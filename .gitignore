@@ -1,0 +1,5 @@
+tmp/*
+db/*.sqlite3
+log/*
+config/database.yml
+config/database.yml_bak
