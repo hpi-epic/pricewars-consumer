@@ -50,3 +50,10 @@ gem "httparty"
 gem "rack-handlers"
 gem "colorize"
 gem "json"
+
+# for deployment
+gem "capistrano", "~> 3.4.1"
+gem "capistrano-passenger"
+gem "capistrano-rvm"
+gem "capistrano-bundler"
+gem "capistrano-recipes"
