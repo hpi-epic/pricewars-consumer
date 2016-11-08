@@ -41,18 +41,26 @@ class SettingController < ApplicationController
     puts url
     response = HTTParty.get(url)
     JSON.parse(response.body)
+    # response = '[{"offer_id":1,"product_id":"1","seller_id":"1","amount":3,"price":5,"shipping_time":5,"prime":true},{"offer_id":1,"product_id":"1","seller_id":"1","amount":3,"price":5,"shipping_time":5,"prime":true}]'
+    # JSON.parse(response)
   end
 
   def logic(items, settings, _bulk_boolean)
-    sells = settings[:amount_of_consumers] / settings[:probability_of_sell] * 100
-    sells = 1 if sells < 1
-    puts "running #{sells.round} times"
-    sells.round.times do
-      item = BuyingBehavior.new(items, settings).buy_random
-      # item = BuyingBehavior.new(items, settings).buy_cheap
-      # Thread.new do |_subT|
-      execute(params[:marketplace_url], item)
-      # end
+    sells = settings[:amount_of_consumers] / settings[:probability_of_sell] * 100 # calculate actual sells with regards to #consumers and selling probability
+    sells = 1 if sells < 1 # if there are less than 1 sell, set it to 1 to avoid errors
+
+    sells.round.times do # for each sell in this iteration, execute
+      settings[:behaviors].each do |behavior| # decide on buying behavior based on settings
+        if rand(1..100) < behavior[:amount] # spread buying behavior accordingly to settings
+          item = BuyingBehavior.new(items, settings).send("buy_" + behavior[:name]) # get item based on buying behavior
+          # Thread.new do |_subT|
+          execute(params[:marketplace_url], item) # buy now!
+          # end
+          break
+        else
+          next
+        end
+      end
     end
   end
 
