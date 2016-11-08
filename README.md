@@ -19,7 +19,7 @@ We are using the [Github flow](https://guides.github.com/introduction/flow/) for
 
 ## Deployment
 
-### Rails Backend & Dashboard
+### Rails Backend
 
 First, run
 
@@ -39,3 +39,14 @@ and see the results with _http://localhost:3000_ .
 ## API
 
 [Ref](https://hpi-epic.github.io/masterproject-pricewars/api/)
+
+
+### Settings
+
+```
+HTTP POST /settings
+```
+
+```
+{ "tick":1,"marketplace_url":"http://http://172.16.58.6:8080","amount_of_consumers":10,"probability_of_sell":100,"behaviors":[{"name":"cheap","amount":100}]}
+```

@@ -3,7 +3,7 @@ class BehaviorController < ApplicationController
     result = []
     result.push(select_first_behavior)
     result.push(select_random_behavior)
-
+    result.push(select_cheap_behavior)
     render json: result
   end
 
@@ -20,6 +20,13 @@ class BehaviorController < ApplicationController
     behavior = {}
     behavior["name"] = "random"
     behavior["description"] = "I am buying random items"
+    behavior
+  end
+
+  def select_cheap_behavior
+    behavior = {}
+    behavior["name"] = "cheap"
+    behavior["description"] = "I am buying the cheaptest item"
     behavior
   end
 end

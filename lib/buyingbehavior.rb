@@ -1,3 +1,5 @@
+require "pp"
+
 class BuyingBehavior
   attr_reader :expression, :variables
 
@@ -13,6 +15,10 @@ class BuyingBehavior
 
   def buy_random
     @items.sample
+  end
+
+  def buy_cheap
+    @items.min_by { |item| item["price"] }
   end
 end
 
