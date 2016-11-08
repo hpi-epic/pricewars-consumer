@@ -18,7 +18,16 @@ class BuyingBehavior
   end
 
   def buy_cheap
-    @items.min_by { |item| item["price"] }
+    @items.min_by {|item| item["price"] }
+  end
+
+  def buy_cheap_and_prime
+    prime_items = @items.select {|item| item["prime"] == true }
+    prime_items.min_by {|item| item["price"] }
+  end
+
+  def buy_expansive
+    @items.max_by {|item| item["price"] }
   end
 end
 

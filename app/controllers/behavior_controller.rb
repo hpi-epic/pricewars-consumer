@@ -4,6 +4,8 @@ class BehaviorController < ApplicationController
     result.push(select_first_behavior)
     result.push(select_random_behavior)
     result.push(select_cheap_behavior)
+    result.push(select_expensive_behavior)
+    result.push(select_cheap_and_prime_behavior)
     render json: result
   end
 
@@ -26,7 +28,21 @@ class BehaviorController < ApplicationController
   def select_cheap_behavior
     behavior = {}
     behavior["name"] = "cheap"
-    behavior["description"] = "I am buying the cheaptest item"
+    behavior["description"] = "I am buying the cheapest item"
+    behavior
+  end
+
+  def select_expensive_behavior
+    behavior = {}
+    behavior["name"] = "expensive"
+    behavior["description"] = "I am buying the most expensive item"
+    behavior
+  end
+
+  def select_cheap_and_prime_behavior
+    behavior = {}
+    behavior["name"] = "cheap_and_prime"
+    behavior["description"] = "I am buying the cheapest item which supports prime shipping"
     behavior
   end
 end

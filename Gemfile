@@ -46,7 +46,7 @@ end
 
 gem "rack-cors", require: "rack/cors"
 gem "seed_dump"
-#gem "httparty"
+# gem "httparty"
 gem "persistent_httparty"
 gem "rack-handlers"
 gem "colorize"
