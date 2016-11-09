@@ -26,7 +26,7 @@ class BuyingBehavior
     prime_items.min_by {|item| item["price"] }
   end
 
-  def buy_expansive
+  def buy_expensive
     @items.max_by {|item| item["price"] }
   end
 end

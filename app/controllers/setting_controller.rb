@@ -20,8 +20,11 @@ class SettingController < ApplicationController
       # Thread.new do |_t|
       loop do
         available_items = get_available_items(params[:marketplace_url])
-        status = logic(available_items, params, params.key?("bulk") ? true : false)
-        # sleep(1)
+        if available_items == "[]"
+          sleep(1)
+          next
+        end
+        status = logic(JSON.parse(available_items), params, params.key?("bulk") ? true : false)
       end
       # end
 
@@ -39,10 +42,8 @@ class SettingController < ApplicationController
   def get_available_items(marketplace_url)
     url = marketplace_url + "/offers"
     puts url
-    response = HTTParty.get(url)
-    JSON.parse(response.body)
-    # response = '[{"offer_id":1,"product_id":"1","seller_id":"1","amount":3,"price":5,"shipping_time":5,"prime":true},{"offer_id":1,"product_id":"1","seller_id":"1","amount":3,"price":5,"shipping_time":5,"prime":true}]'
-    # JSON.parse(response)
+    HTTParty.get(url).body
+    #'[{"offer_id":1,"product_id":"1","seller_id":"1","amount":3,"price":5,"shipping_time":5,"prime":true},{"offer_id":1,"product_id":"1","seller_id":"1","amount":3,"price":5,"shipping_time":5,"prime":true}]'
   end
 
   def logic(items, settings, _bulk_boolean)
@@ -55,6 +56,7 @@ class SettingController < ApplicationController
           item = BuyingBehavior.new(items, settings).send("buy_" + behavior[:name]) # get item based on buying behavior
           # Thread.new do |_subT|
           execute(params[:marketplace_url], item) # buy now!
+          # handle 409 or 410
           # end
           break
         else
