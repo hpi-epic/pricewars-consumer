@@ -23,7 +23,12 @@ class BuyingBehavior
 
   def buy_cheap_and_prime
     prime_items = @items.select {|item| item["prime"] == true }
-    prime_items.min_by {|item| item["price"] }
+    prime_item = prime_items.min_by {|item| item["price"] }
+    if prime_item.nil?
+      buy_cheap
+    else
+      prime_item
+    end
   end
 
   def buy_expensive

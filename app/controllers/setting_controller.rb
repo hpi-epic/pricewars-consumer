@@ -43,7 +43,7 @@ class SettingController < ApplicationController
     url = marketplace_url + "/offers"
     puts url
     HTTParty.get(url).body
-    #'[{"offer_id":1,"product_id":"1","seller_id":"1","amount":3,"price":5,"shipping_time":5,"prime":true},{"offer_id":1,"product_id":"1","seller_id":"1","amount":3,"price":5,"shipping_time":5,"prime":true}]'
+    #'[{"offer_id":1,"product_id":"1","seller_id":"1","amount":3,"price":5,"shipping_time":5,"prime":true},{"offer_id":2,"product_id":"1","seller_id":"1","amount":3,"price":5,"shipping_time":5,"prime":true}]'
   end
 
   def logic(items, settings, _bulk_boolean)
@@ -69,7 +69,11 @@ class SettingController < ApplicationController
   def execute(marketplace_url, item)
     url = marketplace_url + "/offers/" + item["offer_id"].to_s + "/buy"
     puts url
-    response = HTTParty.post(url)
+    response = HTTParty.post(url,
+      :body => { :price => item["price"],
+                 :quantity => rand(1...2)
+               }.to_json,
+      :headers => { 'Content-Type' => 'application/json' } )
     response.code
   end
 end
