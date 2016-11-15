@@ -53,7 +53,7 @@ namespace :deploy do
       within release_path do
         # execute "cp #{release_path}/config/database.mysql.yml #{release_path}/config/database.yml"
         # execute :rake, "db:create"
-        execute :rake, "db:migrate"
+        # execute :rake, "db:migrate"
         # execute :rake, "db:seed"
       end
     end
