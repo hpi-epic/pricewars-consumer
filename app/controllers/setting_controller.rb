@@ -47,6 +47,7 @@ class SettingController < ApplicationController
   end
 
   def logic(items, settings, _bulk_boolean)
+    settings.key?("consumer_id") ? consumer_id = settings[:consumer_id] : consumer_id = 0
     sells = settings[:amount_of_consumers] / settings[:probability_of_sell] * 100 # calculate actual sells with regards to #consumers and selling probability
     sells = 1 if sells < 1 # if there are less than 1 sell, set it to 1 to avoid errors
 
@@ -55,7 +56,7 @@ class SettingController < ApplicationController
         if rand(1..100) < behavior[:amount] # spread buying behavior accordingly to settings
           item = BuyingBehavior.new(items, settings).send("buy_" + behavior[:name]) # get item based on buying behavior
           # Thread.new do |_subT|
-          execute(params[:marketplace_url], item) # buy now!
+          execute(settings[:marketplace_url], item, consumer_id) # buy now!
           # handle 409 or 410
           # end
           break
@@ -66,12 +67,14 @@ class SettingController < ApplicationController
     end
   end
 
-  def execute(marketplace_url, item)
+  def execute(marketplace_url, item, consumer_id)
     url = marketplace_url + "/offers/" + item["offer_id"].to_s + "/buy"
     puts url
     response = HTTParty.post(url,
       :body => { :price => item["price"],
-                 :quantity => rand(1...2)
+                 :quantity => rand(1...2),
+                 :consumer_id => consumer_id,
+                 :prime => item["prime"]
                }.to_json,
       :headers => { 'Content-Type' => 'application/json' } )
     response.code
