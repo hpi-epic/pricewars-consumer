@@ -19,9 +19,10 @@ class SettingController < ApplicationController
     else
       # Thread.new do |_t|
       loop do
+        sleep(1)
         available_items = get_available_items(params[:marketplace_url])
         if available_items == "[]"
-          sleep(1)
+          sleep(2)
           next
         end
         status = logic(JSON.parse(available_items), params, params.key?("bulk") ? true : false)
@@ -56,7 +57,8 @@ class SettingController < ApplicationController
         if rand(1..100) < behavior[:amount] # spread buying behavior accordingly to settings
           item = BuyingBehavior.new(items, settings).send("buy_" + behavior[:name]) # get item based on buying behavior
           # Thread.new do |_subT|
-          execute(settings[:marketplace_url], item, consumer_id) # buy now!
+          status = execute(settings[:marketplace_url], item, consumer_id) # buy now!
+          puts status
           # handle 409 or 410
           # end
           break
@@ -72,7 +74,7 @@ class SettingController < ApplicationController
     puts url
     response = HTTParty.post(url,
       :body => { :price => item["price"],
-                 :quantity => rand(1...2),
+                 :amount => rand(1...2),
                  :consumer_id => consumer_id,
                  :prime => item["prime"]
                }.to_json,
