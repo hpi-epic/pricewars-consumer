@@ -8,7 +8,7 @@ We are using the [Github flow](https://guides.github.com/introduction/flow/) for
 
 | Branch 	| Deployment to  	| Status | Description |
 |---	|---	|---  |---   |
-| master  	|  [consumer.vm-mpws2016hp1-01.eaalab.hpi.uni-potsdam.de](https://consumer.vm-mpws2016hp1-01.eaalab.hpi.uni-potsdam.de) 	| [ ![Codeship Status for hpi-epic/pricewars-consumer](https://app.codeship.com/projects/96f32950-7824-0134-c83e-5251019101b9/status?branch=master)](https://app.codeship.com/projects/180119) | Stable |
+| master  	|  [vm-mpws2016hp1-01.eaalab.hpi.uni-potsdam.de](https://vm-mpws2016hp1-01.eaalab.hpi.uni-potsdam.de) | [ ![Codeship Status for hpi-epic/pricewars-consumer](https://app.codeship.com/projects/96f32950-7824-0134-c83e-5251019101b9/status?branch=master)](https://app.codeship.com/projects/180119) | Stable |
 
 
 ## Requirements
@@ -48,5 +48,5 @@ HTTP POST /settings
 ```
 
 ```
-{ "tick":1,"marketplace_url":"http://http://172.16.58.6:8080","amount_of_consumers":10,"probability_of_sell":100,"behaviors":[{"name":"cheap","amount":100}]}
+{ "tick":1,"marketplace_url":http://172.16.58.6:8080","amount_of_consumers":10,"probability_of_sell":100,"behaviors":[{"name":"cheap","amount":100}]}
 ```
