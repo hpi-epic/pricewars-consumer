@@ -1,7 +1,8 @@
 require "pp"
 require "buyingbehavior"
 require "net/http"
-
+require "resolv-replace"
+ 
 class SettingController < ApplicationController
   include HTTParty
   persistent_connection_adapter name:         "Marketplace",
