@@ -1,12 +1,13 @@
 require "pp"
 require "buyingbehavior"
 require "net/http"
+#require 'resolv'
 require "resolv-replace"
- 
+
 class SettingController < ApplicationController
   include HTTParty
   persistent_connection_adapter name:         "Marketplace",
-                                pool_size:    200,
+                                pool_size:    300,
                                 idle_timeout: 10,
                                 keep_alive:   30
 
