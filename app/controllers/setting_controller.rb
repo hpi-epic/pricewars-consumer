@@ -19,24 +19,31 @@ class SettingController < ApplicationController
       available_items = get_available_items(params[:marketplace_url])
       status = logic(available_items, params, params.key?("bulk") ? true : false)
     else
-      # Thread.new do |_t|
-      loop do
-        sleep(1)
-        available_items = get_available_items(params[:marketplace_url])
-        if available_items == "[]"
-          sleep(2)
-          next
+      $list_of_threads ||= []
+      params[:amount_of_consumers].times {
+        thread = Thread.new do |_t|
+          loop do
+            sleep(1)
+            available_items = get_available_items(params[:marketplace_url])
+            if available_items == "[]"
+              sleep(2)
+              next
+            end
+            status = logic(JSON.parse(available_items), params, params.key?("bulk") ? true : false)
+          end
         end
-        status = logic(JSON.parse(available_items), params, params.key?("bulk") ? true : false)
-      end
-      # end
+        $list_of_threads.push(thread)
+      }
 
     end
     render(nothing: true, status: 200) && return
   end
 
   def delete
-    # TODO: kill open threads
+    $list_of_threads.each do |thread|
+      Thread.kill(thread)
+    end
+    $list_of_threads = []
     render(nothing: true, status: 200) && return
   end
 
