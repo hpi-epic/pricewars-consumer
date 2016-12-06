@@ -40,10 +40,12 @@ class SettingController < ApplicationController
   end
 
   def delete
-    $list_of_threads.each do |thread|
-      Thread.kill(thread)
+    if $list_of_threads.present?
+      $list_of_threads.each do |thread|
+        Thread.kill(thread)
+      end
+      $list_of_threads = []
     end
-    $list_of_threads = []
     render(nothing: true, status: 200) && return
   end
 
