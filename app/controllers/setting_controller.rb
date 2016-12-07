@@ -10,37 +10,34 @@ class SettingController < ApplicationController
                                 pool_size:    300,
                                 idle_timeout: 10,
                                 keep_alive:   30
-
-  timeout_if_no_offers_available = 2 # to be an integer
-  timeout_as_tick                = 1 # to be an integer
-  min_buying_amount              = 1
-  max_buying_amount              = 1
+  def init
+    @timeout_if_no_offers_available = 2 # to be an integer
+    @timeout_as_tick                = 1 # to be an integer
+    @min_buying_amount              = 1
+    @max_buying_amount              = 1
+  end
 
   def create
     render(nothing: true, status: 405) && return unless request.content_type == "application/json"
     render(nothing: true, status: 405) && return unless params.key?(:marketplace_url)
+    init
 
-    if params.key?("test")
-      available_items = get_available_items(params[:marketplace_url])
-      status = logic(available_items, params, params.key?("bulk") ? true : false)
-    else
-      $list_of_threads ||= []
-      params[:amount_of_consumers].times do
-        thread = Thread.new do |_t|
-          loop do
-            sleep(timeout_as_tick)
-            available_items = get_available_items(params[:marketplace_url])
-            if available_items == "[]"
-              sleep(timeout_if_no_offers_available)
-              next
-            end
-            status = logic(JSON.parse(available_items), params, params.key?("bulk") ? true : false)
+    $list_of_threads ||= []
+    params[:amount_of_consumers].times do
+      thread = Thread.new do |_t|
+        loop do
+          sleep(@timeout_as_tick)
+          available_items = get_available_items(params[:marketplace_url])
+          if available_items == "[]"
+            sleep(@timeout_if_no_offers_available)
+            next
           end
+          status = logic(JSON.parse(available_items), params, params.key?("bulk") ? true : false)
         end
-        $list_of_threads.push(thread)
       end
-
+      $list_of_threads.push(thread)
     end
+
     render(nothing: true, status: 200) && return
   end
 
@@ -90,7 +87,7 @@ class SettingController < ApplicationController
     puts url
     response = HTTParty.post(url,
                              body:    {price:       item["price"],
-                                       amount:      rand(min_buying_amount...max_buying_amount),
+                                       amount:      rand(@min_buying_amount..@max_buying_amount),
                                        consumer_id: consumer_id,
                                        prime:       item["prime"]
                                       }.to_json,

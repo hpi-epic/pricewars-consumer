@@ -14,15 +14,15 @@ RSpec.describe SettingController, type: :controller do
     before do
       params = {tick:                1,
                 marketplace_url:     "http://marketplace.api.mp_pricewars.com",
-                amount_of_consumers: 10,
-                probability_of_sell: 33,
+                amount_of_consumers: 2,
+                probability_of_sell: 50,
                 behaviors:           [
                   {type:   "first",
                    amount: 10}
                 ],
                 test:                true
       }
-      post "/setting/?test=true", params.to_json, "CONTENT_TYPE" => "application/json", "ACCEPT" => "application/json"
+      post "/setting/", params.to_json, "CONTENT_TYPE" => "application/json", "ACCEPT" => "application/json"
     end
 
     it "returns http success" do
