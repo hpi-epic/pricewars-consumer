@@ -1,7 +1,7 @@
 require "pp"
 require "buyingbehavior"
 require "net/http"
-#require 'resolv'
+# require 'resolv'
 require "resolv-replace"
 
 class SettingController < ApplicationController
@@ -25,7 +25,7 @@ class SettingController < ApplicationController
       status = logic(available_items, params, params.key?("bulk") ? true : false)
     else
       $list_of_threads ||= []
-      params[:amount_of_consumers].times {
+      params[:amount_of_consumers].times do
         thread = Thread.new do |_t|
           loop do
             sleep(timeout_as_tick)
@@ -38,7 +38,7 @@ class SettingController < ApplicationController
           end
         end
         $list_of_threads.push(thread)
-      }
+      end
 
     end
     render(nothing: true, status: 200) && return
@@ -60,7 +60,7 @@ class SettingController < ApplicationController
     url = marketplace_url + "/offers"
     puts url
     HTTParty.get(url).body
-    #'[{"offer_id":1,"product_id":"1","seller_id":"1","amount":3,"price":5,"shipping_time":5,"prime":true},{"offer_id":2,"product_id":"1","seller_id":"1","amount":3,"price":5,"shipping_time":5,"prime":true}]'
+    # '[{"offer_id":1,"product_id":"1","seller_id":"1","amount":3,"price":5,"shipping_time":5,"prime":true},{"offer_id":2,"product_id":"1","seller_id":"1","amount":3,"price":5,"shipping_time":5,"prime":true}]'
   end
 
   def logic(items, settings, _bulk_boolean)
@@ -89,12 +89,12 @@ class SettingController < ApplicationController
     url = marketplace_url + "/offers/" + item["offer_id"].to_s + "/buy"
     puts url
     response = HTTParty.post(url,
-      :body => { :price => item["price"],
-                 :amount => rand(min_buying_amount...max_buying_amount),
-                 :consumer_id => consumer_id,
-                 :prime => item["prime"]
-               }.to_json,
-      :headers => { 'Content-Type' => 'application/json' } )
+                             body:    {price:       item["price"],
+                                       amount:      rand(min_buying_amount...max_buying_amount),
+                                       consumer_id: consumer_id,
+                                       prime:       item["prime"]
+                                      }.to_json,
+                             headers: {"Content-Type" => "application/json"})
     response.code
   end
 end
