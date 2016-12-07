@@ -4,6 +4,8 @@ This Ruby app implements the MVC pattern including continuous integration and de
 
 We are using the [Github flow](https://guides.github.com/introduction/flow/) for contribution.
 
+The meta repository containing general information can be found [here](https://github.com/hpi-epic/masterproject-pricewars)
+
 ## Application Overview
 
 | Repo | Branch 	| Deployment to  	| Status | Description |
