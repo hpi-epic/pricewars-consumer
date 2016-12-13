@@ -62,10 +62,8 @@ class SettingController < ApplicationController
 
   def logic(items, settings, _bulk_boolean)
     settings.key?("consumer_id") ? consumer_id = settings[:consumer_id] : consumer_id = 0
-    sells = settings[:amount_of_consumers] / settings[:probability_of_sell] * 100 # calculate actual sells with regards to #consumers and selling probability
-    sells = 1 if sells < 1 # if there are less than 1 sell, set it to 1 to avoid errors
 
-    sells.round.times do # for each sell in this iteration, execute
+    if rand(1..100) < settings[:probability_of_sell] 
       settings[:behaviors].each do |behavior| # decide on buying behavior based on settings
         if rand(1..100) < behavior[:amount] # spread buying behavior accordingly to settings
           item = BuyingBehavior.new(items, settings).send("buy_" + behavior[:name]) # get item based on buying behavior
