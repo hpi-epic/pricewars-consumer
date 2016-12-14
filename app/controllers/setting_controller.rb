@@ -10,17 +10,35 @@ class SettingController < ApplicationController
                                 pool_size:    300,
                                 idle_timeout: 10,
                                 keep_alive:   30
-  def init
-    @timeout_if_no_offers_available = 2 # to be an integer
-    @timeout_as_tick                = 1 # to be an integer
-    @min_buying_amount              = 1
-    @max_buying_amount              = 1
+  def init(params)
+    params.key?(:min_buying_amount) ? (@min_buying_amount = params[:min_buying_amount]) : (@min_buying_amount = 1)
+    params.key?(:max_buying_amount) ? (@max_buying_amount = params[:max_buying_amount]) : (@max_buying_amount = 1)
+    params.key?(:min_wait) ? (@min_wait = params[:min_wait]) : (@min_wait = 0.1)
+    params.key?(:max_wait) ? (@max_wait = params[:max_wait]) : (@max_wait = 2)
+    @timeout_as_tick                = rand(@min_wait..@max_wait)
+    params.key?(:timeout_if_no_offers_available) ? (@timeout_if_no_offers_available = params[:timeout_if_no_offers_available]) : (@timeout_if_no_offers_available = 2)
+  end
+
+  def sample
+    settings = Hash.new
+    settings["tick"]                = 1
+    settings["marketplace_url"]     = "http://172.16.58.6:8080"
+    settings["amount_of_consumers"] = 10
+    settings["probability_of_sell"] = 100
+    settings["min_buying_amount"]   = 1
+    settings["max_buying_amount"]   = 1
+    settings["min_wait"]            = 0.1
+    settings["max_wait"]            = 2
+    settings["timeout_as_tick"]     = 2
+    settings["behaviors"]           = []
+    settings["timeout_if_no_offers_available"] = 2
+    render json: settings
   end
 
   def create
     render(nothing: true, status: 405) && return unless request.content_type == "application/json"
     render(nothing: true, status: 405) && return unless params.key?(:marketplace_url)
-    init
+    init(params)
 
     $list_of_threads ||= []
     params[:amount_of_consumers].times do
@@ -63,7 +81,7 @@ class SettingController < ApplicationController
   def logic(items, settings, _bulk_boolean)
     settings.key?("consumer_id") ? consumer_id = settings[:consumer_id] : consumer_id = 0
 
-    if rand(1..100) < settings[:probability_of_sell] 
+    if rand(1..100) < settings[:probability_of_sell]
       settings[:behaviors].each do |behavior| # decide on buying behavior based on settings
         if rand(1..100) < behavior[:amount] # spread buying behavior accordingly to settings
           item = BuyingBehavior.new(items, settings).send("buy_" + behavior[:name]) # get item based on buying behavior
