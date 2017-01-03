@@ -17,11 +17,14 @@ class SettingController < ApplicationController
     params.key?(:max_wait) ? (@max_wait = params[:max_wait]) : (@max_wait = 2)
     @timeout_as_tick                = rand(@min_wait..@max_wait)
     params.key?(:timeout_if_no_offers_available) ? (@timeout_if_no_offers_available = params[:timeout_if_no_offers_available]) : (@timeout_if_no_offers_available = 2)
+    params.key?(:tick) ? (@tick = params[:tick]) : (@tick = 100.0)
+    params.key?(:max_req_per_sec) ? (@max_req_per_sec = params[:max_req_per_sec]) : (@max_req_per_sec = 10)
   end
 
   def sample
-    settings = Hash.new
-    settings["tick"]                = 1
+    settings = {}
+    settings["tick"]                = 10.0
+    settings["max_req_per_sec"]     = 10
     settings["marketplace_url"]     = "http://172.16.58.6:8080"
     settings["amount_of_consumers"] = 10
     settings["probability_of_sell"] = 100
@@ -29,7 +32,6 @@ class SettingController < ApplicationController
     settings["max_buying_amount"]   = 1
     settings["min_wait"]            = 0.1
     settings["max_wait"]            = 2
-    settings["timeout_as_tick"]     = 2
     settings["behaviors"]           = []
     settings["timeout_if_no_offers_available"] = 2
     render json: settings
