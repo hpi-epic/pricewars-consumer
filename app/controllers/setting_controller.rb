@@ -11,28 +11,27 @@ class SettingController < ApplicationController
                                 idle_timeout: 10,
                                 keep_alive:   30
   def init(params)
-    params.key?(:min_buying_amount) ? (@min_buying_amount = params[:min_buying_amount]) : (@min_buying_amount = 1)
-    params.key?(:max_buying_amount) ? (@max_buying_amount = params[:max_buying_amount]) : (@max_buying_amount = 1)
-    params.key?(:min_wait) ? (@min_wait = params[:min_wait]) : (@min_wait = 0.1)
-    params.key?(:max_wait) ? (@max_wait = params[:max_wait]) : (@max_wait = 2)
-    @timeout_as_tick                = rand(@min_wait..@max_wait)
+    params.key?(:min_buying_amount)              ? (@min_buying_amount = params[:min_buying_amount]) : (@min_buying_amount = 1)
+    params.key?(:max_buying_amount)              ? (@max_buying_amount = params[:max_buying_amount]) : (@max_buying_amount = 1)
+    params.key?(:min_wait)                       ? (@min_wait = params[:min_wait])                   : (@min_wait = 0.1)
+    params.key?(:max_wait)                       ? (@max_wait = params[:max_wait])                   : (@max_wait = 2)
     params.key?(:timeout_if_no_offers_available) ? (@timeout_if_no_offers_available = params[:timeout_if_no_offers_available]) : (@timeout_if_no_offers_available = 2)
-    params.key?(:tick) ? (@tick = params[:tick]) : (@tick = 100.0)
-    params.key?(:max_req_per_sec) ? (@max_req_per_sec = params[:max_req_per_sec]) : (@max_req_per_sec = 10)
+    params.key?(:tick)                           ? (@tick = params[:tick])                           : (@tick = 100.0)
+    params.key?(:max_req_per_sec)                ? (@max_req_per_sec = params[:max_req_per_sec])     : (@max_req_per_sec = 10)
   end
 
   def sample
     settings = {}
-    settings["tick"]                = 10.0
-    settings["max_req_per_sec"]     = 10
-    settings["marketplace_url"]     = "http://172.16.58.6:8080"
-    settings["amount_of_consumers"] = 10
-    settings["probability_of_sell"] = 100
-    settings["min_buying_amount"]   = 1
-    settings["max_buying_amount"]   = 1
-    settings["min_wait"]            = 0.1
-    settings["max_wait"]            = 2
-    settings["behaviors"]           = []
+    settings["tick"]                           = 10.0
+    settings["max_req_per_sec"]                = 10
+    settings["marketplace_url"]                = "http://172.16.58.6:8080"
+    settings["amount_of_consumers"]            = 10
+    settings["probability_of_sell"]            = 100
+    settings["min_buying_amount"]              = 1
+    settings["max_buying_amount"]              = 1
+    settings["min_wait"]                       = 0.1
+    settings["max_wait"]                       = 2
+    settings["behaviors"]                      = []
     settings["timeout_if_no_offers_available"] = 2
     render json: settings
   end
@@ -46,7 +45,7 @@ class SettingController < ApplicationController
     params[:amount_of_consumers].times do
       thread = Thread.new do |_t|
         loop do
-          sleep(@timeout_as_tick)
+          sleep((@tick / @max_req_per_sec) + (rand(@min_wait..@max_wait)/@tick)) #sleep regarding global time zone and random offset
           available_items = get_available_items(params[:marketplace_url])
           if available_items == "[]"
             sleep(@timeout_if_no_offers_available)
@@ -77,7 +76,6 @@ class SettingController < ApplicationController
     url = marketplace_url + "/offers"
     puts url
     HTTParty.get(url).body
-    # '[{"offer_id":1,"product_id":"1","seller_id":"1","amount":3,"price":5,"shipping_time":5,"prime":true},{"offer_id":2,"product_id":"1","seller_id":"1","amount":3,"price":5,"shipping_time":5,"prime":true}]'
   end
 
   def logic(items, settings, _bulk_boolean)
