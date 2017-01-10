@@ -27,8 +27,8 @@ class SettingController < ApplicationController
     settings["tick"]                           = 10.0
     settings["max_req_per_sec"]                = 10
     settings["marketplace_url"]                = "http://172.16.58.6:8080"
-    settings["amount_of_consumers"]            = 10
-    settings["probability_of_sell"]            = 100
+    settings["amount_of_consumers"]            = 2
+    settings["probability_of_sell"]            = 10
     settings["min_buying_amount"]              = 1
     settings["max_buying_amount"]              = 1
     settings["min_wait"]                       = 0.1
@@ -76,11 +76,11 @@ class SettingController < ApplicationController
 
   private
 
-  def register_with_marketplace(url)
-    puts url
+  def register_with_marketplace(consumer_url)
     url = @marketplace_url +"/consumers"
+    puts url
     response = HTTParty.post(url,
-                             body:    {api_endpoint_url: url,
+                             body:    {api_endpoint_url: consumer_url,
                                        consumer_name: "Consumer",
                                        description: "Cool"
                                     }.to_json,
@@ -91,7 +91,6 @@ class SettingController < ApplicationController
   end
 
   def deregister_with_marketplace()
-    puts url
     url = @marketplace_url +"/consumer/"+@consumer_id
     response = HTTParty.delete(url,
                              body:    {}.to_json,
