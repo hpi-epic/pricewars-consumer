@@ -1,15 +1,28 @@
 class BehaviorController < ApplicationController
   def index
+    render json: gather_available_behaviors
+  end
+
+  def gather_available_behaviors
     result = []
     result.push(select_first_behavior)
     result.push(select_random_behavior)
     result.push(select_cheap_behavior)
     result.push(select_expensive_behavior)
     result.push(select_cheap_and_prime_behavior)
-    render json: result
+    evenly_distributed_behavior(result)
   end
 
   private
+
+  def evenly_distributed_behavior(behaviors)
+    result = []
+    behaviors.each do |behavior|
+      behavior["amount"] = 100 / behaviors.length
+      result.push(behavior)
+    end
+    result
+  end
 
   def select_first_behavior
     behavior = {}
