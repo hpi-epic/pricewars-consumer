@@ -18,6 +18,8 @@ class SettingController < ApplicationController
     params.key?(:timeout_if_no_offers_available) ? (@timeout_if_no_offers_available = params[:timeout_if_no_offers_available]) : (@timeout_if_no_offers_available = 2)
     params.key?(:tick)                           ? (@tick = params[:tick])                           : (@tick = 100.0)
     params.key?(:max_req_per_sec)                ? (@max_req_per_sec = params[:max_req_per_sec])     : (@max_req_per_sec = 10)
+    params.key?(:timeout_if_too_many_requests)   ? (@timeout_if_too_many_requests = params[:timeout_if_too_many_requests])     : (@timeout_if_too_many_requests = 30)
+    @marketplace_url = params[:marketplace_url]
   end
 
   def sample
@@ -33,6 +35,7 @@ class SettingController < ApplicationController
     settings["max_wait"]                       = 2
     settings["behaviors"]                      = []
     settings["timeout_if_no_offers_available"] = 2
+    settings["timeout_if_too_many_requests"]   = 30
     render json: settings
   end
 
@@ -40,13 +43,13 @@ class SettingController < ApplicationController
     render(nothing: true, status: 405) && return unless request.content_type == "application/json"
     render(nothing: true, status: 405) && return unless params.key?(:marketplace_url)
     init(params)
-
+    register_with_marketplace(request.original_url)
     $list_of_threads ||= []
     params[:amount_of_consumers].times do
       thread = Thread.new do |_t|
         loop do
           sleep((@tick / @max_req_per_sec) + (rand(@min_wait..@max_wait)/@tick)) #sleep regarding global time zone and random offset
-          available_items = get_available_items(params[:marketplace_url])
+          available_items = get_available_items()
           if available_items == "[]"
             sleep(@timeout_if_no_offers_available)
             next
@@ -67,13 +70,38 @@ class SettingController < ApplicationController
       end
       $list_of_threads = []
     end
+    deregister_with_marketplace()
     render(nothing: true, status: 200) && return
   end
 
   private
 
-  def get_available_items(marketplace_url)
-    url = marketplace_url + "/offers"
+  def register_with_marketplace(url)
+    puts url
+    url = @marketplace_url +"/consumers"
+    response = HTTParty.post(url,
+                             body:    {api_endpoint_url: url,
+                                       consumer_name: "Consumer",
+                                       description: "Cool"
+                                    }.to_json,
+                             headers: {"Content-Type" => "application/json"})
+    data = JSON.parse(response.body)
+    @consumer_token = data["consumer_token"]
+    @consumer_id    = data["consumer_id"]
+  end
+
+  def deregister_with_marketplace()
+    puts url
+    url = @marketplace_url +"/consumer/"+@consumer_id
+    response = HTTParty.delete(url,
+                             body:    {}.to_json,
+                             headers: {"Content-Type" => "application/json",
+                                       "Authorization" => "Token #{@consumer_token}"
+                              })
+  end
+
+  def get_available_items()
+    url = @marketplace_url + "/offers"
     puts url
     HTTParty.get(url).body
   end
@@ -86,8 +114,12 @@ class SettingController < ApplicationController
         if rand(1..100) < behavior[:amount] # spread buying behavior accordingly to settings
           item = BuyingBehavior.new(items, settings).send("buy_" + behavior[:name]) # get item based on buying behavior
           # Thread.new do |_subT|
-          status = execute(settings[:marketplace_url], item, consumer_id) # buy now!
+          status = execute(item, consumer_id) # buy now!
           puts status
+          if status == 401
+            puts "sleeping"
+            sleep(@timeout_if_too_many_requests)
+          end
           # handle 409 or 410
           # end
           break
@@ -98,16 +130,18 @@ class SettingController < ApplicationController
     end
   end
 
-  def execute(marketplace_url, item, consumer_id)
-    url = marketplace_url + "/offers/" + item["offer_id"].to_s + "/buy"
+  def execute(item, consumer_id)
+    url = @marketplace_url + "/offers/" + item["offer_id"].to_s + "/buy"
     puts url
     response = HTTParty.post(url,
                              body:    {price:       item["price"],
                                        amount:      rand(@min_buying_amount..@max_buying_amount),
-                                       consumer_id: consumer_id,
+                                       consumer_id: @consumer_id,
                                        prime:       item["prime"]
                                       }.to_json,
-                             headers: {"Content-Type" => "application/json"})
+                             headers: {"Content-Type" => "application/json",
+                                       "Authorization" => "Token #{@consumer_token}"
+                                      })
     response.code
   end
 end
