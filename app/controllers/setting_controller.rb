@@ -42,8 +42,11 @@ class SettingController < ApplicationController
   def create
     render(nothing: true, status: 405) && return unless request.content_type == "application/json"
     render(nothing: true, status: 405) && return unless params.key?(:marketplace_url)
+
     init(params)
-    register_with_marketplace(request.original_url)
+    @consumer_url = request.original_url
+    register_with_marketplace()
+
     $list_of_threads ||= []
     params[:amount_of_consumers].times do
       thread = Thread.new do |_t|
@@ -76,11 +79,11 @@ class SettingController < ApplicationController
 
   private
 
-  def register_with_marketplace(consumer_url)
+  def register_with_marketplace()
     url = @marketplace_url +"/consumers"
     puts url
     response = HTTParty.post(url,
-                             body:    {api_endpoint_url: consumer_url,
+                             body:    {api_endpoint_url: @consumer_url,
                                        consumer_name: "Consumer",
                                        description: "Cool"
                                     }.to_json,
@@ -115,12 +118,12 @@ class SettingController < ApplicationController
           # Thread.new do |_subT|
           status = execute(item, consumer_id) # buy now!
           puts status
-          if status == 401
-            puts "sleeping"
+          if status == 429
             sleep(@timeout_if_too_many_requests)
+          elsif status == 401
+             register_with_marketplace()
           end
-          # handle 409 or 410
-          # end
+          #end
           break
         else
           next
