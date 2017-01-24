@@ -5,8 +5,9 @@ class BuyingBehavior
 
   # Initialize with parameters passed
   def initialize(items, settings)
-    @items = items
-    @settings = settings
+    products        = items.map {|item| item["product_id"] }
+    @items          = items.select {|item| item["product_id"] == products.uniq.sample }
+    @settings       = settings
   end
 
   def buy_first
@@ -40,7 +41,7 @@ class BuyingBehavior
   end
 
   def buy_cheapest_best_quality
-    best_quality = @items.map { |item| item["quality"] }.max
+    best_quality = @items.map {|item| item["quality"] }.max
     best_quality_items = @items.select {|item| item["quality"] == best_quality }
     cheapest_best_quality_item = best_quality_items.min_by {|item| item["price"] }
     if cheapest_best_quality_item.nil?
@@ -57,7 +58,7 @@ class BuyingBehavior
   end
 
   def finding_best_quality(items)
-    items.map { |item| item["quality"] }.max
+    items.map {|item| item["quality"] }.max
   end
 end
 

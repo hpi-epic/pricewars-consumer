@@ -18,7 +18,7 @@ class SettingController < BehaviorController
     @min_wait                       = params.key?(:min_wait)                       ? params[:min_wait]                       : 0.1
     @max_wait                       = params.key?(:max_wait)                       ? params[:max_wait]                       : 2
     @timeout_if_no_offers_available = params.key?(:timeout_if_no_offers_available) ? params[:timeout_if_no_offers_available] : 2
-    @consumer_per_minute            = params.key?(:consumer_per_minute )           ? params[:consumer_per_minute]            : 100.0
+    @consumer_per_minute            = params.key?(:consumer_per_minute)           ? params[:consumer_per_minute]            : 100.0
     @max_req_per_sec                = params.key?(:max_req_per_sec)                ? params[:max_req_per_sec]                : 10
     @timeout_if_too_many_requests   = params.key?(:timeout_if_too_many_requests)   ? params[:timeout_if_too_many_requests]   : 30
     @amount_of_consumers            = params.key?(:amount_of_consumers)            ? params[:amount_of_consumers]            : 1
@@ -56,7 +56,7 @@ class SettingController < BehaviorController
     @amount_of_consumers.times do
       thread = Thread.new do |_t|
         loop do
-          sleep((@consumer_per_minute/60) + rand(@min_wait..@max_wait)) # sleep regarding global time zone and random offset
+          sleep((@consumer_per_minute / 60) + rand(@min_wait..@max_wait)) # sleep regarding global time zone and random offset
           available_items = get_available_items
           if available_items == "[]"
             sleep(@timeout_if_no_offers_available)
