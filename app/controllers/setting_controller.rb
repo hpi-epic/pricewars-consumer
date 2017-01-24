@@ -118,6 +118,7 @@ class SettingController < BehaviorController
       @behaviors_settings.each do |behavior| # decide on buying behavior based on settings
         if rand(1..100) < behavior[:amount]  # spread buying behavior accordingly to settings
           item = BuyingBehavior.new(items, settings).send("buy_" + behavior[:name]) # get item based on buying behavior
+          puts item
           # Thread.new do |_subT|
           status = execute(item, behavior[:name]) # buy now!
           puts status
