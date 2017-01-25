@@ -77,9 +77,14 @@ class SettingController < BehaviorController
         Thread.kill(thread)
       end
       $list_of_threads = []
+      deregister_with_marketplace
+      unless $marketplace_url.nil? or $consumer_id.nil?
+        render(nothing: true, status: 200) && return
+      else
+        render(text: "invalid configuration: consumer_id or marketplace_url unknown", status: 404) && return
+    else
+      render(text: "no instance running", status: 404) && return
     end
-    deregister_with_marketplace
-    render(nothing: true, status: 200) && return
   end
 
   private
