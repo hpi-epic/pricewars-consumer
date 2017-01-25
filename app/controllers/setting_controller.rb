@@ -18,7 +18,7 @@ class SettingController < BehaviorController
     @min_wait                       = params.key?(:min_wait)                       ? params[:min_wait]                       : 0.1
     @max_wait                       = params.key?(:max_wait)                       ? params[:max_wait]                       : 2
     @timeout_if_no_offers_available = params.key?(:timeout_if_no_offers_available) ? params[:timeout_if_no_offers_available] : 2
-    @consumer_per_minute            = params.key?(:consumer_per_minute)           ? params[:consumer_per_minute]            : 100.0
+    @consumer_per_minute            = params.key?(:consumer_per_minute)            ? params[:consumer_per_minute]            : 100.0
     @max_req_per_sec                = params.key?(:max_req_per_sec)                ? params[:max_req_per_sec]                : 10
     @timeout_if_too_many_requests   = params.key?(:timeout_if_too_many_requests)   ? params[:timeout_if_too_many_requests]   : 30
     @amount_of_consumers            = params.key?(:amount_of_consumers)            ? params[:amount_of_consumers]            : 1
@@ -30,7 +30,7 @@ class SettingController < BehaviorController
 
   def index
     settings = {}
-    settings["consumer_per_minute "]           = @consumer_per_minute            ? @consumer_per_minute            : 100.0
+    settings["consumer_per_minute"]            = @consumer_per_minute            ? @consumer_per_minute            : 100.0
     settings["max_req_per_sec"]                = @max_req_per_sec                ? @max_req_per_sec                : 10
     settings["marketplace_url"]                = $marketplace_url                ? $marketplace_url                : "http://vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de:8080/marketplace"
     settings["amount_of_consumers"]            = @amount_of_consumers            ? @amount_of_consumers            : 1
@@ -82,6 +82,7 @@ class SettingController < BehaviorController
         render(nothing: true, status: 200) && return
       else
         render(text: "invalid configuration: consumer_id or marketplace_url unknown", status: 404) && return
+      end
     else
       render(text: "no instance running", status: 404) && return
     end
