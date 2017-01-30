@@ -23,6 +23,7 @@ class SettingController < BehaviorController
     @timeout_if_too_many_requests   = params.key?(:timeout_if_too_many_requests)   ? params[:timeout_if_too_many_requests]   : 30
     @amount_of_consumers            = params.key?(:amount_of_consumers)            ? params[:amount_of_consumers]            : 1
     @probability_of_sell            = params.key?(:probability_of_sell)            ? params[:probability_of_sell]            : 100
+    @max_buying_price               = params.key?(:max_buying_price)               ? params[:max_buying_price]               : 80
     @behaviors_settings             = params.key?(:behaviors)                      ? params[:behaviors]                      : gather_available_behaviors
     $marketplace_url                = params[:marketplace_url]
     @consumer_url                   = request.original_url
@@ -42,6 +43,7 @@ class SettingController < BehaviorController
     settings["behaviors"]                      = @behaviors_settings             ? @behaviors_settings             : gather_available_behaviors
     settings["timeout_if_no_offers_available"] = @timeout_if_no_offers_available ? @timeout_if_no_offers_available : 2
     settings["timeout_if_too_many_requests"]   = @timeout_if_too_many_requests   ? @timeout_if_too_many_requests   : 30
+    settings["max_buying_price"]               = @max_buying_price               ? @max_buying_price               : 80
     render json: settings
   end
 
@@ -123,9 +125,12 @@ class SettingController < BehaviorController
     if rand(1..100) < @probability_of_sell
       @behaviors_settings.each do |behavior| # decide on buying behavior based on settings
         if rand(1..100) < behavior[:amount]  # spread buying behavior accordingly to settings
-          item = BuyingBehavior.new(items, settings).send("buy_" + behavior[:name]) # get item based on buying behavior
-          puts item
+          item = BuyingBehavior.new(items, @max_buying_price).send("buy_" + behavior[:name]) # get item based on buying behavior
           # Thread.new do |_subT|
+          if item.nil?
+            sleep(@timeout_if_no_offers_available)
+            break
+          end
           status = execute(item, behavior[:name]) # buy now!
           puts status
           if status == 429

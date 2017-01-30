@@ -4,35 +4,30 @@ class BuyingBehavior
   attr_reader :expression, :variables
 
   # Initialize with parameters passed
-  def initialize(items, settings)
-    products        = items.map {|item| item["product_id"] }
-    @items          = items.select {|item| item["product_id"] == products.uniq.sample }
-    @settings       = settings
+  def initialize(items, max_buying_price)
+    products           = items.map {|item| item["product_id"] }
+    @items             = items.select {|item| item["product_id"] == products.uniq.sample }
+    @max_buying_price  = max_buying_price
   end
 
   def buy_first
-    @items.first
+    validate_max_price(@items.first)
   end
 
   def buy_random
-    @items.sample
+    validate_max_price(@items.sample)
   end
 
   def buy_cheap
-    @items.min_by {|item| item["price"] }
+    validate_max_price(@items.min_by {|item| item["price"] })
   end
 
   def buy_cheap_and_prime
-    prime_item = having_prime(@items).min_by {|item| item["price"] }
-    if prime_item.nil?
-      buy_cheap
-    else
-      prime_item
-    end
+    validate_max_price(having_prime(@items).min_by {|item| item["price"] })
   end
 
   def buy_expensive
-    @items.max_by {|item| item["price"] }
+    validate_max_price(@items.max_by {|item| item["price"] })
   end
 
   def buy_cheapest_best_quality_with_prime
@@ -43,16 +38,19 @@ class BuyingBehavior
   def buy_cheapest_best_quality
     best_quality = @items.map {|item| item["quality"] }.max
     best_quality_items = @items.select {|item| item["quality"] == best_quality }
-    cheapest_best_quality_item = best_quality_items.min_by {|item| item["price"] }
-    if cheapest_best_quality_item.nil?
-      buy_cheap
-    else
-      cheapest_best_quality_item
-    end
+    validate_max_price(best_quality_items.min_by {|item| item["price"] })
   end
 
   private
 
+  def validate_max_price(item)
+    if item["price"] > @max_buying_price
+      nil
+    else
+      item
+    end
+  end
+  
   def having_prime(items)
     items.select {|item| item["prime"] == true }
   end
