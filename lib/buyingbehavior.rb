@@ -22,6 +22,23 @@ class BuyingBehavior
     validate_max_price(@items.min_by {|item| item["price"] })
   end
 
+  def buy_n_cheap(n)
+    n.times do
+      item = buy_cheap
+      return nil if item.nil?
+      @items.delete(item)
+    end
+    buy_cheap
+  end
+
+  def buy_second_cheap
+    buy_n_cheap(1)
+  end
+
+  def buy_third_cheap
+    buy_n_cheap(2)
+  end
+
   def buy_cheap_and_prime
     validate_max_price(having_prime(@items).min_by {|item| item["price"] })
   end
@@ -50,7 +67,7 @@ class BuyingBehavior
       item
     end
   end
-  
+
   def having_prime(items)
     items.select {|item| item["prime"] == true }
   end

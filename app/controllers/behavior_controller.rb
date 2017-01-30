@@ -12,6 +12,8 @@ class BehaviorController < ApplicationController
     result.push(select_cheap_and_prime_behavior)
     result.push(select_cheapest_best_quality_behavior)
     result.push(select_cheapest_best_quality_with_prime_behavior)
+    result.push(select_second_cheap_behavior)
+    result.push(select_third_cheap_behavior)
     evenly_distributed_behavior(result)
   end
 
@@ -58,6 +60,20 @@ class BehaviorController < ApplicationController
     behavior = {}
     behavior["name"] = "cheap"
     behavior["description"] = "I am buying the cheapest item"
+    behavior
+  end
+
+  def select_second_cheap_behavior
+    behavior = {}
+    behavior["name"] = "second_cheap"
+    behavior["description"] = "I am buying the second cheapest item"
+    behavior
+  end
+
+  def select_third_cheap_behavior
+    behavior = {}
+    behavior["name"] = "third_cheap"
+    behavior["description"] = "I am buying the third cheapest item"
     behavior
   end
 
