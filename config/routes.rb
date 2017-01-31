@@ -8,4 +8,6 @@ Rails.application.routes.draw do
   delete "setting", to: "setting#delete"
 
   get "behavior", to: "behavior#index"
+
+  get "status", to: "setting#status"
 end

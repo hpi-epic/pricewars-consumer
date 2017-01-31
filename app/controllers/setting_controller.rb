@@ -67,6 +67,11 @@ class SettingController < BehaviorController
     render json: retrieve_current_or_default_settings
   end
 
+  def status
+    status = $list_of_threads.present? ? "running" : "dead"
+    render json: status
+  end
+
   def delete
     if $list_of_threads.present?
       $list_of_threads.each do |thread|
