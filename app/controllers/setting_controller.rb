@@ -37,7 +37,7 @@ class SettingController < BehaviorController
     render(nothing: true, status: 405) && return unless request.content_type == "application/json"
     render(nothing: true, status: 405) && return unless params.key?(:marketplace_url)
     init(params, request)
-    index
+    render json: retrieve_current_or_default_settings
   end
 
   def create
