@@ -68,8 +68,9 @@ class SettingController < BehaviorController
   end
 
   def status
-    status = $list_of_threads.present? ? "running" : "dead"
-    render json: status
+    result = {}
+    result["status"] = $list_of_threads.present? ? "running" : "dead"
+    render json: result
   end
 
   def delete
