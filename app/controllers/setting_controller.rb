@@ -20,14 +20,13 @@ class SettingController < BehaviorController
     $max_wait                       = params.key?(:max_wait)                       ? params[:max_wait]                       : 2
     $timeout_if_no_offers_available = params.key?(:timeout_if_no_offers_available) ? params[:timeout_if_no_offers_available] : 2
     $consumer_per_minute            = params.key?(:consumer_per_minute)            ? params[:consumer_per_minute]            : 100.0
-    $max_req_per_sec                = params.key?(:max_req_per_sec)                ? params[:max_req_per_sec]                : 10
     $timeout_if_too_many_requests   = params.key?(:timeout_if_too_many_requests)   ? params[:timeout_if_too_many_requests]   : 30
     $amount_of_consumers            = params.key?(:amount_of_consumers)            ? params[:amount_of_consumers]            : 1
     $probability_of_sell            = params.key?(:probability_of_sell)            ? params[:probability_of_sell]            : 100
     $max_buying_price               = params.key?(:max_buying_price)               ? params[:max_buying_price]               : 80
     $behaviors_settings             = params.key?(:behaviors)                      ? params[:behaviors]                      : gather_available_behaviors
     $marketplace_url                = params[:marketplace_url]
-    $consumer_url                   = request.original_url
+    $consumer_url                   = request.base_url
   end
 
   def index
@@ -52,7 +51,7 @@ class SettingController < BehaviorController
     $amount_of_consumers.times do
       thread = Thread.new do |_t|
         loop do
-          sleep(($consumer_per_minute / 60) + rand($min_wait..$max_wait)) # sleep regarding global time zone and random offset
+          sleep((60/$consumer_per_minute) + rand($min_wait..$max_wait)) # sleep regarding global time zone and random offset
           available_items = get_available_items
           if available_items == "[]"
             sleep($timeout_if_no_offers_available)
@@ -126,19 +125,19 @@ class SettingController < BehaviorController
       $behaviors_settings.each do |behavior| # decide on buying behavior based on settings
         if rand(1..100) < behavior[:amount]  # spread buying behavior accordingly to settings
           item = BuyingBehavior.new(items, $max_buying_price).send("buy_" + behavior[:name]) # get item based on buying behavior
-          # Thread.new do |_subT|
           if item.nil?
             sleep($timeout_if_no_offers_available)
             break
           end
-          status = execute(item, behavior[:name]) # buy now!
-          puts status
-          if status == 429
-            sleep($timeout_if_too_many_requests)
-          elsif status == 401
-            register_with_marketplace
+          Thread.new do |_subT|
+            status = execute(item, behavior[:name]) # buy now!
+            puts status
+            if status == 429
+              sleep($timeout_if_too_many_requests)
+            elsif status == 401
+              register_with_marketplace
+            end
           end
-          # end
           break
         else
           next
@@ -166,7 +165,6 @@ class SettingController < BehaviorController
   def retrieve_current_or_default_settings
     settings = {}
     settings["consumer_per_minute"]            = $consumer_per_minute            ? $consumer_per_minute            : 100.0
-    settings["max_req_per_sec"]                = $max_req_per_sec                ? $max_req_per_sec                : 10
     settings["marketplace_url"]                = $marketplace_url                ? $marketplace_url                : "http://vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de:8080/marketplace"
     settings["amount_of_consumers"]            = $amount_of_consumers            ? $amount_of_consumers            : 1
     settings["probability_of_sell"]            = $probability_of_sell            ? $probability_of_sell            : 100
