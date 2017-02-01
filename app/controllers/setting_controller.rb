@@ -24,6 +24,7 @@ class SettingController < BehaviorController
     $amount_of_consumers            = params.key?(:amount_of_consumers)            ? params[:amount_of_consumers]            : 1
     $probability_of_sell            = params.key?(:probability_of_sell)            ? params[:probability_of_sell]            : 100
     $max_buying_price               = params.key?(:max_buying_price)               ? params[:max_buying_price]               : 80
+    $debug                          = params.key?(:debug)                          ? params[:debug]                          : true
     $behaviors_settings             = params.key?(:behaviors)                      ? params[:behaviors]                      : gather_available_behaviors
     $marketplace_url                = params[:marketplace_url]
     $consumer_url                   = request.base_url
@@ -54,6 +55,7 @@ class SettingController < BehaviorController
           sleep((60/$consumer_per_minute) + rand($min_wait..$max_wait)) # sleep regarding global time zone and random offset
           available_items = get_available_items
           if available_items == "[]"
+            puts "no items available, sleeping #{$timeout_if_no_offers_available}s" if $debug
             sleep($timeout_if_no_offers_available)
             next
           end
@@ -93,7 +95,7 @@ class SettingController < BehaviorController
 
   def register_with_marketplace
     url = $marketplace_url + "/consumers"
-    puts url
+    puts url if $debug
     response = HTTParty.post(url,
                              body:    {api_endpoint_url: $consumer_url,
                                        consumer_name:    "Default",
@@ -103,6 +105,7 @@ class SettingController < BehaviorController
     data = JSON.parse(response.body)
     $consumer_token = data["consumer_token"]
     $consumer_id    = data["consumer_id"]
+    puts "assigning new token #{$consumer_token}" if $debug
   end
 
   def deregister_with_marketplace
@@ -112,11 +115,13 @@ class SettingController < BehaviorController
                                headers: {"Content-Type"  => "application/json",
                                          "Authorization" => "Token #{$consumer_token}"
                                 })
+    puts "deregistered with status code #{response.code}" if $debug
+    response
   end
 
   def get_available_items
     url = $marketplace_url + "/offers"
-    puts url
+    puts url if $debug
     HTTParty.get(url).body
   end
 
@@ -126,6 +131,7 @@ class SettingController < BehaviorController
         if rand(1..100) < behavior[:amount]  # spread buying behavior accordingly to settings
           item = BuyingBehavior.new(items, $max_buying_price).send("buy_" + behavior[:name]) # get item based on buying behavior
           if item.nil?
+            puts "no item selected by BuyingBehavior, sleeping #{$timeout_if_no_offers_available}s" if $debug
             sleep($timeout_if_no_offers_available)
             break
           end
@@ -133,8 +139,10 @@ class SettingController < BehaviorController
             status = execute(item, behavior[:name]) # buy now!
             puts status
             if status == 429
+              puts "429, sleeping #{$timeout_if_too_many_requests}s"
               sleep($timeout_if_too_many_requests)
             elsif status == 401
+              puts "401.." if $debug
               deregister_with_marketplace
               register_with_marketplace
             end
@@ -149,7 +157,7 @@ class SettingController < BehaviorController
 
   def execute(item, behavior)
     url = $marketplace_url + "/offers/" + item["offer_id"].to_s + "/buy"
-    puts url
+    puts url if $debug
     response = HTTParty.post(url,
                              body:    {price:       item["price"],
                                        amount:      rand($min_buying_amount..$max_buying_amount),
@@ -177,6 +185,7 @@ class SettingController < BehaviorController
     settings["timeout_if_no_offers_available"] = $timeout_if_no_offers_available ? $timeout_if_no_offers_available : 2
     settings["timeout_if_too_many_requests"]   = $timeout_if_too_many_requests   ? $timeout_if_too_many_requests   : 30
     settings["max_buying_price"]               = $max_buying_price               ? $max_buying_price               : 80
+    settings["debug"]                          = $debug                          ? $debug                          : true
     settings
   end
 end
