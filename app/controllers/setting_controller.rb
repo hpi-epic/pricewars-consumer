@@ -135,18 +135,18 @@ class SettingController < BehaviorController
             sleep($timeout_if_no_offers_available)
             break
           end
-          Thread.new do |_subT|
-            status = execute(item, behavior[:name]) # buy now!
-            puts status
-            if status == 429
-              puts "429, sleeping #{$timeout_if_too_many_requests}s"
-              sleep($timeout_if_too_many_requests)
-            elsif status == 401
-              puts "401.." if $debug
-              deregister_with_marketplace
-              register_with_marketplace
-            end
+          #Thread.new do |_subT|
+          status = execute(item, behavior[:name]) # buy now!
+          puts status
+          if status == 429
+            puts "429, sleeping #{$timeout_if_too_many_requests}s"
+            sleep($timeout_if_too_many_requests)
+          elsif status == 401
+            puts "401.." if $debug
+            deregister_with_marketplace
+            register_with_marketplace
           end
+          #end
           break
         else
           next
