@@ -139,7 +139,7 @@ class SettingController < BehaviorController
           status = execute(item, behavior[:name]) # buy now!
           puts status
           if status == 429
-            puts "429, sleeping #{$timeout_if_too_many_requests}s"
+            puts "429, sleeping #{$timeout_if_too_many_requests}s" if $debug
             sleep($timeout_if_too_many_requests)
           elsif status == 401
             puts "401.." if $debug
