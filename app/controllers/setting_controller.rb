@@ -135,6 +135,7 @@ class SettingController < BehaviorController
             if status == 429
               sleep($timeout_if_too_many_requests)
             elsif status == 401
+              deregister_with_marketplace
               register_with_marketplace
             end
           end
