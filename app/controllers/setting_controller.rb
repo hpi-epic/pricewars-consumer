@@ -96,8 +96,8 @@ class SettingController < BehaviorController
     puts url
     response = HTTParty.post(url,
                              body:    {api_endpoint_url: $consumer_url,
-                                       consumer_name:    "Consumer",
-                                       description:      "Cool"
+                                       consumer_name:    "Default",
+                                       description:      "Buying with specified settings"
                                       }.to_json,
                              headers: {"Content-Type" => "application/json"})
     data = JSON.parse(response.body)
