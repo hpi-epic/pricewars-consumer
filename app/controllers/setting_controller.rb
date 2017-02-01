@@ -22,7 +22,7 @@ class SettingController < BehaviorController
     $consumer_per_minute            = params.key?(:consumer_per_minute)            ? params[:consumer_per_minute]            : 100.0
     $timeout_if_too_many_requests   = params.key?(:timeout_if_too_many_requests)   ? params[:timeout_if_too_many_requests]   : 30
     $amount_of_consumers            = params.key?(:amount_of_consumers)            ? params[:amount_of_consumers]            : 1
-    $probability_of_sell            = params.key?(:probability_of_sell)            ? params[:probability_of_sell]            : 100
+    $probability_of_buy            = params.key?(:probability_of_buy)            ? params[:probability_of_buy]            : 100
     $max_buying_price               = params.key?(:max_buying_price)               ? params[:max_buying_price]               : 80
     $debug                          = params.key?(:debug)                          ? params[:debug]                          : true
     $behaviors_settings             = params.key?(:behaviors)                      ? params[:behaviors]                      : gather_available_behaviors
@@ -52,7 +52,9 @@ class SettingController < BehaviorController
     $amount_of_consumers.times do
       thread = Thread.new do |_t|
         loop do
-          sleep((60/$consumer_per_minute) + rand($min_wait..$max_wait)) # sleep regarding global time zone and random offset
+          general_timeout_through_consumer_settings = (60/$consumer_per_minute) + rand($min_wait..$max_wait)
+          puts "next iteration starting of with sleeping #{general_timeout_through_consumer_settings}s" if $debug
+          sleep(general_timeout_through_consumer_settings) # sleep regarding global time zone and random offset
           available_items = get_available_items
           if available_items == "[]"
             puts "no items available, sleeping #{$timeout_if_no_offers_available}s" if $debug
@@ -122,11 +124,13 @@ class SettingController < BehaviorController
   def get_available_items
     url = $marketplace_url + "/offers"
     puts url if $debug
-    HTTParty.get(url).body
+    response = HTTParty.get(url)
+    puts response.code if $debug
+    response.body
   end
 
   def logic(items, _settings, _bulk_boolean)
-    if rand(1..100) < $probability_of_sell
+    if rand(1..100) < $probability_of_buy
       $behaviors_settings.each do |behavior| # decide on buying behavior based on settings
         if rand(1..100) < behavior[:amount]  # spread buying behavior accordingly to settings
           item = BuyingBehavior.new(items, $max_buying_price).send("buy_" + behavior[:name]) # get item based on buying behavior
@@ -152,6 +156,8 @@ class SettingController < BehaviorController
           next
         end
       end
+    else
+      puts "luck did not strike for our buy" if $debug
     end
   end
 
@@ -176,7 +182,7 @@ class SettingController < BehaviorController
     settings["consumer_per_minute"]            = $consumer_per_minute            ? $consumer_per_minute            : 100.0
     settings["marketplace_url"]                = $marketplace_url                ? $marketplace_url                : "http://vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de:8080/marketplace"
     settings["amount_of_consumers"]            = $amount_of_consumers            ? $amount_of_consumers            : 1
-    settings["probability_of_sell"]            = $probability_of_sell            ? $probability_of_sell            : 100
+    settings["probability_of_buy"]            = $probability_of_buy            ? $probability_of_buy            : 100
     settings["min_buying_amount"]              = $min_buying_amount              ? $min_buying_amount              : 1
     settings["max_buying_amount"]              = $max_buying_amount              ? $max_buying_amount              : 1
     settings["min_wait"]                       = $min_wait                       ? $min_wait                       : 0.1
