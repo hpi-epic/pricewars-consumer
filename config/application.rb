@@ -1,15 +1,15 @@
 require File.expand_path("../boot", __FILE__)
 
 require "rails/all"
-require 'dotenv'
+require "dotenv"
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
 Dotenv.load(File.expand_path("../.env",  __FILE__))
 
-$producer_url=ENV['PRICEWARS_PRODUCER_URL']
-$marketplace_url=ENV['PRICEWARS_MARKETPLACE_URL']
+$producer_url = ENV["PRICEWARS_PRODUCER_URL"]
+$marketplace_url = ENV["PRICEWARS_MARKETPLACE_URL"]
 
 module Parser
   class Application < Rails::Application

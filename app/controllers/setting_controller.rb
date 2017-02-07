@@ -55,7 +55,7 @@ class SettingController < BehaviorController
     $amount_of_consumers.times do
       thread = Thread.new do |_t|
         loop do
-          general_timeout_through_consumer_settings = (60/$consumer_per_minute) + rand($min_wait..$max_wait)
+          general_timeout_through_consumer_settings = (60 / $consumer_per_minute) + rand($min_wait..$max_wait)
           puts "next iteration starting of with sleeping #{general_timeout_through_consumer_settings}s" if $debug
           sleep(general_timeout_through_consumer_settings) # sleep regarding global time zone and random offset
           available_items = get_available_items
@@ -143,7 +143,7 @@ class SettingController < BehaviorController
             sleep($timeout_if_no_offers_available)
             break
           end
-          #Thread.new do |_subT|
+          # Thread.new do |_subT|
           status = execute(item, behavior[:name]) # buy now!
           if status == 429
             puts "429, sleeping #{$timeout_if_too_many_requests}s" if $debug
@@ -153,7 +153,7 @@ class SettingController < BehaviorController
             deregister_with_marketplace
             register_with_marketplace
           end
-          #end
+          # end
           break
         else
           puts "The luck is not with us, maybe next round" if $debug
@@ -184,20 +184,20 @@ class SettingController < BehaviorController
 
   def retrieve_and_build_product_popularity
     results = {}
-    products_details = HTTParty.get($producer_url+"/products")
+    products_details = HTTParty.get($producer_url + "/products")
     products_details.each do |product|
-      results[product["uid"]] = 100/products_details.length
+      results[product["uid"]] = 100 / products_details.length
     end
     results
   end
 
   def normalize_product_popularity
     total = 0
-    $product_popularity.each do |key, value|
-      total = total + value
+    $product_popularity.each do |_key, value|
+      total += value
     end
     $product_popularity.each do |key, value|
-      $product_popularity[key] = (value / total)*100
+      $product_popularity[key] = (value / total) * 100
     end
   end
 

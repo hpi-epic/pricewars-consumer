@@ -23,14 +23,14 @@ RSpec.describe SettingController, type: :controller do
 
     before do
       @params = {tick:                1,
-                marketplace_url:     "http://marketplace.api.mp_pricewars.com",
-                amount_of_consumers: 1,
-                probability_of_sell: 100,
-                behaviors:           [
-                  {type:   "first",
-                   amount: 100}
-                ],
-                test:                true
+                 marketplace_url:     "http://marketplace.api.mp_pricewars.com",
+                 amount_of_consumers: 1,
+                 probability_of_sell: 100,
+                 behaviors:           [
+                   {type:   "first",
+                    amount: 100}
+                 ],
+                 test:                true
       }
     end
 

@@ -1,14 +1,14 @@
 require "pp"
-#require 'httparty-icebox'
+# require 'httparty-icebox'
 require "gaussian"
 require "sigmoid"
 
 class BuyingBehavior
-  #include HTTParty::Icebox
+  # include HTTParty::Icebox
   include HTTParty
   attr_reader :expression, :variables
 
-  #cache :store => 'file', :timeout => 300, :location => '/tmp/'
+  # cache :store => 'file', :timeout => 300, :location => '/tmp/'
 
   # Initialize with parameters passed
   def initialize(items, max_buying_price, producer_url)
@@ -71,8 +71,8 @@ class BuyingBehavior
     highest_prob_item = {}
 
     @items.shuffle.each do |item|
-      sig = RandomSigmoid.new(@producter_prices[item["uid"]]*2, item["price"]).rand
-      prob = (sig*100).ceil
+      sig = RandomSigmoid.new(@producter_prices[item["uid"]] * 2, item["price"]).rand
+      prob = (sig * 100).ceil
       puts "#{prob}% with sig #{sig} for #{item}"
       if prob > highest_prob
         highest_prob      = prob
@@ -86,7 +86,7 @@ class BuyingBehavior
   private
 
   def validate_max_price(item)
-    return nil if (item.nil? or item.blank?)
+    return nil if item.nil? || item.blank?
     if item["price"] > @max_buying_price
       nil
     else
@@ -104,7 +104,7 @@ class BuyingBehavior
 
   def retrieve_producter_prices(producer_url)
     results = {}
-    products_details = HTTParty.get(producer_url+"/products")
+    products_details = HTTParty.get(producer_url + "/products")
     products_details.each do |product|
       results[product["uid"]] = product["price"]
     end

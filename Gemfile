@@ -48,12 +48,12 @@ gem "rack-cors", require: "rack/cors"
 gem "seed_dump"
 # gem "httparty"
 gem "persistent_httparty"
-#gem "httparty-icebox"
+# gem "httparty-icebox"
 gem "rack-handlers"
 gem "colorize"
 gem "json"
 
-gem 'dotenv-rails'
+gem "dotenv-rails"
 
 # for deployment
 gem "capistrano", "~> 3.4.1"
