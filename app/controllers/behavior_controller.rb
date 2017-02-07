@@ -14,7 +14,7 @@ class BehaviorController < ApplicationController
     result.push(select_cheapest_best_quality_with_prime_behavior)
     result.push(select_second_cheap_behavior)
     result.push(select_third_cheap_behavior)
-    result.push(select_sigmoid_distribution_quality_price)
+    result.push(select_sigmoid_distribution_price)
     evenly_distributed_behavior(result)
   end
 
