@@ -120,6 +120,7 @@ GEM
     persistent_httparty (0.1.2)
       httparty (~> 0.9)
       persistent_http (< 2)
+    pickup (0.0.11)
     powerpack (0.1.1)
     rack (1.6.4)
     rack-cors (0.4.0)
@@ -243,6 +244,7 @@ DEPENDENCIES
   jquery-rails
   json
   persistent_httparty
+  pickup
   rack-cors
   rack-handlers
   rails (= 4.2.0)

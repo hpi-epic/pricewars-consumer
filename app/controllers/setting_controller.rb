@@ -30,6 +30,9 @@ class SettingController < BehaviorController
     $product_popularity             = params.key(:product_popularity)              ? params[:product_popularity]             : retrieve_and_build_product_popularity
     $marketplace_url                = params[:marketplace_url]
     $consumer_url                   = request.base_url
+
+    pickup = Pickup.new(@product_popularity)
+    pp pickup.pick(1)
   end
 
   def index
@@ -137,7 +140,7 @@ class SettingController < BehaviorController
     if rand(1..100) < $probability_of_buy
       $behaviors_settings.each do |behavior| # decide on buying behavior based on settings
         if rand(1..100) < behavior[:amount]  # spread buying behavior accordingly to settings
-          item = BuyingBehavior.new(items, $max_buying_price, $producer_url).send("buy_" + behavior[:name]) # get item based on buying behavior
+          item = BuyingBehavior.new(items, $max_buying_price, $product_popularity, $producer_url).send("buy_" + behavior[:name]) # get item based on buying behavior
           if item.nil?
             puts "no item selected by BuyingBehavior, sleeping #{$timeout_if_no_offers_available}s" if $debug
             sleep($timeout_if_no_offers_available)

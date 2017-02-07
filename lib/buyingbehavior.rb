@@ -2,6 +2,7 @@ require "pp"
 # require 'httparty-icebox'
 require "gaussian"
 require "sigmoid"
+require "pickup"
 
 class BuyingBehavior
   # include HTTParty::Icebox
@@ -11,11 +12,18 @@ class BuyingBehavior
   # cache :store => 'file', :timeout => 300, :location => '/tmp/'
 
   # Initialize with parameters passed
-  def initialize(items, max_buying_price, producer_url)
+  def initialize(items, max_buying_price, product_popularity, producer_url)
     products           = items.map {|item| item["product_id"] }
-    @items             = items.select {|item| item["product_id"] == products.uniq.sample }
+    @product_popularity= product_popularity
+    @items             = items
+
+    # uncomment to select a random product for evaluation rather based on product popularity
+    # OPTIONS: select_random_product | select_based_on_product_popularity
+    select_based_on_product_popularity
+
     @max_buying_price  = max_buying_price
     @producter_prices  = retrieve_producter_prices(producer_url)
+
   end
 
   def buy_first
@@ -84,6 +92,29 @@ class BuyingBehavior
   end
 
   private
+
+  def select_based_on_product_popularity
+    #
+    pickup = Pickup.new(@product_popularity)
+    product_uid = pickup.pick(1)
+    @items = @items.select {|item| item["product_id"] == product_uid }
+  end
+
+  def select_random_product
+    @items = @items.select {|item| item["product_id"] == products.uniq.sample }
+  end
+
+  # consumes { :black => 51, :white => 17 }
+  def choose_weighted(weighted)
+	  sum = weighted.inject(0) do |sum, item_and_weight|
+	    sum += item_and_weight[1]
+	  end
+	  target = rand(sum)
+	  weighted.each do |item, weight|
+	    return item if target <= weight
+	    target -= weight
+	  end
+	end
 
   def validate_max_price(item)
     return nil if item.nil? || item.blank?

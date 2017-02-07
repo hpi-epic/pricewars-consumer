@@ -54,6 +54,7 @@ gem "colorize"
 gem "json"
 
 gem "dotenv-rails"
+gem 'pickup'
 
 # for deployment
 gem "capistrano", "~> 3.4.1"
