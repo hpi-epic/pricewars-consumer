@@ -40,6 +40,7 @@ class SettingController < BehaviorController
     render(nothing: true, status: 405) && return unless request.content_type == "application/json"
     render(nothing: true, status: 405) && return unless params.key?(:marketplace_url)
     init(params, request)
+    normalize_product_popularity
     render json: retrieve_current_or_default_settings
   end
 
@@ -188,6 +189,16 @@ class SettingController < BehaviorController
       results[product["uid"]] = 100/products_details.length
     end
     results
+  end
+
+  def normalize_product_popularity
+    total = 0
+    $product_popularity.each do |key, value|
+      total = total + value
+    end
+    $product_popularity.each do |key, value|
+      $product_popularity[key] = (value / total)*100
+    end
   end
 
   def retrieve_current_or_default_settings
