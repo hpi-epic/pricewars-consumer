@@ -15,7 +15,7 @@ class BuyingBehavior
     products           = items.map {|item| item["product_id"] }
     @items             = items.select {|item| item["product_id"] == products.uniq.sample }
     @max_buying_price  = max_buying_price
-    @producter_prices  = retrieve_producter_prices
+    @producter_prices  = retrieve_producter_prices(producer_url)
   end
 
   def buy_first
@@ -66,18 +66,27 @@ class BuyingBehavior
     validate_max_price(best_quality_items.min_by {|item| item["price"] })
   end
 
-  def buy_sigmoid_distribution_quality_price
+  def buy_sigmoid_distribution_price
+    highest_prob    = 0
+    highest_prob_item = {}
+
     @items.shuffle.each do |item|
-      if rand(1..100) < RandomSigmoid.new(@producter_prices[item["uid"]]*2, item["price"]).rand
-        return item
+      sig = RandomSigmoid.new(@producter_prices[item["uid"]]*2, item["price"]).rand
+      prob = (sig*100).ceil
+      puts "#{prob}% with sig #{sig} for #{item}"
+      if prob > highest_prob
+        highest_prob      = prob
+        highest_prob_item = item
       end
     end
-    buy_sigmoid_distribution_quality_price # loop in case non was selected
+
+    validate_max_price(highest_prob_item)
   end
 
   private
 
   def validate_max_price(item)
+    return nil if (item.nil? or item.blank?)
     if item["price"] > @max_buying_price
       nil
     else
@@ -93,11 +102,11 @@ class BuyingBehavior
     items.map {|item| item["quality"] }.max
   end
 
-  def retrieve_producter_prices
+  def retrieve_producter_prices(producer_url)
     results = {}
     products_details = HTTParty.get(producer_url+"/products")
     products_details.each do |product|
-      results[product.uid] = product.price
+      results[product["uid"]] = product["price"]
     end
     results
   end

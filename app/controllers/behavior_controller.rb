@@ -92,9 +92,9 @@ class BehaviorController < ApplicationController
     behavior
   end
 
-  def select_sigmoid_distribution_quality_price
+  def select_sigmoid_distribution_price
     behavior = {}
-    behavior["name"] = "sigmoid_distribution_quality_price"
+    behavior["name"] = "sigmoid_distribution_price"
     behavior["description"] = "I am with sigmoid distribution on the price regarding the producer prices"
     behavior
   end

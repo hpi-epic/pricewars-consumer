@@ -22,7 +22,7 @@ RSpec.describe BehaviorController, type: :controller do
                                         {"name" => "cheapest_best_quality", "description" => "I am buying the cheapest best quality available.", "amount" => 10},
                                         {"name" => "second_cheap", "description" => "I am buying the second cheapest item", "amount" => 10},
                                         {"name" => "third_cheap", "description" => "I am buying the third cheapest item", "amount" => 10},
-                                        {"name" => "sigmoid_distribution_quality_price", "description" => "I am with sigmoid distribution on the price regarding the producer prices", "amount" => 10}])
+                                        {"name" => "sigmoid_distribution_price", "description" => "I am with sigmoid distribution on the price regarding the producer prices", "amount" => 10}])
     end
   end
 end

@@ -113,6 +113,7 @@ class SettingController < BehaviorController
 
   def deregister_with_marketplace
     url = $marketplace_url + "/consumer/" + $consumer_id
+    puts url if $debug
     response = HTTParty.delete(url,
                                body:    {}.to_json,
                                headers: {"Content-Type"  => "application/json",
@@ -142,7 +143,6 @@ class SettingController < BehaviorController
           end
           #Thread.new do |_subT|
           status = execute(item, behavior[:name]) # buy now!
-          puts status
           if status == 429
             puts "429, sleeping #{$timeout_if_too_many_requests}s" if $debug
             sleep($timeout_if_too_many_requests)
@@ -154,6 +154,7 @@ class SettingController < BehaviorController
           #end
           break
         else
+          puts "The luck is not with us, maybe next round" if $debug
           next
         end
       end
@@ -175,6 +176,7 @@ class SettingController < BehaviorController
                              headers: {"Content-Type"  => "application/json",
                                        "Authorization" => "Token #{$consumer_token}"
                                       })
+    puts response.code if $debug
     response.code
   end
 

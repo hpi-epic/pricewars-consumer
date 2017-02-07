@@ -10,7 +10,10 @@ class RandomSigmoid
     #scale = stddev * rho
     #rndm = Kernel.rand(@mean)
 
-    return self.class.negativeSigmoid(@price, @mean) # returns the probability
+    #return self.class.negativeSigmoid(@price, @mean) # returns the probability
+    re = self.class.negativeSigmoid(@price, @mean)
+    puts "price #{@price} and mean #{@mean} and result #{re}"
+    return re
   end
 
   private
