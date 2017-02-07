@@ -22,12 +22,13 @@ class SettingController < BehaviorController
     $consumer_per_minute            = params.key?(:consumer_per_minute)            ? params[:consumer_per_minute]            : 100.0
     $timeout_if_too_many_requests   = params.key?(:timeout_if_too_many_requests)   ? params[:timeout_if_too_many_requests]   : 30
     $amount_of_consumers            = params.key?(:amount_of_consumers)            ? params[:amount_of_consumers]            : 1
-    $probability_of_buy            = params.key?(:probability_of_buy)            ? params[:probability_of_buy]            : 100
+    $probability_of_buy             = params.key?(:probability_of_buy)             ? params[:probability_of_buy]             : 100
     $max_buying_price               = params.key?(:max_buying_price)               ? params[:max_buying_price]               : 80
     $debug                          = params.key?(:debug)                          ? params[:debug]                          : true
     $behaviors_settings             = params.key?(:behaviors)                      ? params[:behaviors]                      : gather_available_behaviors
     $marketplace_url                = params[:marketplace_url]
     $consumer_url                   = request.base_url
+    $producer_url                   = params.key(:producer_url)                    ? params[:producer_url]                   : "http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de"
   end
 
   def index
@@ -133,7 +134,7 @@ class SettingController < BehaviorController
     if rand(1..100) < $probability_of_buy
       $behaviors_settings.each do |behavior| # decide on buying behavior based on settings
         if rand(1..100) < behavior[:amount]  # spread buying behavior accordingly to settings
-          item = BuyingBehavior.new(items, $max_buying_price).send("buy_" + behavior[:name]) # get item based on buying behavior
+          item = BuyingBehavior.new(items, $max_buying_price, $producer_url).send("buy_" + behavior[:name]) # get item based on buying behavior
           if item.nil?
             puts "no item selected by BuyingBehavior, sleeping #{$timeout_if_no_offers_available}s" if $debug
             sleep($timeout_if_no_offers_available)
@@ -182,7 +183,7 @@ class SettingController < BehaviorController
     settings["consumer_per_minute"]            = $consumer_per_minute            ? $consumer_per_minute            : 100.0
     settings["marketplace_url"]                = $marketplace_url                ? $marketplace_url                : "http://vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de:8080/marketplace"
     settings["amount_of_consumers"]            = $amount_of_consumers            ? $amount_of_consumers            : 1
-    settings["probability_of_buy"]            = $probability_of_buy            ? $probability_of_buy            : 100
+    settings["probability_of_buy"]             = $probability_of_buy             ? $probability_of_buy             : 100
     settings["min_buying_amount"]              = $min_buying_amount              ? $min_buying_amount              : 1
     settings["max_buying_amount"]              = $max_buying_amount              ? $max_buying_amount              : 1
     settings["min_wait"]                       = $min_wait                       ? $min_wait                       : 0.1
@@ -192,6 +193,7 @@ class SettingController < BehaviorController
     settings["timeout_if_too_many_requests"]   = $timeout_if_too_many_requests   ? $timeout_if_too_many_requests   : 30
     settings["max_buying_price"]               = $max_buying_price               ? $max_buying_price               : 80
     settings["debug"]                          = $debug                          ? $debug                          : true
+    settings["producer_url"]                   = $producer_url                   ? $producer_url                   : "http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de"
     settings
   end
 end

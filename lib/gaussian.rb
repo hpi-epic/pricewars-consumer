@@ -23,12 +23,13 @@ class RandomGaussian
   end
 
   private
-  def self.gaussian(mean, stddev, rand)
-    theta = 2 * Math::PI * rand.call
-    rho = Math.sqrt(-2 * Math.log(1 - rand.call))
-    scale = stddev * rho
-    x = mean + scale * Math.cos(theta)
-    y = mean + scale * Math.sin(theta)
-    return x, y
-  end
+  
+    def self.gaussian(mean, stddev, rand)
+      theta = 2 * Math::PI * rand.call
+      rho = Math.sqrt(-2 * Math.log(1 - rand.call))
+      scale = stddev * rho
+      x = mean + scale * Math.cos(theta)
+      y = mean + scale * Math.sin(theta)
+      return x, y
+    end
 end

@@ -1,13 +1,21 @@
 require "pp"
+#require 'httparty-icebox'
+require "gaussian"
+require "sigmoid"
 
 class BuyingBehavior
+  #include HTTParty::Icebox
+  include HTTParty
   attr_reader :expression, :variables
 
+  #cache :store => 'file', :timeout => 300, :location => '/tmp/'
+
   # Initialize with parameters passed
-  def initialize(items, max_buying_price)
+  def initialize(items, max_buying_price, producer_url)
     products           = items.map {|item| item["product_id"] }
     @items             = items.select {|item| item["product_id"] == products.uniq.sample }
     @max_buying_price  = max_buying_price
+    @producter_prices  = retrieve_producter_prices
   end
 
   def buy_first
@@ -58,6 +66,15 @@ class BuyingBehavior
     validate_max_price(best_quality_items.min_by {|item| item["price"] })
   end
 
+  def buy_sigmoid_distribution_quality_price
+    @items.shuffle.each do |item|
+      if rand(1..100) < RandomSigmoid.new(@producter_prices[item["uid"]]*2, item["price"]).rand
+        return item
+      end
+    end
+    buy_sigmoid_distribution_quality_price # loop in case non was selected
+  end
+
   private
 
   def validate_max_price(item)
@@ -74,6 +91,15 @@ class BuyingBehavior
 
   def finding_best_quality(items)
     items.map {|item| item["quality"] }.max
+  end
+
+  def retrieve_producter_prices
+    results = {}
+    products_details = HTTParty.get(producer_url+"/products")
+    products_details.each do |product|
+      results[product.uid] = product.price
+    end
+    results
   end
 end
 
