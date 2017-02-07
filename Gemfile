@@ -53,6 +53,8 @@ gem "rack-handlers"
 gem "colorize"
 gem "json"
 
+gem 'dotenv-rails'
+
 # for deployment
 gem "capistrano", "~> 3.4.1"
 gem "capistrano-passenger"
