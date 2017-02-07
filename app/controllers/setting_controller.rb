@@ -26,9 +26,10 @@ class SettingController < BehaviorController
     $max_buying_price               = params.key?(:max_buying_price)               ? params[:max_buying_price]               : 80
     $debug                          = params.key?(:debug)                          ? params[:debug]                          : true
     $behaviors_settings             = params.key?(:behaviors)                      ? params[:behaviors]                      : gather_available_behaviors
+    $producer_url                   = params.key(:producer_url)                    ? params[:producer_url]                   : $producer_url
+    $product_popularity             = params.key(:product_popularity)              ? params[:product_popularity]             : retrieve_and_build_product_popularity
     $marketplace_url                = params[:marketplace_url]
     $consumer_url                   = request.base_url
-    $producer_url                   = params.key(:producer_url)                    ? params[:producer_url]                   : "http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de"
   end
 
   def index
@@ -180,10 +181,18 @@ class SettingController < BehaviorController
     response.code
   end
 
+  def retrieve_and_build_product_popularity
+    results = {}
+    products_details = HTTParty.get($producer_url+"/products")
+    products_details.each do |product|
+      results[product["uid"]] = 100/products_details.length
+    end
+    results
+  end
+
   def retrieve_current_or_default_settings
     settings = {}
     settings["consumer_per_minute"]            = $consumer_per_minute            ? $consumer_per_minute            : 100.0
-    settings["marketplace_url"]                = $marketplace_url                ? $marketplace_url                : "http://vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de:8080/marketplace"
     settings["amount_of_consumers"]            = $amount_of_consumers            ? $amount_of_consumers            : 1
     settings["probability_of_buy"]             = $probability_of_buy             ? $probability_of_buy             : 100
     settings["min_buying_amount"]              = $min_buying_amount              ? $min_buying_amount              : 1
@@ -195,7 +204,9 @@ class SettingController < BehaviorController
     settings["timeout_if_too_many_requests"]   = $timeout_if_too_many_requests   ? $timeout_if_too_many_requests   : 30
     settings["max_buying_price"]               = $max_buying_price               ? $max_buying_price               : 80
     settings["debug"]                          = $debug                          ? $debug                          : true
-    settings["producer_url"]                   = $producer_url                   ? $producer_url                   : "http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de"
+    settings["product_popularity"]             = $product_popularity             ? $product_popularity             : retrieve_and_build_product_popularity
+    settings["producer_url"]                   = $producer_url
+    settings["marketplace_url"]                = $marketplace_url
     settings
   end
 end
