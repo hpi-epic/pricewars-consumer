@@ -28,7 +28,11 @@ The meta repository containing general information can be found [here](https://g
 
 ### Rails Backend
 
-First, run
+First, install dependencies
+
+```sudo apt-get install libgsl0-dev```
+
+and run
 
 ```bundle exec bundle install```
 

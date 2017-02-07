@@ -12,6 +12,9 @@ class BehaviorController < ApplicationController
     result.push(select_cheap_and_prime_behavior)
     result.push(select_cheapest_best_quality_behavior)
     result.push(select_cheapest_best_quality_with_prime_behavior)
+    result.push(select_second_cheap_behavior)
+    result.push(select_third_cheap_behavior)
+    result.push(select_sigmoid_distribution_price)
     evenly_distributed_behavior(result)
   end
 
@@ -61,6 +64,20 @@ class BehaviorController < ApplicationController
     behavior
   end
 
+  def select_second_cheap_behavior
+    behavior = {}
+    behavior["name"] = "second_cheap"
+    behavior["description"] = "I am buying the second cheapest item"
+    behavior
+  end
+
+  def select_third_cheap_behavior
+    behavior = {}
+    behavior["name"] = "third_cheap"
+    behavior["description"] = "I am buying the third cheapest item"
+    behavior
+  end
+
   def select_expensive_behavior
     behavior = {}
     behavior["name"] = "expensive"
@@ -72,6 +89,13 @@ class BehaviorController < ApplicationController
     behavior = {}
     behavior["name"] = "cheap_and_prime"
     behavior["description"] = "I am buying the cheapest item which supports prime shipping"
+    behavior
+  end
+
+  def select_sigmoid_distribution_price
+    behavior = {}
+    behavior["name"] = "sigmoid_distribution_price"
+    behavior["description"] = "I am with sigmoid distribution on the price regarding the producer prices"
     behavior
   end
 end
