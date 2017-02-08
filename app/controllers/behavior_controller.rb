@@ -15,6 +15,7 @@ class BehaviorController < ApplicationController
     result.push(select_second_cheap_behavior)
     result.push(select_third_cheap_behavior)
     result.push(select_sigmoid_distribution_price)
+    result.push(select_logit_coefficents)
     evenly_distributed_behavior(result)
   end
 
@@ -33,6 +34,8 @@ class BehaviorController < ApplicationController
     behavior = {}
     behavior["name"] = "cheapest_best_quality_with_prime"
     behavior["description"] = "I am buying the cheapest best quality available which supports prime."
+    behavior["settings"] = {}
+    behavior["settings_description"] = "Behavior settings not necessary"
     behavior
   end
 
@@ -40,6 +43,8 @@ class BehaviorController < ApplicationController
     behavior = {}
     behavior["name"] = "cheapest_best_quality"
     behavior["description"] = "I am buying the cheapest best quality available."
+    behavior["settings"] = {}
+    behavior["settings_description"] = "Behavior settings not necessary"
     behavior
   end
 
@@ -47,6 +52,8 @@ class BehaviorController < ApplicationController
     behavior = {}
     behavior["name"] = "first"
     behavior["description"] = "I am buying the first possible item"
+    behavior["settings"] = {}
+    behavior["settings_description"] = "Behavior settings not necessary"
     behavior
   end
 
@@ -54,6 +61,8 @@ class BehaviorController < ApplicationController
     behavior = {}
     behavior["name"] = "random"
     behavior["description"] = "I am buying random items"
+    behavior["settings"] = {}
+    behavior["settings_description"] = "Behavior settings not necessary"
     behavior
   end
 
@@ -61,6 +70,8 @@ class BehaviorController < ApplicationController
     behavior = {}
     behavior["name"] = "cheap"
     behavior["description"] = "I am buying the cheapest item"
+    behavior["settings"] = {}
+    behavior["settings_description"] = "Behavior settings not necessary"
     behavior
   end
 
@@ -68,6 +79,8 @@ class BehaviorController < ApplicationController
     behavior = {}
     behavior["name"] = "second_cheap"
     behavior["description"] = "I am buying the second cheapest item"
+    behavior["settings"] = {}
+    behavior["settings_description"] = "Behavior settings not necessary"
     behavior
   end
 
@@ -75,6 +88,8 @@ class BehaviorController < ApplicationController
     behavior = {}
     behavior["name"] = "third_cheap"
     behavior["description"] = "I am buying the third cheapest item"
+    behavior["settings"] = {}
+    behavior["settings_description"] = "Behavior settings not necessary"
     behavior
   end
 
@@ -82,6 +97,8 @@ class BehaviorController < ApplicationController
     behavior = {}
     behavior["name"] = "expensive"
     behavior["description"] = "I am buying the most expensive item"
+    behavior["settings"] = {}
+    behavior["settings_description"] = "Behavior settings not necessary"
     behavior
   end
 
@@ -89,6 +106,8 @@ class BehaviorController < ApplicationController
     behavior = {}
     behavior["name"] = "cheap_and_prime"
     behavior["description"] = "I am buying the cheapest item which supports prime shipping"
+    behavior["settings"] = {}
+    behavior["settings_description"] = "Behavior settings not necessary"
     behavior
   end
 
@@ -96,6 +115,17 @@ class BehaviorController < ApplicationController
     behavior = {}
     behavior["name"] = "sigmoid_distribution_price"
     behavior["description"] = "I am with sigmoid distribution on the price regarding the producer prices"
+    behavior["settings"] = {}
+    behavior["settings_description"] = "Behavior settings not necessary"
+    behavior
+  end
+
+  def select_logit_coefficents
+    behavior = {}
+    behavior["name"] = "logit_coefficents"
+    behavior["description"] = "I am with logit coefficients"
+    behavior["settings"] = {}
+    behavior["settings_description"] = "Key Value map for Feature and their coeffient"
     behavior
   end
 end

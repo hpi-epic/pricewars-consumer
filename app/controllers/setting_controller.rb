@@ -138,7 +138,7 @@ class SettingController < BehaviorController
     if rand(1..100) < $probability_of_buy
       $behaviors_settings.each do |behavior| # decide on buying behavior based on settings
         if rand(1..100) < behavior[:amount]  # spread buying behavior accordingly to settings
-          item = BuyingBehavior.new(items, $max_buying_price, $product_popularity, $producer_url).send("buy_" + behavior[:name]) # get item based on buying behavior
+          item = BuyingBehavior.new(items, expand_behavior_settings(behavior.settings)).send("buy_" + behavior[:name]) # get item based on buying behavior
           if item.nil?
             puts "no item selected by BuyingBehavior, sleeping #{$timeout_if_no_offers_available}s" if $debug
             sleep($timeout_if_no_offers_available)
@@ -183,10 +183,17 @@ class SettingController < BehaviorController
     response.code
   end
 
+  def expand_behavior_settings(settings)
+    settings.producer_prices    = @producer_details
+    settings.max_buying_price   = $max_buying_price
+    settings.product_popularity = $product_popularity
+    settings
+  end
+
   def retrieve_and_build_product_popularity
     results = {}
-    products_details = HTTParty.get($producer_url + "/products").map {|item| item["product_id"] }
-    products_details.each do |product|
+    @producer_details = HTTParty.get($producer_url + "/products").map {|item| item["product_id"] }
+    @producer_details.each do |product|
       results[product] = 100.0 / products_details.length
     end
     results
@@ -199,8 +206,6 @@ class SettingController < BehaviorController
     end
     $product_popularity.each do |key2, value2|
       $product_popularity[key2] = (value2/total*100).ceil
-      puts "val #{value2} total #{total}"
-      puts "#{key2} prob of #{(value2/total)} #{(value2/total)*100}"
     end
   end
 

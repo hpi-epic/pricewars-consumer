@@ -2,7 +2,7 @@ require "pp"
 # require 'httparty-icebox'
 require "gaussian"
 require "sigmoid"
-require "pickup"
+require "logit"
 
 class BuyingBehavior
   # include HTTParty::Icebox
@@ -12,18 +12,15 @@ class BuyingBehavior
   # cache :store => 'file', :timeout => 300, :location => '/tmp/'
 
   # Initialize with parameters passed
-  def initialize(items, max_buying_price, product_popularity, producer_url)
+  def initialize(items, behavior_settings)
     products           = items.map {|item| item["product_id"] }
-    @product_popularity= product_popularity
     @items             = items
 
     # uncomment to select a random product for evaluation rather based on product popularity
     # OPTIONS: select_random_product | select_based_on_product_popularity
     select_based_on_product_popularity
 
-    @max_buying_price  = max_buying_price
-    @producter_prices  = retrieve_producter_prices(producer_url)
-
+    @behavior_settings = behavior_settings
   end
 
   def buy_first
@@ -79,9 +76,8 @@ class BuyingBehavior
     highest_prob_item = {}
 
     @items.shuffle.each do |item|
-      sig = RandomSigmoid.new(@producter_prices[item["uid"]] * 2, item["price"]).rand
+      sig = RandomSigmoid.new(@behavior_settings.producer_prices[item["uid"]] * 2, item["price"]).rand
       prob = (sig * 100).ceil
-      puts "#{prob}% with sig #{sig} for #{item}"
       if prob > highest_prob
         highest_prob      = prob
         highest_prob_item = item
@@ -91,14 +87,14 @@ class BuyingBehavior
     validate_max_price(highest_prob_item)
   end
 
+  def buy_logit
+    logit = Logit.new()
+  end
+
   private
 
   def select_based_on_product_popularity
-    #
-    #pickup = Pickup.new(@product_popularity)
-    #product_uid = pickup.pick(1)
-    product_id = choose_weighted(@product_popularity)
-    puts "chosing #{product_uid} out of #{@product_popularity}"
+    product_id = choose_weighted(@behavior_settings.product_popularity)
     @items = @items.select {|item| item["product_id"] == product_id }
   end
 
@@ -120,7 +116,7 @@ class BuyingBehavior
 
   def validate_max_price(item)
     return nil if item.nil? || item.blank?
-    if item["price"] > @max_buying_price
+    if item["price"] > @behavior_settings.max_buying_price
       nil
     else
       item
@@ -133,15 +129,6 @@ class BuyingBehavior
 
   def finding_best_quality(items)
     items.map {|item| item["quality"] }.max
-  end
-
-  def retrieve_producter_prices(producer_url)
-    results = {}
-    products_details = HTTParty.get(producer_url + "/products")
-    products_details.each do |product|
-      results[product["uid"]] = product["price"]
-    end
-    results
   end
 end
 
