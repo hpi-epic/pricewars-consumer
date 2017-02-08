@@ -95,9 +95,11 @@ class BuyingBehavior
 
   def select_based_on_product_popularity
     #
-    pickup = Pickup.new(@product_popularity)
-    product_uid = pickup.pick(1)
-    @items = @items.select {|item| item["product_id"] == product_uid }
+    #pickup = Pickup.new(@product_popularity)
+    #product_uid = pickup.pick(1)
+    product_id = choose_weighted(@product_popularity)
+    puts "chosing #{product_uid} out of #{@product_popularity}"
+    @items = @items.select {|item| item["product_id"] == product_id }
   end
 
   def select_random_product

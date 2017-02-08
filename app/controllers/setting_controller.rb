@@ -26,13 +26,12 @@ class SettingController < BehaviorController
     $max_buying_price               = params.key?(:max_buying_price)               ? params[:max_buying_price]               : 80
     $debug                          = params.key?(:debug)                          ? params[:debug]                          : true
     $behaviors_settings             = params.key?(:behaviors)                      ? params[:behaviors]                      : gather_available_behaviors
-    $producer_url                   = params.key(:producer_url)                    ? params[:producer_url]                   : $producer_url
-    $product_popularity             = params.key(:product_popularity)              ? params[:product_popularity]             : retrieve_and_build_product_popularity
+    $producer_url                   = params.key?(:producer_url)                   ? params[:producer_url]                   : $producer_url
+    $product_popularity             = params.key?(:product_popularity)             ? params[:product_popularity]             : retrieve_and_build_product_popularity
     $marketplace_url                = params[:marketplace_url]
     $consumer_url                   = request.base_url
 
-    pickup = Pickup.new(@product_popularity)
-    pp pickup.pick(1)
+    normalize_product_popularity
   end
 
   def index
@@ -43,7 +42,6 @@ class SettingController < BehaviorController
     render(nothing: true, status: 405) && return unless request.content_type == "application/json"
     render(nothing: true, status: 405) && return unless params.key?(:marketplace_url)
     init(params, request)
-    normalize_product_popularity
     render json: retrieve_current_or_default_settings
   end
 
@@ -187,20 +185,22 @@ class SettingController < BehaviorController
 
   def retrieve_and_build_product_popularity
     results = {}
-    products_details = HTTParty.get($producer_url + "/products")
+    products_details = HTTParty.get($producer_url + "/products").map {|item| item["product_id"] }
     products_details.each do |product|
-      results[product["uid"]] = 100 / products_details.length
+      results[product] = 100.0 / products_details.length
     end
     results
   end
 
   def normalize_product_popularity
-    total = 0
+    total = 0.0
     $product_popularity.each do |_key, value|
-      total += value
+      total = total + value
     end
-    $product_popularity.each do |key, value|
-      $product_popularity[key] = (value / total) * 100
+    $product_popularity.each do |key2, value2|
+      $product_popularity[key2] = (value2/total*100).ceil
+      puts "val #{value2} total #{total}"
+      puts "#{key2} prob of #{(value2/total)} #{(value2/total)*100}"
     end
   end
 
