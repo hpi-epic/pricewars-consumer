@@ -87,7 +87,7 @@ class BuyingBehavior
     validate_max_price(highest_prob_item)
   end
 
-  def buy_logit
+  def buy_logit_coefficients
     logit = Logit.new()
   end
 

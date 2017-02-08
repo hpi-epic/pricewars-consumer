@@ -15,7 +15,7 @@ class BehaviorController < ApplicationController
     result.push(select_second_cheap_behavior)
     result.push(select_third_cheap_behavior)
     result.push(select_sigmoid_distribution_price)
-    result.push(select_logit_coefficents)
+    result.push(select_logit_coefficients)
     evenly_distributed_behavior(result)
   end
 
@@ -120,9 +120,9 @@ class BehaviorController < ApplicationController
     behavior
   end
 
-  def select_logit_coefficents
+  def select_logit_coefficients
     behavior = {}
-    behavior["name"] = "logit_coefficents"
+    behavior["name"] = "logit_coefficients"
     behavior["description"] = "I am with logit coefficients"
     behavior["settings"] = {}
     behavior["settings_description"] = "Key Value map for Feature and their coeffient"
