@@ -17,8 +17,6 @@ marketplace = 'http://' + marketplace unless marketplace.starts_with?('http')
 $producer_url = producer
 $marketplace_url = marketplace
 
-puts 'producer_url' + $producer_url
-puts 'marketplace_url' + $marketplace_url
 
 module Parser
   class Application < Rails::Application
