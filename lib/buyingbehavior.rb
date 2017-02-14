@@ -9,6 +9,7 @@ class BuyingBehavior
   include HTTParty
   attr_reader :expression, :variables
 
+  # uncomment for using caching for external calls (e.g. producer) to reduce waiting time
   # cache :store => 'file', :timeout => 300, :location => '/tmp/'
 
   # Initialize with parameters passed
@@ -88,7 +89,19 @@ class BuyingBehavior
   end
 
   def buy_logit_coefficients
-    logit = Logit.new()
+    #@behavior_settings
+    highest_prob_item = {}
+    highest_prob      = 0
+
+    @items.each do |item|
+      logit = Logit.new()
+      prob = logit.predict(model, features)
+      if prob > highest_prob
+        highest_prob      = prob
+        highest_prob_item = item
+      end
+    end
+    highest_prob_item
   end
 
   private
