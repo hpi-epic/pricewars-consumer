@@ -187,14 +187,16 @@ class SettingController < BehaviorController
     settings.producer_prices    = $producer_details
     settings.max_buying_price   = $max_buying_price
     settings.product_popularity = $product_popularity
+    settings.unique_products    = $unique_products
     settings
   end
 
   def retrieve_and_build_product_popularity
     results = {}
-    $producer_details = HTTParty.get($producer_url + "/products").map {|item| item["product_id"] }
-    $producer_details.each do |product|
-      results[product] = 100.0 / products_details.length
+    $producer_details = HTTParty.get($producer_url + "/products")
+    $unique_products = ($producer_details.map {|item| item["product_id"] }).uniq
+    $unique_products.each do |product|
+      results[product] = 100.0 / $unique_products.size
     end
     results
   end
@@ -202,10 +204,10 @@ class SettingController < BehaviorController
   def normalize_product_popularity
     total = 0.0
     $product_popularity.each do |_key, value|
-      total = total + value
+      total += value
     end
     $product_popularity.each do |key2, value2|
-      $product_popularity[key2] = (value2/total*100).ceil
+      $product_popularity[key2] = (value2 / total * 100).ceil
     end
   end
 
@@ -223,8 +225,8 @@ class SettingController < BehaviorController
     settings["timeout_if_too_many_requests"]   = $timeout_if_too_many_requests   ? $timeout_if_too_many_requests   : 30
     settings["max_buying_price"]               = $max_buying_price               ? $max_buying_price               : 80
     settings["debug"]                          = $debug                          ? $debug                          : true
-    settings["product_popularity"]             = $product_popularity             ? $product_popularity             : retrieve_and_build_product_popularity
     settings["producer_url"]                   = $producer_url
+    settings["product_popularity"]             = $product_popularity             ? $product_popularity             : retrieve_and_build_product_popularity
     settings["marketplace_url"]                = $marketplace_url
     settings
   end

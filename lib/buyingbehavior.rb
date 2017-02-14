@@ -89,12 +89,12 @@ class BuyingBehavior
   end
 
   def buy_logit_coefficients
-    #@behavior_settings
+    # @behavior_settings
     highest_prob_item = {}
     highest_prob      = 0
 
     @items.each do |item|
-      logit = Logit.new()
+      logit = Logit.new
       prob = logit.predict(model, features)
       if prob > highest_prob
         highest_prob      = prob
@@ -117,15 +117,15 @@ class BuyingBehavior
 
   # consumes { :black => 51, :white => 17 }
   def choose_weighted(weighted)
-	  sum = weighted.inject(0) do |sum, item_and_weight|
-	    sum += item_and_weight[1]
-	  end
-	  target = rand(sum)
-	  weighted.each do |item, weight|
-	    return item if target <= weight
-	    target -= weight
-	  end
-	end
+    sum = weighted.inject(0) do |sum, item_and_weight|
+      sum += item_and_weight[1]
+    end
+    target = rand(sum)
+    weighted.each do |item, weight|
+      return item if target <= weight
+      target -= weight
+    end
+  end
 
   def validate_max_price(item)
     return nil if item.nil? || item.blank?
