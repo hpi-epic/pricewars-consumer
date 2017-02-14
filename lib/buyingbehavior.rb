@@ -122,6 +122,10 @@ class BuyingBehavior
   end
 
   def select_based_on_product_popularity
+    if @behavior_settings["product_popularity"].nil?
+      puts "ALERT: product_popularity wrong configured, falling back to select_random_product"
+      return select_random_product
+    end
     product_id = choose_weighted(@behavior_settings["product_popularity"])
     @items = @items.select {|item| item["product_id"] == product_id }
   end

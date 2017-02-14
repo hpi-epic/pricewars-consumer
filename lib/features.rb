@@ -44,9 +44,9 @@ class Features
   end
 
   def self.feature_average_price_on_market
-    average_price = 0
+    average_price = 0.0
     @market_situation.select {|item| average_price += item["price"] }
-    (average_price+evaluated_item["price"]) / @market_situation.size+1
+    (average_price + evaluated_item["price"]) / @market_situation.size+1
   end
 
   def self.feature_quality_rank
