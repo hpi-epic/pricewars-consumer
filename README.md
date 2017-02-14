@@ -45,7 +45,7 @@ afterwards you may start the webserver
 ```
 export PRICEWARS_MARKETPLACE_URL='http://vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de:8080/marketplace'
 export PRICEWARS_PRODUCER_URL='http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de'
-rails s -b 0.0.0.0
+PRICEWARS_MARKETPLACE_URL=http://vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de:8080/marketplace PRICEWARS_PRODUCER_URL=http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de rails s -b 0.0.0.0
 ```
 
 and see the results with _http://localhost:3000_ .

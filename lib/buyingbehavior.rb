@@ -3,6 +3,7 @@ require "pp"
 require "gaussian"
 require "sigmoid"
 require "logit"
+require "features"
 
 class BuyingBehavior
   # include HTTParty::Icebox
@@ -77,7 +78,7 @@ class BuyingBehavior
     highest_prob_item = {}
 
     @items.shuffle.each do |item|
-      sig = RandomSigmoid.new(@behavior_settings.producer_prices[item["uid"]] * 2, item["price"]).rand
+      sig = RandomSigmoid.new(@behavior_settings["producer_prices"][item["uid"]] * 2, item["price"]).rand
       prob = (sig * 100).ceil
       if prob > highest_prob
         highest_prob      = prob
@@ -89,25 +90,39 @@ class BuyingBehavior
   end
 
   def buy_logit_coefficients
-    # @behavior_settings
+    theta             = @behavior_settings["coefficents"].map {|key, value| value }
     highest_prob_item = {}
     highest_prob      = 0
 
     @items.each do |item|
-      logit = Logit.new
-      prob = logit.predict(model, features)
+      puts "eval #{item}"
+      features          = [build_features_array(@behavior_settings["coefficents"].map {|key, value| key }, item)]
+      puts "features #{features}"
+      logit             = Logit.new()
+      prob              = logit.predict(features, theta, y)
+      puts "item #{item["uid"]} has prob of #{prob}%"
       if prob > highest_prob
         highest_prob      = prob
         highest_prob_item = item
       end
     end
+    puts "highest item is #{highest_prob_item["uid"]} with #{highest_prob}%"
     highest_prob_item
   end
 
   private
 
+  def build_features_array(feature_names, item)
+    result = []
+    feature_names.each do |feature|
+      puts "feature #{feature}"
+      result.push(Features.new(feature, @items, item))
+    end
+    result
+  end
+
   def select_based_on_product_popularity
-    product_id = choose_weighted(@behavior_settings.product_popularity)
+    product_id = choose_weighted(@behavior_settings["product_popularity"])
     @items = @items.select {|item| item["product_id"] == product_id }
   end
 
@@ -117,19 +132,19 @@ class BuyingBehavior
 
   # consumes { :black => 51, :white => 17 }
   def choose_weighted(weighted)
-    sum = weighted.inject(0) do |sum, item_and_weight|
-      sum += item_and_weight[1]
-    end
-    target = rand(sum)
-    weighted.each do |item, weight|
-      return item if target <= weight
-      target -= weight
-    end
-  end
+	  sum = weighted.inject(0) do |sum, item_and_weight|
+	    sum += item_and_weight[1]
+	  end
+	  target = rand(sum)
+	  weighted.each do |item, weight|
+	    return item if target <= weight
+	    target -= weight
+	  end
+	end
 
   def validate_max_price(item)
     return nil if item.nil? || item.blank?
-    if item["price"] > @behavior_settings.max_buying_price
+    if item["price"] > @behavior_settings["max_buying_price"]
       nil
     else
       item

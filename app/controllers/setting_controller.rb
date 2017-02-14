@@ -54,7 +54,7 @@ class SettingController < BehaviorController
 
     $list_of_threads ||= []
     $amount_of_consumers.times do
-      thread = Thread.new do |_t|
+      #thread = Thread.new do |_t|
         loop do
           general_timeout_through_consumer_settings = (60 / $consumer_per_minute) + rand($min_wait..$max_wait)
           puts "next iteration starting of with sleeping #{general_timeout_through_consumer_settings}s" if $debug
@@ -67,8 +67,8 @@ class SettingController < BehaviorController
           end
           status = logic(JSON.parse(available_items), params, params.key?("bulk") ? true : false)
         end
-      end
-      $list_of_threads.push(thread)
+      #end
+    #  $list_of_threads.push(thread)
     end
 
     render json: retrieve_current_or_default_settings
@@ -138,7 +138,7 @@ class SettingController < BehaviorController
     if rand(1..100) < $probability_of_buy
       $behaviors_settings.each do |behavior| # decide on buying behavior based on settings
         if rand(1..100) < behavior[:amount]  # spread buying behavior accordingly to settings
-          item = BuyingBehavior.new(items, expand_behavior_settings(behavior.settings)).send("buy_" + behavior[:name]) # get item based on buying behavior
+          item = BuyingBehavior.new(items, expand_behavior_settings(behavior["settings"])).send("buy_" + behavior[:name]) # get item based on buying behavior
           if item.nil?
             puts "no item selected by BuyingBehavior, sleeping #{$timeout_if_no_offers_available}s" if $debug
             sleep($timeout_if_no_offers_available)
@@ -184,10 +184,10 @@ class SettingController < BehaviorController
   end
 
   def expand_behavior_settings(settings)
-    settings.producer_prices    = $producer_details
-    settings.max_buying_price   = $max_buying_price
-    settings.product_popularity = $product_popularity
-    settings.unique_products    = $unique_products
+    settings["producer_prices"]    = $producer_details
+    settings["max_buying_price"]   = $max_buying_price
+    settings["product_popularity"] = $product_popularity
+    settings["unique_products"]    = $unique_products
     settings
   end
 

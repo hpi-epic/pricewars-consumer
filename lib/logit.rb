@@ -1,51 +1,45 @@
 # Credits belong to
-# http://mh-journal.blogspot.de/2016/01/a-ruby-program-on-logistic-regression.html
+# https://github.com/emaadmanzoor/python-ML-minimal/blob/master/logistic-regression.py
 
 class Logit
   def initialize
     # calculate_additional_features
   end
 
-  def predict(_features, _coefficients)
+  def predict(features, theta, y)
+    m = features.length      # Number of training examples
+    n = features[0].length   # Number of features
+
+    features.each {|i| i.unshift(1) } # Append a column of 1's to features
+
+    self.class.cost_logistic_regression(theta, features, y, m, n)
   end
 
-  def train(x, y)
-    # x = []  # List of training example parameters
-    # y = []  # List of training example results
-    x = [[34.62365962451697,78.0246928153624],
-        [30.28671076822607,43.89499752400101],
-        [35.84740876993872,72.90219802708364],
-        [60.18259938620976,86.30855209546826],
-        [79.0327360507101,75.3443764369103]]
-    y = [0,0,0,1,1]
-    m = x.length      # Number of training examples
-    n = x[0].length   # Number of features
+  #
+  # X = List of training example parameters, e.g. [[34.97,78.24]],[30.97,43.86]]
+  # Y = List of training example results, e.g. [0,1,0]
+  # learning_rate = 0.001
+  # iterations    = 4000
+  def train(features, y, learning_rate, iterations)
+    m = features.length             # Number of training examples
+    n = features[0].length          # Number of features
+    initial_theta = [0.0] * (n + 1) # Initialize theta's
 
-    # Append a column of 1's to x
-    x.each {|i| i.unshift(1) }
+    features.each {|i| i.unshift(1) } # Append a column of 1's to features
 
-    # Initialize theta's
-    initial_theta = [0.0] * (n + 1)
-    learning_rate = 0.001
-    iterations   = 4000
+    features = self.class.scale_features(features, m, n)
 
-    x = self.scale_features(x, m, n)
-
-    # Run gradient descent to get our guessed hypothesis
-    final_theta = self.gradient_descent_logistic(initial_theta, x, y, m, n, learning_rate, iterations)
+    # Run gradient descent to get our guessed theta
+    self.class.gradient_descent_logistic(initial_theta, features, y, m, n, learning_rate, iterations)
 
     # Evaluate our hypothesis accuracy
-    puts "final_theta: #{final_theta}"
-    puts "Initial cost: #{cost_logistic_regression(final_theta, x, y, m, n)}"
-    puts "Final cost: #{cost_logistic_regression(final_theta, x, y, m, n)}"
+    #puts "Final theta: #{final_theta}"
+    #puts "Initial cost: #{self.class.cost_logistic_regression(initial_theta, features, y, m, n)}"
+    #puts "Final cost: #{self.class.cost_logistic_regression(final_theta, features, y, m, n)}"
+    #puts "Example: #{self.class.cost_logistic_regression([0,0,1], features, y, m, n)}"
   end
 
   private
-
-  # Credentials: http://mh-journal.blogspot.de/2016/01/a-ruby-program-on-logistic-regression.html
-
-  def self.calculate_additional_features
-  end
 
   def self.scale_features(data, m, n)
     mean = [0]
@@ -104,7 +98,7 @@ class Logit
       0.upto n do |j|
         summation = 0.0
         0.upto m - 1 do |k|
-          summation += (self.h_logistic_regression(theta, x[k], n) - y[k]) * x[k][j]
+          summation += (h_logistic_regression(theta, x[k], n) - y[k]) * x[k][j]
         end
         thetatemp[j] = thetatemp[j] - alpha * summation / m
       end
@@ -116,7 +110,7 @@ class Logit
   def self.cost_logistic_regression(theta, x, y, m, n)
     summation = 0.0
     0.upto m - 1 do |i|
-      summation += y[i] * Math.log(self.h_logistic_regression(theta, x[i], n)) + (1 - y[i]) * Math.log(1 - self.h_logistic_regression(theta, x[i], n))
+      summation += y[i] * Math.log(h_logistic_regression(theta, x[i], n)) + (1 - y[i]) * Math.log(1 - h_logistic_regression(theta, x[i], n))
     end
     -summation / m
   end
