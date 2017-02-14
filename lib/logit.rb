@@ -1,6 +1,9 @@
+# Credits belong to
+# http://mh-journal.blogspot.de/2016/01/a-ruby-program-on-logistic-regression.html
+
 class Logit
+
   def initialize
-    # http://mh-journal.blogspot.de/2016/01/a-ruby-program-on-logistic-regression.html
 
     #calculate_additional_features
 
@@ -21,14 +24,14 @@ class Logit
       x.each {|i| i.unshift(1)}
 
       # Initialize theta's
-      initialtheta = [0.0] * (n + 1)
-      learningrate = 0.001
+      initial_theta = [0.0] * (n + 1)
+      learning_rate = 0.001
       iterations   = 4000
 
       x = self.scale_features(x, m, n)
 
       # Run gradient descent to get our guessed hypothesis
-      final_theta = self.gradient_descent_logistic(initialtheta, x, y, m, n, learningrate, iterations)
+      final_theta = self.gradient_descent_logistic(initial_theta, x, y, m, n, learning_rate, iterations)
 
       # Evaluate our hypothesis accuracy
       puts "final_theta: #{final_theta}"

@@ -184,7 +184,7 @@ class SettingController < BehaviorController
   end
 
   def expand_behavior_settings(settings)
-    settings.producer_prices    = @producer_details
+    settings.producer_prices    = $producer_details
     settings.max_buying_price   = $max_buying_price
     settings.product_popularity = $product_popularity
     settings
@@ -192,8 +192,8 @@ class SettingController < BehaviorController
 
   def retrieve_and_build_product_popularity
     results = {}
-    @producer_details = HTTParty.get($producer_url + "/products").map {|item| item["product_id"] }
-    @producer_details.each do |product|
+    $producer_details = HTTParty.get($producer_url + "/products").map {|item| item["product_id"] }
+    $producer_details.each do |product|
       results[product] = 100.0 / products_details.length
     end
     results
