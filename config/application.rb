@@ -8,8 +8,8 @@ Bundler.require(*Rails.groups)
 
 Dotenv.load(File.expand_path("../.env",  __FILE__))
 
-producer = ENV["PRICEWARS_PRODUCER_URL"] || 'vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de:8080/marketplace'
-marketplace = ENV["PRICEWARS_MARKETPLACE_URL"] || 'vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de'
+producer = ENV["PRICEWARS_PRODUCER_URL"] || 'vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de'
+marketplace = ENV["PRICEWARS_MARKETPLACE_URL"] || 'vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de:8080/marketplace'
 
 producer = 'http://' + producer unless producer.starts_with?('http')
 marketplace = 'http://' + marketplace unless marketplace.starts_with?('http')
