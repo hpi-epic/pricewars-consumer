@@ -34,9 +34,9 @@ class Logit
 
     # Evaluate our hypothesis accuracy
     #puts "Final theta: #{final_theta}"
-    #puts "Initial cost: #{self.class.cost_logistic_regression(initial_theta, features, y, m, n)}"
-    #puts "Final cost: #{self.class.cost_logistic_regression(final_theta, features, y, m, n)}"
-    #puts "Example: #{self.class.cost_logistic_regression([0,0,1], features, y, m, n)}"
+    #puts "Initial cost: #{self.class.cost_logistic_regression(initial_theta, features, y, m, n)}" if $debug
+    #puts "Final cost: #{self.class.cost_logistic_regression(final_theta, features, y, m, n)}" if $debug
+    #puts "Example: #{self.class.cost_logistic_regression([0,0,1], features, y, m, n)}" if $debug
   end
 
   private
