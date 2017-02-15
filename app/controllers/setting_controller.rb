@@ -54,7 +54,7 @@ class SettingController < BehaviorController
 
     $list_of_threads ||= []
     $amount_of_consumers.times do
-      #thread = Thread.new do |_t|
+      thread = Thread.new do |_t|
         loop do
           general_timeout_through_consumer_settings = (60 / $consumer_per_minute) + rand($min_wait..$max_wait)
           puts "next iteration starting of with sleeping #{general_timeout_through_consumer_settings}s" if $debug
@@ -67,8 +67,8 @@ class SettingController < BehaviorController
           end
           status = logic(JSON.parse(available_items), params, params.key?("bulk") ? true : false)
         end
-      #end
-    #  $list_of_threads.push(thread)
+      end
+      $list_of_threads.push(thread)
     end
 
     render json: retrieve_current_or_default_settings
@@ -135,8 +135,7 @@ class SettingController < BehaviorController
   end
 
   def logic(items, _settings, _bulk_boolean)
-    #if rand(1..100) < $probability_of_buy
-    if true
+    if rand(1..100) < $probability_of_buy
       $behaviors_settings.each do |behavior| # decide on buying behavior based on settings
         rndm = rand(1..100)/$behaviors_settings.size
         if rndm < behavior[:amount]  # spread buying behavior accordingly to settings
