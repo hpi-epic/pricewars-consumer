@@ -95,18 +95,24 @@ class BuyingBehavior
     highest_prob      = 0
 
     $items.each do |item|
-      puts "eval #{item}"
-      features          = [build_features_array(@behavior_settings["coefficents"].map {|key, value| key }, item)]
-      puts "features #{features}"
+      #puts "eval #{item}"
+      names             = @behavior_settings["coefficents"].map {|key, value| key }
+      names.delete("intercept")
+      features          = [build_features_array(names, item)]
       logit             = Logit.new()
+      y                 = []
+      features.length.times { y.push(0)}
+      #puts "y: #{y}"
+      #puts "theta: #{theta}"
+      #puts "features: #{features}"
       prob              = logit.predict(features, theta, y)
-      puts "item #{item["uid"]} has prob of #{prob}%"
+      #puts "item #{item["uid"]} has prob of #{prob}%"
       if prob > highest_prob
         highest_prob      = prob
         highest_prob_item = item
       end
     end
-    puts "highest item is #{highest_prob_item["uid"]} with #{highest_prob}%"
+    #puts "highest item is #{highest_prob_item["uid"]} with #{highest_prob}%"
     highest_prob_item
   end
 
@@ -115,8 +121,7 @@ class BuyingBehavior
   def build_features_array(feature_names, item)
     result = []
     feature_names.each do |feature|
-      puts "feature #{feature}"
-      result.push(Features.new(feature, $items, item))
+      result.push(Features.new().determine(feature, $items, item))
     end
     result
   end

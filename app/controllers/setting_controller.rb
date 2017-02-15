@@ -53,8 +53,8 @@ class SettingController < BehaviorController
     register_with_marketplace
 
     $list_of_threads ||= []
-    $amount_of_consumers.times do
-      thread = Thread.new do |_t|
+#$amount_of_consumers.times do
+    #  thread = Thread.new do |_t|
         loop do
           general_timeout_through_consumer_settings = (60 / $consumer_per_minute) + rand($min_wait..$max_wait)
           puts "next iteration starting of with sleeping #{general_timeout_through_consumer_settings}s" if $debug
@@ -67,9 +67,9 @@ class SettingController < BehaviorController
           end
           status = logic(JSON.parse(available_items), params, params.key?("bulk") ? true : false)
         end
-      end
-      $list_of_threads.push(thread)
-    end
+    #  end
+    #  $list_of_threads.push(thread)
+  #  end
 
     render json: retrieve_current_or_default_settings
   end
