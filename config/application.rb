@@ -8,8 +8,15 @@ Bundler.require(*Rails.groups)
 
 Dotenv.load(File.expand_path("../.env",  __FILE__))
 
-$producer_url = ENV["PRICEWARS_PRODUCER_URL"]
-$marketplace_url = ENV["PRICEWARS_MARKETPLACE_URL"]
+producer = ENV["PRICEWARS_PRODUCER_URL"] || 'vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de'
+marketplace = ENV["PRICEWARS_MARKETPLACE_URL"] || 'vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de:8080/marketplace'
+
+producer = 'http://' + producer unless producer.starts_with?('http')
+marketplace = 'http://' + marketplace unless marketplace.starts_with?('http')
+
+$producer_url = producer
+$marketplace_url = marketplace
+
 
 module Parser
   class Application < Rails::Application
