@@ -54,7 +54,7 @@ class SettingController < BehaviorController
 
     $list_of_threads ||= []
     $amount_of_consumers.times do
-      thread = Thread.new do |_t|
+      #thread = Thread.new do |_t|
         loop do
           general_timeout_through_consumer_settings = (60 / $consumer_per_minute) + rand($min_wait..$max_wait)
           puts "next iteration starting of with sleeping #{general_timeout_through_consumer_settings}s" if $debug
@@ -67,8 +67,8 @@ class SettingController < BehaviorController
           end
           status = logic(JSON.parse(available_items), params, params.key?("bulk") ? true : false)
         end
-      end
-      $list_of_threads.push(thread)
+      #end
+      #$list_of_threads.push(thread)
     end
 
     render json: retrieve_current_or_default_settings
@@ -86,12 +86,12 @@ class SettingController < BehaviorController
         Thread.kill(thread)
       end
       $list_of_threads = []
-      deregister_with_marketplace
-      unless $marketplace_url.nil? || $consumer_id.nil?
-        render(nothing: true, status: 200) && return
-      else
+
+      if $marketplace_url.nil? || $consumer_id.nil?
         render(text: "invalid configuration: consumer_id or marketplace_url unknown", status: 404) && return
       end
+      response = deregister_with_marketplace
+      render(nothing: true, status: response.code) && return
     else
       render(text: "no instance running", status: 404) && return
     end
@@ -141,7 +141,7 @@ class SettingController < BehaviorController
         if rndm < behavior[:amount]  # spread buying behavior accordingly to settings
           item = BuyingBehavior.new(items, expand_behavior_settings(behavior[:settings])).send("buy_" + behavior[:name]) # get item based on buying behavior
           if item.nil?
-            puts "no item selected by BuyingBehavior, sleeping #{$timeout_if_no_offers_available}s" if $debug
+            puts "no item selected by BuyingBehavior with #{behavior[:name]}, sleeping #{$timeout_if_no_offers_available}s" if $debug
             sleep($timeout_if_no_offers_available)
             break
           end
