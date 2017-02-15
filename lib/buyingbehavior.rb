@@ -20,7 +20,7 @@ class BuyingBehavior
 
     # uncomment to select a random product for evaluation rather based on product popularity
     # OPTIONS: select_random_product | select_based_on_product_popularity
-    @behavior_settings = behavior_settings
+    @behavior_settings  = behavior_settings
 
     select_based_on_product_popularity
   end
@@ -95,18 +95,18 @@ class BuyingBehavior
     highest_prob      = 0
 
     $items.each do |item|
-      puts "eval #{item}" if $debug
+      puts "eval #{item}"
       features          = [build_features_array(@behavior_settings["coefficents"].map {|key, value| key }, item)]
-      puts "features #{features}" if $debug
+      puts "features #{features}"
       logit             = Logit.new()
       prob              = logit.predict(features, theta, y)
-      puts "item #{item["uid"]} has prob of #{prob}%" if $debug
+      puts "item #{item["uid"]} has prob of #{prob}%"
       if prob > highest_prob
         highest_prob      = prob
         highest_prob_item = item
       end
     end
-    puts "highest item is #{highest_prob_item["uid"]} with #{highest_prob}%" if $debug
+    puts "highest item is #{highest_prob_item["uid"]} with #{highest_prob}%"
     highest_prob_item
   end
 
@@ -115,7 +115,7 @@ class BuyingBehavior
   def build_features_array(feature_names, item)
     result = []
     feature_names.each do |feature|
-      puts "feature #{feature}" if $debug
+      puts "feature #{feature}"
       result.push(Features.new(feature, $items, item))
     end
     result
@@ -123,7 +123,7 @@ class BuyingBehavior
 
   def select_based_on_product_popularity
     if @behavior_settings["product_popularity"].nil?
-      puts "ALERT: product_popularity wrong configured, falling back to select_random_product" if $debug
+      puts "ALERT: product_popularity wrong configured, falling back to select_random_product"
       return select_random_product
     end
     product_id = choose_weighted(@behavior_settings["product_popularity"])
