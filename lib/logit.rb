@@ -72,7 +72,7 @@ class Logit
   def self.h_logistic_regression(theta, x, n)
     theta_t_x = 0
     0.upto n do |i|
-      puts "#theta[i] #{theta[i]} and x[i] #{x[i]} for #{i}"
+      #puts "#theta[i] #{theta[i]} and x[i] #{x[i]} for #{i}"
       theta_t_x += theta[i] * x[i]
     end
 

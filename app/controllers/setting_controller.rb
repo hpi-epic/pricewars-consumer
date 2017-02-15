@@ -53,8 +53,8 @@ class SettingController < BehaviorController
     register_with_marketplace
 
     $list_of_threads ||= []
-#$amount_of_consumers.times do
-    #  thread = Thread.new do |_t|
+    $amount_of_consumers.times do
+      thread = Thread.new do |_t|
         loop do
           general_timeout_through_consumer_settings = (60 / $consumer_per_minute) + rand($min_wait..$max_wait)
           puts "next iteration starting of with sleeping #{general_timeout_through_consumer_settings}s" if $debug
@@ -67,9 +67,9 @@ class SettingController < BehaviorController
           end
           status = logic(JSON.parse(available_items), params, params.key?("bulk") ? true : false)
         end
-    #  end
-    #  $list_of_threads.push(thread)
-  #  end
+      end
+      $list_of_threads.push(thread)
+    end
 
     render json: retrieve_current_or_default_settings
   end
@@ -213,22 +213,32 @@ class SettingController < BehaviorController
     end
   end
 
+  #def cleanup_behavior_settings(behaviors)
+  #  behaviors.each do |key, behavior|
+  #    behaviors[key][:settings].delete(:producer_prices)
+  #    behaviors[key][:settings].delete(:max_buying_price)
+  #    behaviors[key][:settings].delete(:unique_products)
+  #    behaviors[key][:settings].delete(:product_popularity)
+  #  end
+  #  behaviors
+  #end
+
   def retrieve_current_or_default_settings
     settings = {}
-    settings["consumer_per_minute"]            = $consumer_per_minute            ? $consumer_per_minute            : 100.0
-    settings["amount_of_consumers"]            = $amount_of_consumers            ? $amount_of_consumers            : 1
-    settings["probability_of_buy"]             = $probability_of_buy             ? $probability_of_buy             : 100
-    settings["min_buying_amount"]              = $min_buying_amount              ? $min_buying_amount              : 1
-    settings["max_buying_amount"]              = $max_buying_amount              ? $max_buying_amount              : 1
-    settings["min_wait"]                       = $min_wait                       ? $min_wait                       : 0.1
-    settings["max_wait"]                       = $max_wait                       ? $max_wait                       : 2
-    settings["behaviors"]                      = $behaviors_settings             ? $behaviors_settings             : gather_available_behaviors
-    settings["timeout_if_no_offers_available"] = $timeout_if_no_offers_available ? $timeout_if_no_offers_available : 2
-    settings["timeout_if_too_many_requests"]   = $timeout_if_too_many_requests   ? $timeout_if_too_many_requests   : 30
-    settings["max_buying_price"]               = $max_buying_price               ? $max_buying_price               : 80
-    settings["debug"]                          = $debug                          ? $debug                          : false
+    settings["consumer_per_minute"]            = $consumer_per_minute            ? $consumer_per_minute                            : 100.0
+    settings["amount_of_consumers"]            = $amount_of_consumers            ? $amount_of_consumers                            : 1
+    settings["probability_of_buy"]             = $probability_of_buy             ? $probability_of_buy                             : 100
+    settings["min_buying_amount"]              = $min_buying_amount              ? $min_buying_amount                              : 1
+    settings["max_buying_amount"]              = $max_buying_amount              ? $max_buying_amount                              : 1
+    settings["min_wait"]                       = $min_wait                       ? $min_wait                                       : 0.1
+    settings["max_wait"]                       = $max_wait                       ? $max_wait                                       : 2
+    settings["behaviors"]                      = $behaviors_settings             ? $behaviors_settings                             : gather_available_behaviors
+    settings["timeout_if_no_offers_available"] = $timeout_if_no_offers_available ? $timeout_if_no_offers_available                 : 2
+    settings["timeout_if_too_many_requests"]   = $timeout_if_too_many_requests   ? $timeout_if_too_many_requests                   : 30
+    settings["max_buying_price"]               = $max_buying_price               ? $max_buying_price                               : 80
+    settings["debug"]                          = $debug                          ? $debug                                          : false
     settings["producer_url"]                   = $producer_url
-    settings["product_popularity"]             = $product_popularity             ? $product_popularity             : retrieve_and_build_product_popularity
+    settings["product_popularity"]             = $product_popularity             ? $product_popularity                             : retrieve_and_build_product_popularity
     settings["marketplace_url"]                = $marketplace_url
     settings
   end

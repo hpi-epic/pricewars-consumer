@@ -90,13 +90,13 @@ class BuyingBehavior
   end
 
   def buy_logit_coefficients
-    theta             = @behavior_settings["coefficents"].map {|key, value| value }
+    theta             = @behavior_settings["coefficients"].map {|key, value| value }
     highest_prob_item = {}
     highest_prob      = 0
 
     $items.each do |item|
       #puts "eval #{item}"
-      names             = @behavior_settings["coefficents"].map {|key, value| key }
+      names             = @behavior_settings["coefficients"].map {|key, value| key }
       names.delete("intercept")
       features          = [build_features_array(names, item)]
       logit             = Logit.new()
