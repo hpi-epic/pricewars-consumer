@@ -135,10 +135,12 @@ class SettingController < BehaviorController
   end
 
   def logic(items, _settings, _bulk_boolean)
-    if rand(1..100) < $probability_of_buy
+    #if rand(1..100) < $probability_of_buy
+    if true
       $behaviors_settings.each do |behavior| # decide on buying behavior based on settings
-        if rand(1..100) < behavior[:amount]  # spread buying behavior accordingly to settings
-          item = BuyingBehavior.new(items, expand_behavior_settings(behavior["settings"])).send("buy_" + behavior[:name]) # get item based on buying behavior
+        rndm = rand(1..100)/$behaviors_settings.size
+        if rndm < behavior[:amount]  # spread buying behavior accordingly to settings
+          item = BuyingBehavior.new(items, expand_behavior_settings(behavior[:settings])).send("buy_" + behavior[:name]) # get item based on buying behavior
           if item.nil?
             puts "no item selected by BuyingBehavior, sleeping #{$timeout_if_no_offers_available}s" if $debug
             sleep($timeout_if_no_offers_available)
@@ -184,10 +186,11 @@ class SettingController < BehaviorController
   end
 
   def expand_behavior_settings(settings)
-    settings["producer_prices"]    = $producer_details
-    settings["max_buying_price"]   = $max_buying_price
-    settings["product_popularity"] = $product_popularity
-    settings["unique_products"]    = $unique_products
+    retrieve_and_build_product_popularity
+    settings[:producer_prices]    = $producer_details
+    settings[:max_buying_price]   = $max_buying_price
+    settings[:product_popularity] = $product_popularity
+    settings[:unique_products]    = $unique_products
     settings
   end
 

@@ -15,33 +15,33 @@ class BuyingBehavior
 
   # Initialize with parameters passed
   def initialize(items, behavior_settings)
-    products           = items.map {|item| item["product_id"] }
-    @items             = items
+    $products           = items.map {|item| item["product_id"] }
+    $items              = items
 
     # uncomment to select a random product for evaluation rather based on product popularity
     # OPTIONS: select_random_product | select_based_on_product_popularity
-    select_based_on_product_popularity
-
     @behavior_settings = behavior_settings
+
+    select_based_on_product_popularity
   end
 
   def buy_first
-    validate_max_price(@items.first)
+    validate_max_price($items.first)
   end
 
   def buy_random
-    validate_max_price(@items.sample)
+    validate_max_price($items.sample)
   end
 
   def buy_cheap
-    validate_max_price(@items.min_by {|item| item["price"] })
+    validate_max_price($items.min_by {|item| item["price"] })
   end
 
   def buy_n_cheap(n)
     n.times do
       item = buy_cheap
       return nil if item.nil?
-      @items.delete(item)
+      $items.delete(item)
     end
     buy_cheap
   end
@@ -55,21 +55,21 @@ class BuyingBehavior
   end
 
   def buy_cheap_and_prime
-    validate_max_price(having_prime(@items).min_by {|item| item["price"] })
+    validate_max_price(having_prime($items).min_by {|item| item["price"] })
   end
 
   def buy_expensive
-    validate_max_price(@items.max_by {|item| item["price"] })
+    validate_max_price($items.max_by {|item| item["price"] })
   end
 
   def buy_cheapest_best_quality_with_prime
-    @items = having_prime(@items)
+    $items = having_prime($items)
     buy_cheapest_best_quality
   end
 
   def buy_cheapest_best_quality
-    best_quality = @items.map {|item| item["quality"] }.max
-    best_quality_items = @items.select {|item| item["quality"] == best_quality }
+    best_quality = $items.map {|item| item["quality"] }.max
+    best_quality_items = $items.select {|item| item["quality"] == best_quality }
     validate_max_price(best_quality_items.min_by {|item| item["price"] })
   end
 
@@ -77,7 +77,7 @@ class BuyingBehavior
     highest_prob    = 0
     highest_prob_item = {}
 
-    @items.shuffle.each do |item|
+    $items.shuffle.each do |item|
       sig = RandomSigmoid.new(@behavior_settings["producer_prices"][item["uid"]] * 2, item["price"]).rand
       prob = (sig * 100).ceil
       if prob > highest_prob
@@ -94,7 +94,7 @@ class BuyingBehavior
     highest_prob_item = {}
     highest_prob      = 0
 
-    @items.each do |item|
+    $items.each do |item|
       puts "eval #{item}"
       features          = [build_features_array(@behavior_settings["coefficents"].map {|key, value| key }, item)]
       puts "features #{features}"
@@ -116,7 +116,7 @@ class BuyingBehavior
     result = []
     feature_names.each do |feature|
       puts "feature #{feature}"
-      result.push(Features.new(feature, @items, item))
+      result.push(Features.new(feature, $items, item))
     end
     result
   end
@@ -127,11 +127,11 @@ class BuyingBehavior
       return select_random_product
     end
     product_id = choose_weighted(@behavior_settings["product_popularity"])
-    @items = @items.select {|item| item["product_id"] == product_id }
+    $items = $items.select {|item| item["product_id"] == product_id.to_i }
   end
 
   def select_random_product
-    @items = @items.select {|item| item["product_id"] == products.uniq.sample }
+    $items = $items.select {|item| item["product_id"] == $products.uniq.sample }
   end
 
   # consumes { :black => 51, :white => 17 }
