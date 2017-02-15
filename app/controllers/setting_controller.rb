@@ -24,7 +24,7 @@ class SettingController < BehaviorController
     $amount_of_consumers            = params.key?(:amount_of_consumers)            ? params[:amount_of_consumers]            : 1
     $probability_of_buy             = params.key?(:probability_of_buy)             ? params[:probability_of_buy]             : 100
     $max_buying_price               = params.key?(:max_buying_price)               ? params[:max_buying_price]               : 80
-    $debug                          = params.key?(:debug)                          ? params[:debug]                          : true
+    $debug                          = params.key?(:debug)                          ? params[:debug]                          : false
     $behaviors_settings             = params.key?(:behaviors)                      ? params[:behaviors]                      : gather_available_behaviors
     $producer_url                   = params.key?(:producer_url)                   ? params[:producer_url]                   : $producer_url
     $product_popularity             = params.key?(:product_popularity)             ? params[:product_popularity]             : retrieve_and_build_product_popularity
@@ -226,7 +226,7 @@ class SettingController < BehaviorController
     settings["timeout_if_no_offers_available"] = $timeout_if_no_offers_available ? $timeout_if_no_offers_available : 2
     settings["timeout_if_too_many_requests"]   = $timeout_if_too_many_requests   ? $timeout_if_too_many_requests   : 30
     settings["max_buying_price"]               = $max_buying_price               ? $max_buying_price               : 80
-    settings["debug"]                          = $debug                          ? $debug                          : true
+    settings["debug"]                          = $debug                          ? $debug                          : false
     settings["producer_url"]                   = $producer_url
     settings["product_popularity"]             = $product_popularity             ? $product_popularity             : retrieve_and_build_product_popularity
     settings["marketplace_url"]                = $marketplace_url

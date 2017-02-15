@@ -18,7 +18,7 @@ class Features
     when "quality_rank"
       self.feature_quality_rank
     else
-      puts "unsupported feature #{feature}"
+      puts "unsupported feature #{feature}" if $debug
       0
     end
   end

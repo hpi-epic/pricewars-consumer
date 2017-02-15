@@ -12,7 +12,7 @@ class RandomSigmoid
 
     # return self.class.negativeSigmoid(@price, @mean) # returns the probability
     re = self.class.negativeSigmoid(@price, @mean)
-    puts "price #{@price} and mean #{@mean} and result #{re}"
+    puts "price #{@price} and mean #{@mean} and result #{re}" if $debug
     re
   end
 
