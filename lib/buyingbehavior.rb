@@ -4,6 +4,7 @@ require "gaussian"
 require "sigmoid"
 require "logit"
 require "features"
+#require 'statsample-glm'
 
 class BuyingBehavior
   # include HTTParty::Icebox
@@ -78,14 +79,16 @@ class BuyingBehavior
     highest_prob_item = {}
 
     $items.shuffle.each do |item|
-      sig = RandomSigmoid.new(@behavior_settings["producer_prices"][item["uid"]] * 2, item["price"]).rand
-      prob = (sig * 100).ceil
+      product = (@behavior_settings[:producer_prices].select { |product| product["uid"] == item["uid"] }).first
+      sig = RandomSigmoid.new(product["price"].to_i * 2, item["price"].to_i).rand
+
+      prob = (sig * 100)
+
       if prob > highest_prob
         highest_prob      = prob
         highest_prob_item = item
       end
     end
-
     validate_max_price(highest_prob_item)
   end
 
@@ -95,17 +98,19 @@ class BuyingBehavior
     highest_prob      = 0
 
     $items.each do |item|
-      #puts "eval #{item}"
+      puts "eval #{item}"
       names             = @behavior_settings["coefficients"].map {|key, value| key }
       names.delete("intercept")
       features          = [build_features_array(names, item)]
-      logit             = Logit.new()
+      #logit             = Logit.new()
       y                 = []
-      features.length.times { y.push(0)}
+      features.length.times { y.push(1)}
       #puts "y: #{y}"
       #puts "theta: #{theta}"
       #puts "features: #{features}"
-      prob              = logit.predict(features, theta, y)
+      #prob              = logit.predict(features, theta, y)
+      glm = Statsample::GLM.compute data_set, :y, :logistic, {constant: 1, algorithm: :mle}
+
       #puts "item #{item["uid"]} has prob of #{prob}%"
       if prob > highest_prob
         highest_prob      = prob

@@ -15,7 +15,7 @@ class BehaviorController < ApplicationController
     result.push(select_second_cheap_behavior)
     result.push(select_third_cheap_behavior)
     result.push(select_sigmoid_distribution_price)
-    #result.push(select_logit_coefficients)
+    result.push(select_logit_coefficients)
     evenly_distributed_behavior(result)
   end
 

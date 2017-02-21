@@ -169,7 +169,7 @@ class SettingController < BehaviorController
 
   def execute(item, behavior)
     url = $marketplace_url + "/offers/" + item["offer_id"].to_s + "/buy"
-    puts url if $debug
+    puts "#{url} for #{behavior}" if $debug
     response = HTTParty.post(url,
                              body:    {price:       item["price"],
                                        amount:      rand($min_buying_amount..$max_buying_amount),
