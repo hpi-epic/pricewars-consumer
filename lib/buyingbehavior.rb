@@ -4,7 +4,7 @@ require "gaussian"
 require "sigmoid"
 require "logit"
 require "features"
-#require 'statsample-glm'
+# require 'statsample-glm'
 
 class BuyingBehavior
   # include HTTParty::Icebox
@@ -79,7 +79,7 @@ class BuyingBehavior
     highest_prob_item = {}
 
     $items.shuffle.each do |item|
-      product = (@behavior_settings[:producer_prices].select { |product| product["uid"] == item["uid"] }).first
+      product = (@behavior_settings[:producer_prices].select {|product| product["uid"] == item["uid"] }).first
       sig = RandomSigmoid.new(product["price"].to_i * 2, item["price"].to_i).rand
 
       prob = (sig * 100)
@@ -93,31 +93,31 @@ class BuyingBehavior
   end
 
   def buy_logit_coefficients
-    theta             = @behavior_settings["coefficients"].map {|key, value| value }
+    theta             = @behavior_settings["coefficients"].map {|_key, value| value }
     highest_prob_item = {}
     highest_prob      = 0
 
     $items.each do |item|
-      #puts "eval #{item}"
-      names             = @behavior_settings["coefficients"].map {|key, value| key }
+      # puts "eval #{item}"
+      names             = @behavior_settings["coefficients"].map {|key, _value| key }
       names.delete("intercept")
       features          = [build_features_array(names, item)]
-      logit             = Logit.new()
+      logit             = Logit.new
       y                 = []
-      features.length.times { y.push(1)}
-      #puts "y: #{y}"
-      #puts "theta: #{theta}"
-      #puts "features: #{features}"
+      features.length.times { y.push(1) }
+      # puts "y: #{y}"
+      # puts "theta: #{theta}"
+      # puts "features: #{features}"
       prob              = logit.predict(features, theta, y)
-      #glm = Statsample::GLM.compute data_set, :y, :logistic, {constant: 1, algorithm: :mle}
+      # glm = Statsample::GLM.compute data_set, :y, :logistic, {constant: 1, algorithm: :mle}
 
-      #puts "item #{item["uid"]} has prob of #{prob}%"
+      # puts "item #{item["uid"]} has prob of #{prob}%"
       if prob > highest_prob
         highest_prob      = prob
         highest_prob_item = item
       end
     end
-    #puts "highest item is #{highest_prob_item["uid"]} with #{highest_prob}%"
+    # puts "highest item is #{highest_prob_item["uid"]} with #{highest_prob}%"
     highest_prob_item
   end
 
@@ -126,7 +126,7 @@ class BuyingBehavior
   def build_features_array(feature_names, item)
     result = []
     feature_names.each do |feature|
-      result.push(Features.new().determine(feature, $items, item))
+      result.push(Features.new.determine(feature, $items, item))
     end
     result
   end
@@ -137,7 +137,7 @@ class BuyingBehavior
       return select_random_product
     end
     products_in_marketsituation = $unfiltered_items.map {|item| item["product_id"] }
-    supported_products = @behavior_settings["product_popularity"].select {|key,value| products_in_marketsituation.uniq.include?(key.to_i) }
+    supported_products = @behavior_settings["product_popularity"].select {|key, _value| products_in_marketsituation.uniq.include?(key.to_i) }
     $items = $unfiltered_items.select {|item| item["product_id"] == choose_weighted(supported_products).to_i }
   end
 
@@ -147,15 +147,15 @@ class BuyingBehavior
 
   # consumes { :black => 51, :white => 17 }
   def choose_weighted(weighted)
-	  sum = weighted.inject(0) do |sum, item_and_weight|
-	    sum += item_and_weight[1]
-	  end
-	  target = rand(sum)
-	  weighted.each do |item, weight|
-	    return item if target <= weight
-	    target -= weight
-	  end
-	end
+    sum = weighted.inject(0) do |sum, item_and_weight|
+      sum += item_and_weight[1]
+    end
+    target = rand(sum)
+    weighted.each do |item, weight|
+      return item if target <= weight
+      target -= weight
+    end
+  end
 
   def validate_max_price(item)
     return nil if item.nil? || item.blank?

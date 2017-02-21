@@ -124,7 +124,7 @@ class BehaviorController < ApplicationController
     behavior = {}
     behavior["name"] = "logit_coefficients"
     behavior["description"] = "I am with logit coefficients"
-    behavior["settings"] = {"coefficients": { "intercept":1,"static":0.5, "price_rank": 0.5}}
+    behavior["settings"] = {"coefficients": {"intercept": 1, "static": 0.5, "price_rank": 0.5}}
     behavior["settings_description"] = "Key Value map for Feature and their coeffient"
     behavior
   end

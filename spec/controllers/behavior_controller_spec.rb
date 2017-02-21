@@ -23,7 +23,7 @@ RSpec.describe BehaviorController, type: :controller do
                                         {"name" => "second_cheap", "description" => "I am buying the second cheapest item", "settings" => {}, "settings_description" => "Behavior settings not necessary", "amount" => 10},
                                         {"name" => "third_cheap", "description" => "I am buying the third cheapest item", "settings" => {}, "settings_description" => "Behavior settings not necessary", "amount" => 10},
                                         {"name" => "sigmoid_distribution_price", "description" => "I am with sigmoid distribution on the price regarding the producer prices", "settings" => {}, "settings_description" => "Behavior settings not necessary", "amount" => 10},
-                                        {"name" => "logit_coefficients", "description" => "I am with logit coefficients", "settings" => {"coefficients": { "intercept":1,"static":0.5, "price_rank": 0.5}}, "settings_description" => "Key Value map for Feature and their coeffient", "amount" => 10}])
+                                        {"name" => "logit_coefficients", "description" => "I am with logit coefficients", "settings" => {"coefficients": {"intercept": 1, "static": 0.5, "price_rank": 0.5}}, "settings_description" => "Key Value map for Feature and their coeffient", "amount" => 10}])
     end
   end
 end

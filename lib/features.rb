@@ -4,7 +4,7 @@ class Features
 
   def determine(feature, market_situation, evaluated_item)
     filtered_market_situation = market_situation.select {|item| item["product_id"] == evaluated_item["product_id"] }      # only evalute offers for same product id
-    @cleaned_market_situation = filtered_market_situation.select {|item| item["offer_id"] != evaluated_item["offer_id"] } #exclude one offers
+    @cleaned_market_situation = filtered_market_situation.select {|item| item["offer_id"] != evaluated_item["offer_id"] } # exclude one offers
 
     case feature
     when "static"
@@ -48,7 +48,7 @@ class Features
   def self.feature_average_price_on_market(market_situation, evaluated_item)
     average_price = 0.0
     market_situation.select {|item| average_price += item["price"] }
-    (average_price + evaluated_item["price"]) / market_situation.size+1
+    (average_price + evaluated_item["price"]) / market_situation.size + 1
   end
 
   def self.feature_quality_rank(market_situation, evaluated_item)

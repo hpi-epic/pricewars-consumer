@@ -33,10 +33,10 @@ class Logit
     self.class.gradient_descent_logistic(initial_theta, features, y, m, n, learning_rate, iterations)
 
     # Evaluate our hypothesis accuracy
-    #puts "Final theta: #{final_theta}"
-    #puts "Initial cost: #{self.class.cost_logistic_regression(initial_theta, features, y, m, n)}" if $debug
-    #puts "Final cost: #{self.class.cost_logistic_regression(final_theta, features, y, m, n)}" if $debug
-    #puts "Example: #{self.class.cost_logistic_regression([0,0,1], features, y, m, n)}" if $debug
+    # puts "Final theta: #{final_theta}"
+    # puts "Initial cost: #{self.class.cost_logistic_regression(initial_theta, features, y, m, n)}" if $debug
+    # puts "Final cost: #{self.class.cost_logistic_regression(final_theta, features, y, m, n)}" if $debug
+    # puts "Example: #{self.class.cost_logistic_regression([0,0,1], features, y, m, n)}" if $debug
   end
 
   private
@@ -72,7 +72,7 @@ class Logit
   def self.h_logistic_regression(theta, x, n)
     theta_t_x = 0
     0.upto n do |i|
-      #puts "#theta[i] #{theta[i]} and x[i] #{x[i]} for #{i}"
+      # puts "#theta[i] #{theta[i]} and x[i] #{x[i]} for #{i}"
       theta_t_x += theta[i] * x[i]
     end
 

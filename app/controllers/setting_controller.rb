@@ -91,7 +91,7 @@ class SettingController < BehaviorController
         render(text: "invalid configuration: consumer_id or marketplace_url unknown", status: 404) && return
       end
       response = deregister_with_marketplace
-      render(nothing: true, status: response.code) && return
+      render(text: "all process instances terminated", status: response.code) && return
     else
       render(text: "no instance running", status: 404) && return
     end
@@ -136,41 +136,33 @@ class SettingController < BehaviorController
 
   def logic(items, _settings, _bulk_boolean)
     if rand(1..100) < $probability_of_buy
-      $behaviors_settings.each do |behavior| # decide on buying behavior based on settings
-        #rndm = rand(1..100)/$behaviors_settings.size
-        rndm = rand(1..100)
-        if rndm < behavior[:amount]  # spread buying behavior accordingly to settings
-          item = BuyingBehavior.new(items, expand_behavior_settings(behavior[:settings])).send("buy_" + behavior[:name]) # get item based on buying behavior
-          if item.nil?
-            puts "no item selected by BuyingBehavior with #{behavior[:name]}, sleeping #{$timeout_if_no_offers_available}s" if $debug
-            sleep($timeout_if_no_offers_available)
-            break
-          end
-          # Thread.new do |_subT|
-          status = execute(item, behavior[:name]) # buy now!
-          if status == 429
-            puts "429, sleeping #{$timeout_if_too_many_requests}s" if $debug
-            sleep($timeout_if_too_many_requests)
-          elsif status == 401
-            puts "401.." if $debug
-            deregister_with_marketplace
-            register_with_marketplace
-          end
-          # end
-          break
-        else
-          puts "The luck is not with us, maybe next round" if $debug
-          next
-        end
+      behavior_weights = {}
+      $behaviors_settings.each {|behavior| behavior_weights[behavior[:name]] = behavior[:amount] }
+      behavior = choose_weighted(behavior_weights)
+
+      item = BuyingBehavior.new(items, expand_behavior_settings(behavior[:settings])).send("buy_" + behavior[:name]) # get item based on buying behavior
+      if item.nil?
+        puts "no item selected by BuyingBehavior with #{behavior[:name]}, sleeping #{$timeout_if_no_offers_available}s" if $debug
+        sleep($timeout_if_no_offers_available)
+        return
+      end
+      status = execute(item, behavior[:name]) # buy now!
+      if status == 429
+        puts "429, sleeping #{$timeout_if_too_many_requests}s" if $debug
+        sleep($timeout_if_too_many_requests)
+      elsif status == 401
+        puts "401.." if $debug
+        deregister_with_marketplace
+        register_with_marketplace
       end
     else
-      puts "luck did not strike for our buy" if $debug
+      puts "The luck is not with us, maybe next round" if $debug
     end
   end
 
   def execute(item, behavior)
     url = $marketplace_url + "/offers/" + item["offer_id"].to_s + "/buy"
-    puts "#{url} for #{behavior} with quality #{item["quality"]}" if $debug
+    puts "#{url} for #{behavior} with quality #{item['quality']}" if $debug
     response = HTTParty.post(url,
                              body:    {price:       item["price"],
                                        amount:      rand($min_buying_amount..$max_buying_amount),
@@ -214,7 +206,7 @@ class SettingController < BehaviorController
     end
   end
 
-  #def cleanup_behavior_settings(behaviors)
+  # def cleanup_behavior_settings(behaviors)
   #  behaviors.each do |key, behavior|
   #    behaviors[key][:settings].delete(:producer_prices)
   #    behaviors[key][:settings].delete(:max_buying_price)
@@ -222,7 +214,7 @@ class SettingController < BehaviorController
   #    behaviors[key][:settings].delete(:product_popularity)
   #  end
   #  behaviors
-  #end
+  # end
 
   def retrieve_current_or_default_settings
     settings = {}
@@ -242,5 +234,16 @@ class SettingController < BehaviorController
     settings["product_popularity"]             = $product_popularity             ? $product_popularity                             : retrieve_and_build_product_popularity
     settings["marketplace_url"]                = $marketplace_url
     settings
+  end
+
+  def choose_weighted(weighted)
+    sum = weighted.inject(0) do |sum, item_and_weight|
+      sum += item_and_weight[1]
+    end
+    target = rand(sum)
+    weighted.each do |item, weight|
+      return item if target <= weight
+      target -= weight
+    end
   end
 end

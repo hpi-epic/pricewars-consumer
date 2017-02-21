@@ -127,6 +127,40 @@
 <li>Rails 4.2</li>
 </ul>
 
+<h2>Folder Structure</h2>
+
+<pre class="code ruby"><code class="ruby">|-- app
+|   `-- controllers
+|       `-- concerns
+|-- bin
+|-- config
+|   |-- deploy
+|   |-- environments
+|   |-- initializers
+|   `-- locales
+|-- db
+|-- doc
+|   |-- css
+|   `-- js
+|-- lib
+|   |-- assets
+|   |-- capistrano
+|   |   `-- tasks
+|   `-- tasks
+|-- log
+|-- public
+|-- spec
+|   `-- controllers
+|-- tmp
+|   |-- cache
+|   |   `-- assets
+|   |-- pids
+|   |-- sessions
+|   `-- sockets
+`-- vendor
+
+</code></pre>
+
 <h2>Deployment</h2>
 
 <p>Clone the repo with</p>
@@ -138,11 +172,13 @@
 
 <p>First, install dependencies</p>
 
-<p><code>sudo apt-get install libgsl0-dev</code></p>
+<pre class="code ruby"><code class="ruby">sudo apt-get install libgsl0-dev
+</code></pre>
 
 <p>and run</p>
 
-<p><code>bundle exec bundle install</code></p>
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_install'>install</span>
+</code></pre>
 
 <p>afterwards you may start the webserver</p>
 
@@ -151,48 +187,75 @@ export PRICEWARS_PRODUCER_URL=&#39;http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsd
 rails s -b 0.0.0.0
 </code></pre>
 
-<p>where as the env var PRICEWARS_MARKETPLACE_URL and PRICEWARS_PRODUCER_URL point to the actual path of the marketplace and the producer.</p>
+<p>where as the ENV var PRICEWARS_MARKETPLACE_URL and PRICEWARS_PRODUCER_URL point to the actual path of the marketplace and the producer.</p>
 
-<p>If all worked out, see the results with <em><a href="http://localhost:3000">http://localhost:3000</a></em> .</p>
+<p>If all worked out, see the results with _ <a href="http://localhost:3000">http://localhost:3000</a> _ .</p>
 
-<h2>API</h2>
+<h2>Documentation</h2>
+
+<h3>API</h3>
 
 <p><a href="https://hpi-epic.github.io/masterproject-pricewars/api/">Ref</a></p>
 
-<h3>Settings</h3>
+<h3>Source Code</h3>
 
-<pre class="code ruby"><code class="ruby">HTTP POST /settings
+<p>Detailed information regarding method and function usage and behavior can be found within the <a href="doc/index.html">doc/ directory</a> of this repository.</p>
+
+<h3>ENV parameter</h3>
+
+<p>Currently, two ENV params are needed:</p>
+
+<ul>
+<li>PRICEWARS_PRODUCER_URL</li>
+<li>PRICEWARS_MARKETPLACE_URL</li>
+</ul>
+
+<p>If they are not set, the deployed VM urls are automatically used.</p>
+
+<p>One may simple export them to the related system:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_export'>export</span> <span class='const'>PRICEWARS_MARKETPLACE_URL</span><span class='op'>=</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>http://vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de:8080/marketplace</span><span class='tstring_end'>&#39;</span></span>
+<span class='id identifier rubyid_export'>export</span> <span class='const'>PRICEWARS_PRODUCER_URL</span><span class='op'>=</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de</span><span class='tstring_end'>&#39;</span></span>
 </code></pre>
 
-<pre class="code ruby"><code class="ruby">{ &quot;tick&quot;:1,&quot;marketplace_url&quot;:http://172.16.58.6:8080&quot;,&quot;amount_of_consumers&quot;:10,&quot;probability_of_sell&quot;:100,&quot;behaviors&quot;:[{&quot;name&quot;:&quot;cheap&quot;,&quot;amount&quot;:100}]}
-</code></pre>
-
-<h2>Concept</h2>
+<h3>Concept</h3>
 
 <p>The consumer is defined via behaviors which are implemented in <em>lib/buyingbehavior.rb</em>. All available behaviors are included with their default settings and description in <em>app/controllers/behavior_controller.rb</em> .</p>
 
-<h3>Consumer Behaviors</h3>
+<h4>Consumer Behaviors</h4>
 
 <p>Via settings, the distribution across those available behaviors is defined as percentage. In the consumer logic then, each behavior is <a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/app/controllers/setting_controller.rb#L142">called and executed</a> dynamically based on the provided behavior method name based on their distribution.</p>
 
-<h4>Existing new behaviors</h4>
+<h5>Existing new behaviors</h5>
 
 <ul>
-<li>buy_first</li>
-<li>buy_random</li>
-<li>buy_cheap</li>
-<li>buy_n_cheap(n)</li>
-<li>buy_second_cheap</li>
-<li>buy_third_cheap</li>
-<li>buy_cheap_and_prime</li>
-<li>buy_expensive</li>
-<li>buy_cheapest_best_quality_with_prime</li>
-<li>buy_cheapest_best_quality</li>
-<li>buy_sigmoid_distribution_price</li>
-<li>buy_logit_coefficients</li>
+<li>buy_first
+&gt; buying the first item out of the marketplace offer list</li>
+<li>buy_random
+&gt; buying a random item out of the marketplace offer list</li>
+<li>buy_cheap
+&gt; buying the cheapest item out of the marketplace offer list</li>
+<li>buy_n_cheap(n)
+&gt; buying the n-cheapest item out of the marketplace offer list</li>
+<li>buy_second_cheap
+&gt; buying the second cheapest item out of the marketplace offer list</li>
+<li>buy_third_cheap
+&gt; buying the third cheapest item out of the marketplace offer list</li>
+<li>buy_cheap_and_prime
+&gt; buying the cheapest item out of the marketplace offer list filtered by prime</li>
+<li>buy_expensive
+&gt; buying the most expensive item out of the marketplace offer list</li>
+<li>buy_cheapest_best_quality_with_prime
+&gt; buying the cheapest item with the best possible quality out of the marketplace offer list filtered by prime</li>
+<li>buy_cheapest_best_quality
+&gt; buying the cheapest item with the best possible quality out of the marketplace offer list</li>
+<li>buy_sigmoid_distribution_price
+&gt; buying items with sigmoid distribution around twice the producer price from the marketplace offer list</li>
+<li>buy_logit_coefficients
+&gt; buying items based on the provided logit coefficients from the marketplace offer list</li>
 </ul>
 
-<h4>Adding new behaviors</h4>
+<h5>Adding new behaviors</h5>
 
 <p>For adding a new buying behavior, one simple needs to add the buying logic as method in <em>lib/buyingbehavior.rb</em> starting with the prefix <em>buy_</em> returning the item (only one!), which is supposed to be bought.</p>
 
@@ -202,7 +265,9 @@ rails s -b 0.0.0.0
 
 <p>All available product (ids) are included in <em>$products</em> and <em>$items</em> contains all offer items for one preselected product category.</p>
 
-<h3>Selection of one product &amp; its market situation</h3>
+<p>Keep in mind to add the new behavior with its description, default settings and method name in the <em>app/controller/behavior_controller.rb</em> in the way that it will be included and listed in the default setting return value.</p>
+
+<h4>Selection of one product &amp; its market situation</h4>
 
 <p>The current implementation supports an even distributed selection of items (random selection). Additionally, one may define product popularity via the consumer settings which is evaluated instead of a random distribution.</p>
 
@@ -210,7 +275,7 @@ rails s -b 0.0.0.0
 </div></div>
 
       <div id="footer">
-  Generated on Tue Feb 21 08:08:28 2017 by
+  Generated on Tue Feb 21 17:00:47 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.8 (ruby-2.3.1).
 </div>
