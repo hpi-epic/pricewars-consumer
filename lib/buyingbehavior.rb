@@ -102,7 +102,7 @@ class BuyingBehavior
       names             = @behavior_settings["coefficients"].map {|key, value| key }
       names.delete("intercept")
       features          = [build_features_array(names, item)]
-      #logit             = Logit.new()
+      logit             = Logit.new()
       y                 = []
       features.length.times { y.push(1)}
       #puts "y: #{y}"
