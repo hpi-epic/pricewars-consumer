@@ -17,7 +17,7 @@ class BuyingBehavior
   # Initialize with parameters passed
   def initialize(items, behavior_settings)
     $products           = items.map {|item| item["product_id"] }
-    $items              = items
+    $unfiltered_items   = items
 
     # uncomment to select a random product for evaluation rather based on product popularity
     # OPTIONS: select_random_product | select_based_on_product_popularity
@@ -98,7 +98,7 @@ class BuyingBehavior
     highest_prob      = 0
 
     $items.each do |item|
-      puts "eval #{item}"
+      #puts "eval #{item}"
       names             = @behavior_settings["coefficients"].map {|key, value| key }
       names.delete("intercept")
       features          = [build_features_array(names, item)]
@@ -136,12 +136,13 @@ class BuyingBehavior
       puts "ALERT: product_popularity wrong configured, falling back to select_random_product"
       return select_random_product
     end
-    product_id = choose_weighted(@behavior_settings["product_popularity"])
-    $items = $items.select {|item| item["product_id"] == product_id.to_i }
+    products_in_marketsituation = $unfiltered_items.map {|item| item["product_id"] }
+    supported_products = @behavior_settings["product_popularity"].select {|key,value| products_in_marketsituation.uniq.include?(key.to_i) }
+    $items = $unfiltered_items.select {|item| item["product_id"] == choose_weighted(supported_products).to_i }
   end
 
   def select_random_product
-    $items = $items.select {|item| item["product_id"] == $products.uniq.sample }
+    $items = $unfiltered_items.select {|item| item["product_id"] == $products.uniq.sample }
   end
 
   # consumes { :black => 51, :white => 17 }

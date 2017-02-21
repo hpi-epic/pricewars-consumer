@@ -137,7 +137,8 @@ class SettingController < BehaviorController
   def logic(items, _settings, _bulk_boolean)
     if rand(1..100) < $probability_of_buy
       $behaviors_settings.each do |behavior| # decide on buying behavior based on settings
-        rndm = rand(1..100)/$behaviors_settings.size
+        #rndm = rand(1..100)/$behaviors_settings.size
+        rndm = rand(1..100)
         if rndm < behavior[:amount]  # spread buying behavior accordingly to settings
           item = BuyingBehavior.new(items, expand_behavior_settings(behavior[:settings])).send("buy_" + behavior[:name]) # get item based on buying behavior
           if item.nil?
@@ -169,7 +170,7 @@ class SettingController < BehaviorController
 
   def execute(item, behavior)
     url = $marketplace_url + "/offers/" + item["offer_id"].to_s + "/buy"
-    puts "#{url} for #{behavior}" if $debug
+    puts "#{url} for #{behavior} with quality #{item["quality"]}" if $debug
     response = HTTParty.post(url,
                              body:    {price:       item["price"],
                                        amount:      rand($min_buying_amount..$max_buying_amount),
