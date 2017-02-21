@@ -23,6 +23,40 @@ The meta repository containing general information can be found [here](https://g
 * Ruby 2.3
 * Rails 4.2
 
+## Folder Structure
+
+```
+|-- app
+|   `-- controllers
+|       `-- concerns
+|-- bin
+|-- config
+|   |-- deploy
+|   |-- environments
+|   |-- initializers
+|   `-- locales
+|-- db
+|-- doc
+|   |-- css
+|   `-- js
+|-- lib
+|   |-- assets
+|   |-- capistrano
+|   |   `-- tasks
+|   `-- tasks
+|-- log
+|-- public
+|-- spec
+|   `-- controllers
+|-- tmp
+|   |-- cache
+|   |   `-- assets
+|   |-- pids
+|   |-- sessions
+|   `-- sockets
+`-- vendor
+
+```
 
 ## Deployment
 
@@ -36,11 +70,15 @@ git clone https://github.com/hpi-epic/pricewars-consumer
 
 First, install dependencies
 
-```sudo apt-get install libgsl0-dev```
+```
+sudo apt-get install libgsl0-dev
+```
 
 and run
 
-```bundle exec bundle install```
+```
+bundle exec bundle install
+```
 
 afterwards you may start the webserver
 
@@ -49,9 +87,9 @@ export PRICEWARS_MARKETPLACE_URL='http://vm-mpws2016hp1-04.eaalab.hpi.uni-potsda
 export PRICEWARS_PRODUCER_URL='http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de'
 rails s -b 0.0.0.0
 ```
-where as the env var PRICEWARS_MARKETPLACE_URL and PRICEWARS_PRODUCER_URL point to the actual path of the marketplace and the producer.
+where as the ENV var PRICEWARS_MARKETPLACE_URL and PRICEWARS_PRODUCER_URL point to the actual path of the marketplace and the producer.
 
-If all worked out, see the results with _http://localhost:3000_ .
+If all worked out, see the results with _ http://localhost:3000 _ .
 
 
 ## API
@@ -59,15 +97,6 @@ If all worked out, see the results with _http://localhost:3000_ .
 [Ref](https://hpi-epic.github.io/masterproject-pricewars/api/)
 
 
-### Settings
-
-```
-HTTP POST /settings
-```
-
-```
-{ "tick":1,"marketplace_url":http://172.16.58.6:8080","amount_of_consumers":10,"probability_of_sell":100,"behaviors":[{"name":"cheap","amount":100}]}
-```
 
 ## Concept
 
