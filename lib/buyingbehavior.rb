@@ -108,8 +108,8 @@ class BuyingBehavior
       #puts "y: #{y}"
       #puts "theta: #{theta}"
       #puts "features: #{features}"
-      #prob              = logit.predict(features, theta, y)
-      glm = Statsample::GLM.compute data_set, :y, :logistic, {constant: 1, algorithm: :mle}
+      prob              = logit.predict(features, theta, y)
+      #glm = Statsample::GLM.compute data_set, :y, :logistic, {constant: 1, algorithm: :mle}
 
       #puts "item #{item["uid"]} has prob of #{prob}%"
       if prob > highest_prob
