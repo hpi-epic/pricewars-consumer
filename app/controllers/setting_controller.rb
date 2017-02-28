@@ -93,7 +93,7 @@ class SettingController < BehaviorController
       response = deregister_with_marketplace
       render(text: "all process instances terminated", status: response.code) && return
     else
-      render(text: "no instance running", status: 404) && return
+      render(text: "no instance running", status: 200) && return
     end
   end
 
@@ -109,8 +109,8 @@ class SettingController < BehaviorController
                                       }.to_json,
                              headers: {"Content-Type" => "application/json"})
     data = JSON.parse(response.body)
-    $consumer_token = data["consumer_token"]
-    $consumer_id    = data["consumer_id"]
+    $consumer_token        = data["consumer_token"]
+    $consumer_id           = data["consumer_id"]
     puts "assigning new token #{$consumer_token}" if $debug
   end
 
@@ -153,8 +153,9 @@ class SettingController < BehaviorController
         sleep($timeout_if_too_many_requests)
       elsif status == 401
         puts "401.." if $debug
-        deregister_with_marketplace
-        register_with_marketplace
+        #deregister_with_marketplace
+        #register_with_marketplace
+        puts "ERROR: marketplace rejected consumer API Token"
       end
     else
       puts "The luck is not with us, maybe next round" if $debug
