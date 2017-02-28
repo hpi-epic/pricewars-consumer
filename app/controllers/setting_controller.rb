@@ -45,6 +45,12 @@ class SettingController < BehaviorController
     render json: retrieve_current_or_default_settings
   end
 
+  def update_product_details
+    puts "Updating product details on request" if $debug
+    retrieve_and_build_product_popularity
+    render(text: "updated product details", status: 200)
+  end
+
   def create
     render(nothing: true, status: 405) && return unless request.content_type == "application/json"
     render(nothing: true, status: 405) && return unless params.key?(:marketplace_url)
@@ -68,7 +74,7 @@ class SettingController < BehaviorController
           status = logic(JSON.parse(available_items), params, params.key?("bulk") ? true : false)
         end
       end
-      $list_of_threads.push(thread)
+     $list_of_threads.push(thread)
     end
 
     render json: retrieve_current_or_default_settings

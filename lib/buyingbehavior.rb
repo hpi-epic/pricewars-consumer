@@ -118,7 +118,7 @@ class BuyingBehavior
       end
     end
     # puts "highest item is #{highest_prob_item["uid"]} with #{highest_prob}%"
-    highest_prob_item
+    validate_max_price(highest_prob_item)
   end
 
   private
