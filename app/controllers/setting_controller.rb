@@ -66,12 +66,13 @@ class SettingController < BehaviorController
           puts "next iteration starting of with sleeping #{general_timeout_through_consumer_settings}s" if $debug
           sleep(general_timeout_through_consumer_settings) # sleep regarding global time zone and random offset
           available_items = get_available_items
-          if available_items == "[]"
+          puts "processing #{available_items.size} offers" if $debug
+          if !available_items.any? or available_items.empty?
             puts "no items available, sleeping #{$timeout_if_no_offers_available}s" if $debug
             sleep($timeout_if_no_offers_available)
             next
           end
-          status = logic(JSON.parse(available_items), params, params.key?("bulk") ? true : false)
+          status = logic(available_items, params, params.key?("bulk") ? true : false)
         end
       end
      $list_of_threads.push(thread)
@@ -137,7 +138,7 @@ class SettingController < BehaviorController
     puts url if $debug
     response = HTTParty.get(url)
     puts response.code if $debug
-    response.body
+    JSON.parse(response.body)
   end
 
   def logic(items, _settings, _bulk_boolean)

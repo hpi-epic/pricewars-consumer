@@ -80,6 +80,10 @@ class BuyingBehavior
 
     $items.shuffle.each do |item|
       product = (@behavior_settings[:producer_prices].select {|product| product["uid"] == item["uid"] }).first
+      if product.nil?
+        puts "ERROR: item uid #{item["uid"]} is unknown to producer_prices for sigmoid distribution"
+        next
+      end
       sig = RandomSigmoid.new(product["price"].to_i * 2, item["price"].to_i).rand
 
       prob = (sig * 100)
