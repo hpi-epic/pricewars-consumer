@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe RegisterController, type: :controller do
   describe "POST #register", type: :request do
     before do
-      post_response = "{'consumer_id':1337}"
+      post_response = '{"consumer_id":1337}'
       stub_request(:post, /marketplace.api.mp_pricewars.com/).to_return(body: post_response, status: 200, headers: {})
     end
 

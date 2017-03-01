@@ -44,6 +44,7 @@ group :development, :test do
   gem "webmock"
 
   gem "yard"
+  gem "i18n"
 end
 
 gem "rack-cors", require: "rack/cors"
