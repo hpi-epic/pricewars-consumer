@@ -14,6 +14,13 @@ class RegisterController < ApplicationController
   end
 
   def delete
+    if $list_of_threads.present?
+      $list_of_threads.each do |thread|
+        Thread.kill(thread)
+      end
+      $list_of_threads = []
+    end
+
     response_code = unregister
     render json: {'status code from marketplace': response_code}.as_json
   end
