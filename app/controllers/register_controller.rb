@@ -1,4 +1,6 @@
 class RegisterController < ApplicationController
+  include RegisterHelper
+
   def create
     render(nothing: true, status: 405) && return unless request.content_type == "application/json"
     render(nothing: true, status: 405) && return unless params.key?(:marketplace_url)
@@ -11,15 +13,8 @@ class RegisterController < ApplicationController
     render json: customer
   end
 
-  private
-
-  def register_on(marketplace_url, consumer_url, name, description)
-    url = marketplace_url + "/customer/register"
-    HTTParty.post(url,
-                  body:    {customer_url: consumer_url,
-                            name:         name,
-                            description:  description
-                           }.to_json,
-                  headers: {"Content-Type" => "application/json"}).body
+  def delete
+    response_code = unregister
+    render json: {'status code from marketplace': response_code}.as_json
   end
 end

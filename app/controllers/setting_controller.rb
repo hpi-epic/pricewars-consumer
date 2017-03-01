@@ -7,6 +7,7 @@ require "behavior_controller"
 
 class SettingController < BehaviorController
   include HTTParty
+  include RegisterHelper
 
   persistent_connection_adapter name:         "Marketplace",
                                 pool_size:    300,
@@ -56,7 +57,7 @@ class SettingController < BehaviorController
     render(nothing: true, status: 405) && return unless params.key?(:marketplace_url)
 
     init(params, request)
-    register_with_marketplace
+    register_with_marketplace unless $consumer_token.present?
 
     $list_of_threads ||= []
     $amount_of_consumers.times do
@@ -97,8 +98,7 @@ class SettingController < BehaviorController
       if $marketplace_url.nil? || $consumer_id.nil?
         render(text: "invalid configuration: consumer_id or marketplace_url unknown", status: 417) && return
       end
-      response = deregister_with_marketplace
-      render(text: "all process instances terminated", status: response.code)
+      render(text: "all process instances terminated", status: 200)
     else
       render(text: "no instance running", status: 200)
     end
@@ -107,30 +107,11 @@ class SettingController < BehaviorController
   private
 
   def register_with_marketplace
-    url = $marketplace_url + "/consumers"
-    puts url if $debug
-    response = HTTParty.post(url,
-                             body:    {api_endpoint_url: $consumer_url,
-                                       consumer_name:    "Default",
-                                       description:      "Buying with specified settings"
-                                      }.to_json,
-                             headers: {"Content-Type" => "application/json"})
-    data = JSON.parse(response.body)
-    $consumer_token        = data["consumer_token"]
-    $consumer_id           = data["consumer_id"]
-    puts "assigning new token #{$consumer_token}" if $debug
+    register_on($marketplace_url, $consumer_url, 'Default', 'Buying with specified settings')
   end
 
   def deregister_with_marketplace
-    url = $marketplace_url + "/consumers/" + $consumer_id
-    puts url if $debug
-    response = HTTParty.delete(url,
-                               body:    {}.to_json,
-                               headers: {"Content-Type"  => "application/json",
-                                         "Authorization" => "Token #{$consumer_token}"
-                                })
-    puts "deregistered with status code #{response.code}" if $debug
-    response
+    unregister
   end
 
   def get_available_items
@@ -160,8 +141,8 @@ class SettingController < BehaviorController
         sleep($timeout_if_too_many_requests)
       elsif status == 401
         puts "401.." if $debug
-        # deregister_with_marketplace
-        # register_with_marketplace
+        deregister_with_marketplace
+        register_with_marketplace
         puts "ERROR: marketplace rejected consumer API Token"
       end
     else

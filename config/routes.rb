@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   post "register", to: "register#create"
+  delete "register", to: "register#delete"
 
   get "setting/sample", to: "setting#index"
   get "setting", to: "setting#index"
