@@ -21,8 +21,7 @@ module RegisterHelper
   end
 
   def unregister
-    return 404 if $consumer_id.blank?
-    $consumer_token = nil
+    return 404 if $consumer_id.blank? || $consumer_token.blank?
 
     url = $marketplace_url + "/consumers/" + $consumer_id
     puts url if $debug
@@ -32,6 +31,8 @@ module RegisterHelper
                                          "Authorization" => "Token #{$consumer_token}"
                                })
     puts "deregistered with status code #{response.code}" if $debug
+    $consumer_token = nil
+    $consumer_id = nil
     response.code
   end
 end
