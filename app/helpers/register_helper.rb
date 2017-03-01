@@ -8,9 +8,9 @@ module RegisterHelper
     url = $marketplace_url + "/consumers"
     puts url if $debug
     response = HTTParty.post(url,
-                             body: {api_endpoint_url: $consumer_url,
-                                    consumer_name: $consumer_name,
-                                    description: $consumer_description
+                             body:    {api_endpoint_url: $consumer_url,
+                                       consumer_name:    $consumer_name,
+                                       description:      $consumer_description
                              }.to_json,
                              headers: {"Content-Type" => "application/json"})
     data = JSON.parse(response.body)
@@ -26,8 +26,8 @@ module RegisterHelper
     url = $marketplace_url + "/consumers/" + $consumer_id
     puts url if $debug
     response = HTTParty.delete(url,
-                               body: {}.to_json,
-                               headers: {"Content-Type" => "application/json",
+                               body:    {}.to_json,
+                               headers: {"Content-Type"  => "application/json",
                                          "Authorization" => "Token #{$consumer_token}"
                                })
     puts "deregistered with status code #{response.code}" if $debug

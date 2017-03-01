@@ -107,7 +107,7 @@ class SettingController < BehaviorController
   private
 
   def register_with_marketplace
-    register_on($marketplace_url, $consumer_url, 'Default', 'Buying with specified settings')
+    register_on($marketplace_url, $consumer_url, "Default", "Buying with specified settings")
   end
 
   def deregister_with_marketplace
