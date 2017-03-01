@@ -42,9 +42,6 @@ group :development, :test do
   gem "spring"
   gem "rubocop", "~> 0.29.1"
   gem "webmock"
-
-  gem "yard"
-  gem "i18n"
 end
 
 gem "rack-cors", require: "rack/cors"
