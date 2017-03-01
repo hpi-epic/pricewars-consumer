@@ -52,7 +52,7 @@ namespace :deploy do
     on roles :all do
       within release_path do
         execute "gem install bundler"
-        execute "bundle install --gemfile=#{release_path}/Gemfile"
+        execute "bundle install --gemfile=#{release_path}/Gemfile --deployment"
         # execute "cp #{release_path}/config/database.mysql.yml #{release_path}/config/database.yml"
         # execute :rake, "db:create"
         # execute :rake, "db:migrate"
