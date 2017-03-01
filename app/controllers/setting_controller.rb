@@ -67,7 +67,7 @@ class SettingController < BehaviorController
           sleep(general_timeout_through_consumer_settings) # sleep regarding global time zone and random offset
           available_items = get_available_items
           puts "processing #{available_items.size} offers" if $debug
-          if !available_items.any? or available_items.empty?
+          if !available_items.any? || available_items.empty?
             puts "no items available, sleeping #{$timeout_if_no_offers_available}s" if $debug
             sleep($timeout_if_no_offers_available)
             next
@@ -75,7 +75,7 @@ class SettingController < BehaviorController
           status = logic(available_items, params, params.key?("bulk") ? true : false)
         end
       end
-     $list_of_threads.push(thread)
+      $list_of_threads.push(thread)
     end
 
     render json: retrieve_current_or_default_settings
@@ -146,7 +146,7 @@ class SettingController < BehaviorController
       behavior_weights = {}
       $behaviors_settings.each {|behavior| behavior_weights[behavior[:name]] = behavior[:amount] }
       selected_behavior = choose_weighted(behavior_weights)
-      behavior = ($behaviors_settings.select { |b| b[:name]==selected_behavior }).first
+      behavior = ($behaviors_settings.select {|b| b[:name] == selected_behavior }).first
 
       item = BuyingBehavior.new(items, expand_behavior_settings(behavior[:settings])).send("buy_" + behavior[:name]) # get item based on buying behavior
       if item.nil?
@@ -160,8 +160,8 @@ class SettingController < BehaviorController
         sleep($timeout_if_too_many_requests)
       elsif status == 401
         puts "401.." if $debug
-        #deregister_with_marketplace
-        #register_with_marketplace
+        # deregister_with_marketplace
+        # register_with_marketplace
         puts "ERROR: marketplace rejected consumer API Token"
       end
     else

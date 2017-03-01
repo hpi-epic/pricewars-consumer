@@ -12,6 +12,4 @@ Rails.application.routes.draw do
   get "behavior", to: "behavior#index"
 
   get "status", to: "setting#status"
-
-
 end
