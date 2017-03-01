@@ -51,6 +51,7 @@ namespace :deploy do
   task :prepare_app do
     on roles :all do
       within release_path do
+        execute "gem install bundler"
         execute "bundle install"
         # execute "cp #{release_path}/config/database.mysql.yml #{release_path}/config/database.yml"
         # execute :rake, "db:create"
