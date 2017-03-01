@@ -57,77 +57,68 @@
         <div class="clear"></div>
       </div>
 
-      <div id="content"><div id='filecontents'><h1>Consumer</h1>
+      <div id="content"><div id='filecontents'>
+<h1 id="label-Consumer">Consumer</h1>
 
-<p>This Ruby app implements the MVC pattern including continuous integration and deployment via Codeship. Please make sure tests are running before committing. HTML can be found in the <em>public/</em> dir.</p>
+<p>This Ruby app implements the MVC pattern including continuous integration
+and deployment via Codeship. Please make sure tests are running before
+committing. HTML can be found in the <em>public/</em> dir.</p>
 
-<p>We are using the <a href="https://guides.github.com/introduction/flow/">Github flow</a> for contribution.</p>
+<p>We are using the <a
+href="https://guides.github.com/introduction/flow/">Github flow</a> for
+contribution.</p>
 
-<p>The meta repository containing general information can be found <a href="https://github.com/hpi-epic/masterproject-pricewars">here</a></p>
+<p>The meta repository containing general information can be found <a
+href="https://github.com/hpi-epic/masterproject-pricewars">here</a></p>
 
-<h2>Application Overview</h2>
+<h2 id="label-Application+Overview">Application Overview</h2>
 
-<table><thead>
-<tr>
-<th>Repo</th>
-<th>Branch</th>
-<th>Deployment to</th>
-<th>Status</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td><a href="https://github.com/hpi-epic/pricewars-mgmt-ui">UI</a></td>
-<td>master</td>
-<td><a href="http://vm-mpws2016hp1-02.eaalab.hpi.uni-potsdam.de">vm-mpws2016hp1-02.eaalab.hpi.uni-potsdam.de</a></td>
-<td><a href="https://app.codeship.com/projects/184009"> <img src="https://app.codeship.com/projects/d91a8460-88c2-0134-a385-7213830b2f8c/status?branch=master" alt="Codeship Status for hpi-epic/pricewars-mgmt-ui"></a></td>
-<td>Stable</td>
-</tr>
-<tr>
-<td><a href="https://github.com/hpi-epic/pricewars-consumer">Consumer</a></td>
-<td>master</td>
-<td><a href="http://vm-mpws2016hp1-01.eaalab.hpi.uni-potsdam.de">vm-mpws2016hp1-01.eaalab.hpi.uni-potsdam.de</a></td>
-<td><a href="https://app.codeship.com/projects/180119"> <img src="https://app.codeship.com/projects/96f32950-7824-0134-c83e-5251019101b9/status?branch=master" alt="Codeship Status for hpi-epic/pricewars-consumer"></a></td>
-<td>Stable</td>
-</tr>
-<tr>
-<td><a href="https://github.com/hpi-epic/pricewars-producer">Producer</a></td>
-<td>master</td>
-<td><a href="http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de">vm-mpws2016hp1-03eaalab.hpi.uni-potsdam.de</a></td>
-<td><a href="https://app.codeship.com/projects/184016"> <img src="https://app.codeship.com/projects/0328e450-88c6-0134-e3d6-7213830b2f8c/status?branch=master" alt="Codeship Status for hpi-epic/pricewars-producer"></a></td>
-<td>Stable</td>
-</tr>
-<tr>
-<td><a href="https://github.com/hpi-epic/pricewars-marketplace">Marketplace</a></td>
-<td>master</td>
-<td><a href="http://vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de/marketplace/offers">vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de/marketplace</a></td>
-<td><a href="https://app.codeship.com/projects/184015"> <img src="https://app.codeship.com/projects/e9d9b3e0-88c5-0134-6167-4a60797e4d29/status?branch=master" alt="Codeship Status for hpi-epic/pricewars-marketplace"></a></td>
-<td>Stable</td>
-</tr>
-<tr>
-<td><a href="https://github.com/hpi-epic/pricewars-merchant">Merchant</a></td>
-<td>master</td>
-<td><a href="http://vm-mpws2016hp1-06.eaalab.hpi.uni-potsdam.de/">vm-mpws2016hp1-06.eaalab.hpi.uni-potsdam.de/</a></td>
-<td><a href="https://app.codeship.com/projects/184013"> <img src="https://app.codeship.com/projects/a7d3be30-88c5-0134-ea9c-5ad89f4798f3/status?branch=master" alt="Codeship Status for hpi-epic/pricewars-merchant"></a></td>
-<td>Stable</td>
-</tr>
-<tr>
-<td><a href="https://github.com/hpi-epic/pricewars-kafka-rest">Kafka RESTful API</a></td>
-<td>master</td>
-<td><a href="http://vm-mpws2016hp1-05.eaalab.hpi.uni-potsdam.de">vm-mpws2016hp1-05.eaalab.hpi.uni-potsdam.de</a></td>
-<td><a href="https://app.codeship.com/projects/186252"> <img src="https://app.codeship.com/projects/f59aa150-92f0-0134-8718-4a1d78af514c/status?branch=master" alt="Codeship Status for hpi-epic/pricewars-kafka-rest"></a></td>
-<td>Stable</td>
-</tr>
-</tbody></table>
+<p>| Repo | Branch | Deployment to | Status | Description | |— |— |— |— |— | |
+<a href="https://github.com/hpi-epic/pricewars-mgmt-ui">UI</a> | master |
+<a
+href="http://vm-mpws2016hp1-02.eaalab.hpi.uni-potsdam.de">vm-mpws2016hp1-02.eaalab.hpi.uni-potsdam.de</a>
+| <a href="https://app.codeship.com/projects/184009">
+rdoc-image:https://app.codeship.com/projects/d91a8460-88c2-0134-a385-7213830b2f8c/status?branch=master</a>
+| Stable | | <a
+href="https://github.com/hpi-epic/pricewars-consumer">Consumer</a> | master
+| <a
+href="http://vm-mpws2016hp1-01.eaalab.hpi.uni-potsdam.de">vm-mpws2016hp1-01.eaalab.hpi.uni-potsdam.de</a>
+| <a href="https://app.codeship.com/projects/180119">
+rdoc-image:https://app.codeship.com/projects/96f32950-7824-0134-c83e-5251019101b9/status?branch=master</a>
+| Stable | | <a
+href="https://github.com/hpi-epic/pricewars-producer">Producer</a> | master
+| <a
+href="http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de">vm-mpws2016hp1-03eaalab.hpi.uni-potsdam.de</a>
+| <a href="https://app.codeship.com/projects/184016">
+rdoc-image:https://app.codeship.com/projects/0328e450-88c6-0134-e3d6-7213830b2f8c/status?branch=master</a>
+| Stable | | <a
+href="https://github.com/hpi-epic/pricewars-marketplace">Marketplace</a> |
+master | <a
+href="http://vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de/marketplace/offers">vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de/marketplace</a>
+| <a href="https://app.codeship.com/projects/184015">
+rdoc-image:https://app.codeship.com/projects/e9d9b3e0-88c5-0134-6167-4a60797e4d29/status?branch=master</a>
+| Stable | | <a
+href="https://github.com/hpi-epic/pricewars-merchant">Merchant</a> | master
+| <a
+href="http://vm-mpws2016hp1-06.eaalab.hpi.uni-potsdam.de/">vm-mpws2016hp1-06.eaalab.hpi.uni-potsdam.de/</a>
+| <a href="https://app.codeship.com/projects/184013">
+rdoc-image:https://app.codeship.com/projects/a7d3be30-88c5-0134-ea9c-5ad89f4798f3/status?branch=master</a>
+| Stable | | <a
+href="https://github.com/hpi-epic/pricewars-kafka-rest">Kafka RESTful
+API</a> | master | <a
+href="http://vm-mpws2016hp1-05.eaalab.hpi.uni-potsdam.de">vm-mpws2016hp1-05.eaalab.hpi.uni-potsdam.de</a>
+| <a href="https://app.codeship.com/projects/186252">
+rdoc-image:https://app.codeship.com/projects/f59aa150-92f0-0134-8718-4a1d78af514c/status?branch=master</a>
+| Stable |</p>
 
-<h2>Requirements</h2>
+<h2 id="label-Requirements">Requirements</h2>
+<ul><li>
+<p>Ruby 2.3</p>
+</li><li>
+<p>Rails 4.2</p>
+</li></ul>
 
-<ul>
-<li>Ruby 2.3</li>
-<li>Rails 4.2</li>
-</ul>
-
-<h2>Folder Structure</h2>
+<h2 id="label-Folder+Structure">Folder Structure</h2>
 
 <pre class="code ruby"><code class="ruby">|-- app
 |   `-- controllers
@@ -157,23 +148,19 @@
 |   |-- pids
 |   |-- sessions
 |   `-- sockets
-`-- vendor
+`-- vendor</code></pre>
 
-</code></pre>
-
-<h2>Deployment</h2>
+<h2 id="label-Deployment">Deployment</h2>
 
 <p>Clone the repo with</p>
 
-<pre class="code ruby"><code class="ruby">git clone https://github.com/hpi-epic/pricewars-consumer
-</code></pre>
+<pre class="code ruby"><code class="ruby">git clone https://github.com/hpi-epic/pricewars-consumer</code></pre>
 
-<h3>Rails Backend</h3>
+<h3 id="label-Rails+Backend">Rails Backend</h3>
 
 <p>First, install dependencies</p>
 
-<pre class="code ruby"><code class="ruby">sudo apt-get install libgsl0-dev
-</code></pre>
+<pre class="code ruby"><code class="ruby">sudo apt-get install libgsl0-dev</code></pre>
 
 <p>and run</p>
 
@@ -184,31 +171,30 @@
 
 <pre class="code ruby"><code class="ruby">export PRICEWARS_MARKETPLACE_URL=&#39;http://vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de:8080/marketplace&#39;
 export PRICEWARS_PRODUCER_URL=&#39;http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de&#39;
-rails s -b 0.0.0.0
-</code></pre>
+rails s -b 0.0.0.0</code></pre>
 
-<p>where as the ENV var PRICEWARS_MARKETPLACE_URL and PRICEWARS_PRODUCER_URL point to the actual path of the marketplace and the producer.</p>
+<p>where as the ENV var PRICEWARS_MARKETPLACE_URL and PRICEWARS_PRODUCER_URL
+point to the actual path of the marketplace and the producer.</p>
 
-<p>If all worked out, see the results with _ <a href="http://localhost:3000">http://localhost:3000</a> _ .</p>
+<p>If all worked out, see the results with _ <a
+href="http://localhost:3000">localhost:3000</a> _ .</p>
 
-<h2>Documentation</h2>
+<h2 id="label-Documentation">Documentation</h2>
 
-<h3>API</h3>
+<h3 id="label-API">API</h3>
 
 <p><a href="https://hpi-epic.github.io/masterproject-pricewars/api/">Ref</a></p>
 
-<h3>Source Code</h3>
+<h3 id="label-Source+Code">Source Code</h3>
 
-<p>Detailed information regarding method and function usage and behavior can be found within the <a href="doc/index.html">doc/ directory</a> of this repository.</p>
+<p>Detailed information regarding method and function usage and behavior can
+be found within the <a href="doc/index.html">doc/ directory</a> of this
+repository.</p>
 
-<h3>ENV parameter</h3>
+<h3 id="label-ENV+parameter">ENV parameter</h3>
 
-<p>Currently, two ENV params are needed:</p>
-
-<ul>
-<li>PRICEWARS_PRODUCER_URL</li>
-<li>PRICEWARS_MARKETPLACE_URL</li>
-</ul>
+<p>Currently, two ENV params are needed: * PRICEWARS_PRODUCER_URL *
+PRICEWARS_MARKETPLACE_URL</p>
 
 <p>If they are not set, the deployed VM urls are automatically used.</p>
 
@@ -218,66 +204,140 @@ rails s -b 0.0.0.0
 <span class='id identifier rubyid_export'>export</span> <span class='const'>PRICEWARS_PRODUCER_URL</span><span class='op'>=</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de</span><span class='tstring_end'>&#39;</span></span>
 </code></pre>
 
-<h3>Concept</h3>
+<h3 id="label-Concept">Concept</h3>
 
-<p>The consumer is defined via behaviors which are implemented in <em>lib/buyingbehavior.rb</em>. All available behaviors are included with their default settings and description in <em>app/controllers/behavior_controller.rb</em> .</p>
+<p>The consumer is defined via behaviors which are implemented in
+<em>lib/buyingbehavior.rb</em>. All available behaviors are included with
+their default settings and description in
+<em>app/controllers/behavior_controller.rb</em> .</p>
 
-<h4>Consumer Behaviors</h4>
+<h4 id="label-Consumer+Behaviors">Consumer Behaviors</h4>
 
-<p>Via settings, the distribution across those available behaviors is defined as percentage. In the consumer logic then, each behavior is <a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/app/controllers/setting_controller.rb#L142">called and executed</a> dynamically based on the provided behavior method name based on their distribution.</p>
+<p>Via settings, the distribution across those available behaviors is defined
+as percentage. In the consumer logic then, each behavior is <a
+href="https://github.com/hpi-epic/pricewars-consumer/blob/master/app/controllers/setting_controller.rb#L142">called
+and executed</a> dynamically based on the provided behavior method name
+based on their distribution.</p>
 
-<h5>Existing new behaviors</h5>
+<h5 id="label-Existing+new+behaviors">Existing new behaviors</h5>
+<ul><li>
+<p>buy_first</p>
 
-<ul>
-<li>buy_first
-&gt; buying the first item out of the marketplace offer list</li>
-<li>buy_random
-&gt; buying a random item out of the marketplace offer list</li>
-<li>buy_cheap
-&gt; buying the cheapest item out of the marketplace offer list</li>
-<li>buy_n_cheap(n)
-&gt; buying the n-cheapest item out of the marketplace offer list</li>
-<li>buy_second_cheap
-&gt; buying the second cheapest item out of the marketplace offer list</li>
-<li>buy_third_cheap
-&gt; buying the third cheapest item out of the marketplace offer list</li>
-<li>buy_cheap_and_prime
-&gt; buying the cheapest item out of the marketplace offer list filtered by prime</li>
-<li>buy_expensive
-&gt; buying the most expensive item out of the marketplace offer list</li>
-<li>buy_cheapest_best_quality_with_prime
-&gt; buying the cheapest item with the best possible quality out of the marketplace offer list filtered by prime</li>
-<li>buy_cheapest_best_quality
-&gt; buying the cheapest item with the best possible quality out of the marketplace offer list</li>
-<li>buy_sigmoid_distribution_price
-&gt; buying items with sigmoid distribution around twice the producer price from the marketplace offer list</li>
-<li>buy_logit_coefficients
-&gt; buying items based on the provided logit coefficients from the marketplace offer list</li>
-</ul>
+<blockquote>
+<p>buying the first item out of the marketplace offer list</p>
+</blockquote>
+</li><li>
+<p>buy_random</p>
 
-<h5>Adding new behaviors</h5>
+<blockquote>
+<p>buying a random item out of the marketplace offer list</p>
+</blockquote>
+</li><li>
+<p>buy_cheap</p>
 
-<p>For adding a new buying behavior, one simple needs to add the buying logic as method in <em>lib/buyingbehavior.rb</em> starting with the prefix <em>buy_</em> returning the item (only one!), which is supposed to be bought.</p>
+<blockquote>
+<p>buying the cheapest item out of the marketplace offer list</p>
+</blockquote>
+</li><li>
+<p>buy_n_cheap(n)</p>
 
-<p>If wished, <em>validate_max_price()</em> can be used to validate whether the selected item full fills the settings (e.g. max price).</p>
+<blockquote>
+<p>buying the n-cheapest item out of the marketplace offer list</p>
+</blockquote>
+</li><li>
+<p>buy_second_cheap</p>
 
-<p>If the new behavior has individual settings, they can be accessed via <em>@behavior_settings</em>.</p>
+<blockquote>
+<p>buying the second cheapest item out of the marketplace offer list</p>
+</blockquote>
+</li><li>
+<p>buy_third_cheap</p>
 
-<p>All available product (ids) are included in <em>$products</em> and <em>$items</em> contains all offer items for one preselected product category.</p>
+<blockquote>
+<p>buying the third cheapest item out of the marketplace offer list</p>
+</blockquote>
+</li><li>
+<p>buy_cheap_and_prime</p>
 
-<p>Keep in mind to add the new behavior with its description, default settings and method name in the <em>app/controller/behavior_controller.rb</em> in the way that it will be included and listed in the default setting return value.</p>
+<blockquote>
+<p>buying the cheapest item out of the marketplace offer list filtered by
+prime</p>
+</blockquote>
+</li><li>
+<p>buy_expensive</p>
 
-<h4>Selection of one product &amp; its market situation</h4>
+<blockquote>
+<p>buying the most expensive item out of the marketplace offer list</p>
+</blockquote>
+</li><li>
+<p>buy_cheapest_best_quality_with_prime</p>
 
-<p>The current implementation supports an even distributed selection of items (random selection). Additionally, one may define product popularity via the consumer settings which is evaluated instead of a random distribution.</p>
+<blockquote>
+<p>buying the cheapest item with the best possible quality out of the
+marketplace offer list filtered by prime</p>
+</blockquote>
+</li><li>
+<p>buy_cheapest_best_quality</p>
 
-<p>The relative selection method can be defined in the <a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L25">initialize method of the buyingbehavior.rb</a> by either using <em>select_random_product</em> or  <em>select_based_on_product_popularity</em> (see comments).</p>
+<blockquote>
+<p>buying the cheapest item with the best possible quality out of the
+marketplace offer list</p>
+</blockquote>
+</li><li>
+<p>buy_sigmoid_distribution_price</p>
+
+<blockquote>
+<p>buying items with sigmoid distribution around twice the producer price from
+the marketplace offer list</p>
+</blockquote>
+</li><li>
+<p>buy_logit_coefficients</p>
+
+<blockquote>
+<p>buying items based on the provided logit coefficients from the marketplace
+offer list</p>
+</blockquote>
+</li></ul>
+
+<h5 id="label-Adding+new+behaviors">Adding new behaviors</h5>
+
+<p>For adding a new buying behavior, one simple needs to add the buying logic
+as method in <em>lib/buyingbehavior.rb</em> starting with the prefix
+<em>buy_</em> returning the item (only one!), which is supposed to be
+bought.</p>
+
+<p>If wished, <em>validate_max_price()</em> can be used to validate whether
+the selected item full fills the settings (e.g. max price).</p>
+
+<p>If the new behavior has individual settings, they can be accessed via
+<em>@behavior_settings</em>.</p>
+
+<p>All available product (ids) are included in <em>$products</em> and
+<em>$items</em> contains all offer items for one preselected product
+category.</p>
+
+<p>Keep in mind to add the new behavior with its description, default settings
+and method name in the <em>app/controller/behavior_controller.rb</em> in
+the way that it will be included and listed in the default setting return
+value.</p>
+
+<h4 id="label-Selection+of+one+product+-26+its+market+situation">Selection of one product &amp; its market situation</h4>
+
+<p>The current implementation supports an even distributed selection of items
+(random selection). Additionally, one may define product popularity via the
+consumer settings which is evaluated instead of a random distribution.</p>
+
+<p>The relative selection method can be defined in the <a
+href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L25">initialize
+method of the buyingbehavior.rb</a> by either using
+<em>select_random_product</em> or
+<em>select_based_on_product_popularity</em> (see comments).</p>
 </div></div>
 
       <div id="footer">
-  Generated on Tue Feb 28 22:43:23 2017 by
+  Generated on Wed Mar  1 11:44:43 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.8 (ruby-2.3.1).
+  0.9.8 (ruby-2.4.0).
 </div>
 
     </div>
