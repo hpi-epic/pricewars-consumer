@@ -95,12 +95,12 @@ class SettingController < BehaviorController
       $list_of_threads = []
 
       if $marketplace_url.nil? || $consumer_id.nil?
-        render(text: "invalid configuration: consumer_id or marketplace_url unknown", status: 404) && return
+        render(text: "invalid configuration: consumer_id or marketplace_url unknown", status: 417) && return
       end
       response = deregister_with_marketplace
-      render(text: "all process instances terminated", status: response.code) && return
+      render(text: "all process instances terminated", status: response.code)
     else
-      render(text: "no instance running", status: 200) && return
+      render(text: "no instance running", status: 200)
     end
   end
 
@@ -122,7 +122,7 @@ class SettingController < BehaviorController
   end
 
   def deregister_with_marketplace
-    url = $marketplace_url + "/consumer/" + $consumer_id
+    url = $marketplace_url + "/consumers/" + $consumer_id
     puts url if $debug
     response = HTTParty.delete(url,
                                body:    {}.to_json,
