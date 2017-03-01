@@ -197,7 +197,7 @@ class SettingController < BehaviorController
 
   def retrieve_and_build_product_popularity
     results = {}
-    $producer_details = HTTParty.get($producer_url + "/products")
+    $producer_details = HTTParty.get($producer_url + "/products?showDeleted=true")
     $unique_products = ($producer_details.map {|item| item["product_id"] }).uniq
     $unique_products.each do |product|
       results[product] = 100.0 / $unique_products.size
