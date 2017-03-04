@@ -1,6 +1,6 @@
 # Consumer
 
-This Ruby app implements the MVC pattern including continuous integration and deployment via Codeship. Please make sure tests are running before committing. HTML can be found in the _public/_ dir.
+This Ruby app implements the MVC pattern including continuous integration and deployment via Codeship. Please make sure tests are running before committing.
 
 We are using the [Github flow](https://guides.github.com/introduction/flow/) for contribution.
 
@@ -71,20 +71,12 @@ git clone https://github.com/hpi-epic/pricewars-consumer
 First, install dependencies
 
 ```
-sudo apt-get install libgsl0-dev
-```
-
-and run
-
-```
 bundle exec bundle install
 ```
 
 afterwards you may start the webserver
 
 ```
-export PRICEWARS_MARKETPLACE_URL='http://vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de:8080/marketplace'
-export PRICEWARS_PRODUCER_URL='http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de'
 rails s -b 0.0.0.0
 ```
 where as the ENV var PRICEWARS_MARKETPLACE_URL and PRICEWARS_PRODUCER_URL point to the actual path of the marketplace and the producer.
@@ -96,7 +88,7 @@ If all worked out, see the results with _ http://localhost:3000 _ .
 
 ### API
 
-[Ref](https://hpi-epic.github.io/masterproject-pricewars/api/)
+The reader will politely be referred to the swagger.io [API documentation](https://hpi-epic.github.io/masterproject-pricewars/api/).
 
 ### Source Code
 
@@ -117,52 +109,79 @@ export PRICEWARS_MARKETPLACE_URL='http://vm-mpws2016hp1-04.eaalab.hpi.uni-potsda
 export PRICEWARS_PRODUCER_URL='http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de'
 ```
 
-
 ### Concept
 
-The consumer is defined via behaviors which are implemented in *lib/buyingbehavior.rb*. All available behaviors are included with their default settings and description in *app/controllers/behavior_controller.rb* .
+The consumer is defined via behaviors which are implemented in *lib/buyingbehavior.rb*. All available behaviors are included and exposed with their default settings and description in *app/controllers/behavior_controller.rb* .
 
 #### Consumer Behaviors
 
-Via settings, the distribution across those available behaviors is defined as percentage. In the consumer logic then, each behavior is [called and executed](https://github.com/hpi-epic/pricewars-consumer/blob/master/app/controllers/setting_controller.rb#L142) dynamically based on the provided behavior method name based on their distribution.
+Via settings, the distribution across those available behaviors is defined as percentage. In the consumer logic then, each behavior is [called and executed](https://github.com/hpi-epic/pricewars-consumer/blob/master/app/controllers/setting_controller.rb#L142) dynamically based on the provided behavior method name and its distribution.
 
 ##### Existing new behaviors
 
-* buy_first
+* [buy_first](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L29)
+
 > buying the first item out of the marketplace offer list
-* buy_random
+
+* [buy_random](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L33)
+
 > buying a random item out of the marketplace offer list
-* buy_cheap
+
+* [buy_cheap](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L37)
+
 > buying the cheapest item out of the marketplace offer list
-* buy_n_cheap(n)
+
+* [buy_n_cheap(n)](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L41)
+
 > buying the n-cheapest item out of the marketplace offer list
-* buy_second_cheap
+
+* [buy_second_cheap](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L50)
+
 > buying the second cheapest item out of the marketplace offer list
-* buy_third_cheap
+
+* [buy_third_cheap](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L54)
+
 > buying the third cheapest item out of the marketplace offer list
-* buy_cheap_and_prime
+
+* [buy_cheap_and_prime](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L58)
+
 > buying the cheapest item out of the marketplace offer list filtered by prime
-* buy_expensive
+
+* [buy_expensive](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L62)
+
 > buying the most expensive item out of the marketplace offer list
-* buy_cheapest_best_quality_with_prime
-> buying the cheapest item with the best possible quality out of the marketplace offer list filtered by prime
-* buy_cheapest_best_quality
+
+* [buy_cheapest_best_quality_with_prime](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L66)
+
+> buying the cheapest item with the best possible quality out of
+the marketplace offer list filtered by prime
+
+* [buy_cheapest_best_quality](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L71)
+
 > buying the cheapest item with the best possible quality out of the marketplace offer list
-* buy_sigmoid_distribution_price
+
+* [buy_sigmoid_distribution_price](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L77)
+
 > buying items with sigmoid distribution around twice the producer price from the marketplace offer list
-* buy_logit_coefficients
+
+* [buy_logit_coefficients](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L99)
+
 > buying items based on the provided logit coefficients from the marketplace offer list
 
 
 ##### Adding new behaviors
 
-For adding a new buying behavior, one simple needs to add the buying logic as method in *lib/buyingbehavior.rb* starting with the prefix *buy_* returning the item (only one!), which is supposed to be bought.
+For adding a new buying behavior, one simply needs to add the buying logic as method in *lib/buyingbehavior.rb* starting with the prefix *buy_* returning the item (only one!), which is supposed to be bought.
 
-If wished, *validate_max_price()* can be used to validate whether the selected item full fills the settings (e.g. max price).
+If wished, *validate_max_price()* can be used to validate whether the selected item comply the settings (e.g. max price).
 
 If the new behavior has individual settings, they can be accessed via *@behavior_settings*.
 
-All available product (ids) are included in *$products* and *$items* contains all offer items for one preselected product category.
+All available product (ids) are included in *$products* and *$items* contains all offer items for one preselected product category. This preselection is done during the [initialization](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L26) and can be realized either by selecting a random product or by selecting a product based on the provided product popularity via settings.
+
+```
+# OPTIONS: select_random_product | select_based_on_product_popularity
+```
 
 Keep in mind to add the new behavior with its description, default settings and method name in the *app/controller/behavior_controller.rb* in the way that it will be included and listed in the default setting return value.
 
