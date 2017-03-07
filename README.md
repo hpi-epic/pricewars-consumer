@@ -190,3 +190,23 @@ Keep in mind to add the new behavior with its description, default settings and 
 The current implementation supports an even distributed selection of items (random selection). Additionally, one may define product popularity via the consumer settings which is evaluated instead of a random distribution.
 
 The relative selection method can be defined in the [initialize method of the buyingbehavior.rb](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L25) by either using *select_random_product* or  *select_based_on_product_popularity* (see comments).
+
+### Host entries
+
+When working on the provided VMs make sure to including DNS routing in the local /etc/hosts file. We experienced a lot of issues with TCP connection timeouts if those are not set. Also within the CI & CD pipeline in the way that github was not reachable due to connection timeouts.
+Different resolver were tried out, however, the only working solution is to expand the host file,
+
+```
+/etc/hosts
+127.0.0.1       localhost
+127.0.1.1       vm-mpws2016hp1-01.eaalab.hpi.uni-potsdam.de     vm-mpws2016hp1-01
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+
+# Reducing DNS lookups by assigning statically marketplace host
+192.168.31.90 vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de
+192.168.31.89 vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de
+```
