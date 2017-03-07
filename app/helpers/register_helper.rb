@@ -16,7 +16,7 @@ module RegisterHelper
     data = JSON.parse(response.body)
     $consumer_token = data["consumer_token"]
     $consumer_id = data["consumer_id"]
-    puts "assigning new token #{$consumer_token}" if $debug
+    puts "assigning new token #{$consumer_token} with #{response.code}" if $debug
     $consumer_id
   end
 

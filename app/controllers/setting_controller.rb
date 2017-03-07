@@ -127,8 +127,9 @@ class SettingController < BehaviorController
       behavior_weights = {}
       $behaviors_settings.each {|behavior| behavior_weights[behavior[:name]] = behavior[:amount] }
       selected_behavior = choose_weighted(behavior_weights)
+      puts "selected_behavior: #{selected_behavior}" if $debug
       behavior = ($behaviors_settings.select {|b| b[:name] == selected_behavior }).first
-
+      puts "actual behavior: #{behavior[:name]}" if $debug
       item = BuyingBehavior.new(items, expand_behavior_settings(behavior[:settings])).send("buy_" + behavior[:name]) # get item based on buying behavior
       if item.nil?
         puts "no item selected by BuyingBehavior with #{behavior[:name]}, sleeping #{$timeout_if_no_offers_available}s" if $debug

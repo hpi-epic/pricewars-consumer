@@ -18,12 +18,13 @@ class BuyingBehavior
   def initialize(items, behavior_settings)
     $products           = items.map {|item| item["product_id"] }
     $unfiltered_items   = items
+    @behavior_settings  = behavior_settings
 
     # uncomment to select a random product for evaluation rather based on product popularity
     # OPTIONS: select_random_product | select_based_on_product_popularity
-    @behavior_settings  = behavior_settings
-
     select_based_on_product_popularity
+
+    puts "available items in buyingbehavior: #{$items.size}" if $debug
   end
 
   def buy_first
