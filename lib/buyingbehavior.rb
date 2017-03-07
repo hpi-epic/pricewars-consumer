@@ -165,6 +165,7 @@ class BuyingBehavior
   def validate_max_price(item)
     return nil if item.nil? || item.blank?
     if item["price"] > @behavior_settings["max_buying_price"]
+      puts "item price (#{item["price"]}€) is above max_buying_price (#{@behavior_settings["max_buying_price"]}€), reject" if $debug
       nil
     else
       item
