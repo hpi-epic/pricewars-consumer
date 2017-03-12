@@ -116,8 +116,7 @@ class SettingController < BehaviorController
 
   def get_available_items
     url = $marketplace_url + "/offers"
-    puts url if $debug
-    response = HTTParty.get(url)
+    response = http_get_on(url, "marketplace")
     puts response.code if $debug
     JSON.parse(response.body)
   end
@@ -179,12 +178,26 @@ class SettingController < BehaviorController
 
   def retrieve_and_build_product_popularity
     results = {}
-    $producer_details = HTTParty.get($producer_url + "/products?showDeleted=true")
+
+    $producer_details = http_get_on($producer_url + "/products?showDeleted=true", "producer")
     $unique_products = ($producer_details.map {|item| item["product_id"] }).uniq
     $unique_products.each do |product|
       results[product] = 100.0 / $unique_products.size
     end
+
     results
+  end
+
+  def http_get_on(url, target)
+    puts url if $debug
+    begin
+      result = HTTParty.get(url)
+    rescue => e
+      puts "Critical: HTTP GET on #{target} resulted in #{e}, lets wait 10s"
+      sleep(10)
+      result = http_get_on(url)
+    end
+    result
   end
 
   def normalize_product_popularity

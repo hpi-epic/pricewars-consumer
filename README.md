@@ -185,6 +185,10 @@ All available product (ids) are included in *$products* and *$items* contains al
 
 Keep in mind to add the new behavior with its description, default settings and method name in the *app/controller/behavior_controller.rb* in the way that it will be included and listed in the default setting return value.
 
+##### Adding new features for logit behaviors
+
+For adding a new features for the logit behavior, one simply needs to extend the logic in *lib\features.rb*. In particular, one may implement a new method and include it in the switch case starting in L9.
+
 #### Selection of one product & its market situation
 
 The current implementation supports an even distributed selection of items (random selection). Additionally, one may define product popularity via the consumer settings which is evaluated instead of a random distribution.
