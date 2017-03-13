@@ -139,9 +139,6 @@
 |   |-- initializers
 |   `-- locales
 |-- db
-|-- doc
-|   |-- css
-|   `-- js
 |-- lib
 |   |-- assets
 |   |-- capistrano
@@ -149,6 +146,9 @@
 |   `-- tasks
 |-- log
 |-- public
+|   `-- doc
+|      |-- css
+|      `-- js
 |-- spec
 |   `-- controllers
 |-- tmp
@@ -192,7 +192,7 @@
 
 <h3>Source Code</h3>
 
-<p>Detailed information regarding method and function usage and behavior can be found within the <a href="doc/index.html">doc/ directory</a> of this repository.</p>
+<p>Detailed information regarding method and function usage and behavior can be found within the <a href="public/doc/index.html">public/doc/ directory</a> of this repository or within the deployed service by <a href="http://vm-mpws2016hp1-01.eaalab.hpi.uni-potsdam.de/doc/index.html">clicking here</a>.</p>
 
 <h3>ENV parameter</h3>
 
@@ -318,6 +318,19 @@ the marketplace offer list filtered by prime</p>
 <p>buying items based on the provided logit coefficients from the marketplace offer list</p>
 </blockquote>
 
+<h5>Sigmoid distribution behavior in detail</h5>
+
+<p>The <a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L77">sigmoid distribution</a> behavior realizes a sigmoid(-x) distribution of consumer purchases over <a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L88">twice the producer price</a> which is used as mean. The offer which is highest probability is selected to be bought.</p>
+
+<h5>Logistic regression behavior in detail</h5>
+
+<p>The <a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L99">logistic regression</a> behavior calculates for each offer the buying probability based on the feature coefficients provided in the behavior settings. The offer with the highest probability of selling will be actually bought by the consumer.
+The features and their coefficients can be altered within runtime and will then be applied to the next calculation iteration taking place. Make sure the hashmap of features and their coefficients is also implemented as available features.</p>
+
+<h5>Adding new features for logit behaviors</h5>
+
+<p>For adding a new feature for the logit behavior, one simply needs to extend the logic in <em>lib\features.rb</em>. In particular, one may implement a new method and include it in the switch case starting in L9.</p>
+
 <h5>Adding new behaviors</h5>
 
 <p>For adding a new buying behavior, one simply needs to add the buying logic as method in <em>lib/buyingbehavior.rb</em> starting with the prefix <em>buy_</em> returning the item (only one!), which is supposed to be bought.</p>
@@ -332,10 +345,6 @@ the marketplace offer list filtered by prime</p>
 </span></code></pre>
 
 <p>Keep in mind to add the new behavior with its description, default settings and method name in the <em>app/controller/behavior_controller.rb</em> in the way that it will be included and listed in the default setting return value.</p>
-
-<h5>Adding new features for logit behaviors</h5>
-
-<p>For adding a new features for the logit behavior, one simply needs to extend the logic in <em>lib\features.rb</em>. In particular, one may implement a new method and include it in the switch case starting in L9.</p>
 
 <h4>Selection of one product &amp; its market situation</h4>
 
@@ -361,10 +370,148 @@ ff02::2 ip6-allrouters
 192.168.31.90 vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de
 192.168.31.89 vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de
 </code></pre>
+
+<h3>Sample Configuration</h3>
+
+<p>Like described in the <a href="https://hpi-epic.github.io/masterproject-pricewars/api/">API documentation</a>, a sample setting json for the consumer looks like the following:</p>
+
+<blockquote>
+<p>HTTP GET <a href="http://localhost:3000/setting/">http://localhost:3000/setting/</a></p>
+</blockquote>
+
+<pre class="code ruby"><code class="ruby"><span class='lbrace'>{</span>
+   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>consumer_per_minute</span><span class='label_end'>&quot;:</span><span class='float'>100.0</span><span class='comma'>,</span>
+   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>amount_of_consumers</span><span class='label_end'>&quot;:</span><span class='int'>1</span><span class='comma'>,</span>
+   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>probability_of_buy</span><span class='label_end'>&quot;:</span><span class='int'>100</span><span class='comma'>,</span>
+   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>min_buying_amount</span><span class='label_end'>&quot;:</span><span class='int'>1</span><span class='comma'>,</span>
+   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>max_buying_amount</span><span class='label_end'>&quot;:</span><span class='int'>1</span><span class='comma'>,</span>
+   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>min_wait</span><span class='label_end'>&quot;:</span><span class='float'>0.1</span><span class='comma'>,</span>
+   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>max_wait</span><span class='label_end'>&quot;:</span><span class='int'>2</span><span class='comma'>,</span>
+   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>behaviors</span><span class='label_end'>&quot;:</span><span class='lbracket'>[</span>
+      <span class='lbrace'>{</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>first</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>description</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>I am buying the first possible item</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings</span><span class='label_end'>&quot;:</span><span class='lbrace'>{</span>
+
+         <span class='rbrace'>}</span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings_description</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Behavior settings not necessary</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>amount</span><span class='label_end'>&quot;:</span><span class='int'>9</span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>random</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>description</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>I am buying random items</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings</span><span class='label_end'>&quot;:</span><span class='lbrace'>{</span>
+
+         <span class='rbrace'>}</span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings_description</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Behavior settings not necessary</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>amount</span><span class='label_end'>&quot;:</span><span class='int'>9</span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>cheap</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>description</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>I am buying the cheapest item</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings</span><span class='label_end'>&quot;:</span><span class='lbrace'>{</span>
+
+         <span class='rbrace'>}</span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings_description</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Behavior settings not necessary</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>amount</span><span class='label_end'>&quot;:</span><span class='int'>9</span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>expensive</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>description</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>I am buying the most expensive item</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings</span><span class='label_end'>&quot;:</span><span class='lbrace'>{</span>
+
+         <span class='rbrace'>}</span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings_description</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Behavior settings not necessary</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>amount</span><span class='label_end'>&quot;:</span><span class='int'>9</span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>cheap_and_prime</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>description</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>I am buying the cheapest item which supports prime shipping</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings</span><span class='label_end'>&quot;:</span><span class='lbrace'>{</span>
+
+         <span class='rbrace'>}</span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings_description</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Behavior settings not necessary</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>amount</span><span class='label_end'>&quot;:</span><span class='int'>9</span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>cheapest_best_quality</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>description</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>I am buying the cheapest best quality available.</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings</span><span class='label_end'>&quot;:</span><span class='lbrace'>{</span>
+
+         <span class='rbrace'>}</span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings_description</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Behavior settings not necessary</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>amount</span><span class='label_end'>&quot;:</span><span class='int'>9</span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>cheapest_best_quality_with_prime</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>description</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>I am buying the cheapest best quality available which supports prime.</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings</span><span class='label_end'>&quot;:</span><span class='lbrace'>{</span>
+
+         <span class='rbrace'>}</span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings_description</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Behavior settings not necessary</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>amount</span><span class='label_end'>&quot;:</span><span class='int'>9</span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>second_cheap</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>description</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>I am buying the second cheapest item</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings</span><span class='label_end'>&quot;:</span><span class='lbrace'>{</span>
+
+         <span class='rbrace'>}</span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings_description</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Behavior settings not necessary</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>amount</span><span class='label_end'>&quot;:</span><span class='int'>9</span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>third_cheap</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>description</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>I am buying the third cheapest item</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings</span><span class='label_end'>&quot;:</span><span class='lbrace'>{</span>
+
+         <span class='rbrace'>}</span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings_description</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Behavior settings not necessary</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>amount</span><span class='label_end'>&quot;:</span><span class='int'>9</span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>sigmoid_distribution_price</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>description</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>I am with sigmoid distribution on the price regarding the producer prices</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings</span><span class='label_end'>&quot;:</span><span class='lbrace'>{</span>
+
+         <span class='rbrace'>}</span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings_description</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Behavior settings not necessary</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>amount</span><span class='label_end'>&quot;:</span><span class='int'>9</span>
+      <span class='rbrace'>}</span><span class='comma'>,</span>
+      <span class='lbrace'>{</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>logit_coefficients</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>description</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>I am with logit coefficients</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings</span><span class='label_end'>&quot;:</span><span class='lbrace'>{</span>
+            <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>coefficients</span><span class='label_end'>&quot;:</span><span class='lbrace'>{</span>
+               <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>intercept</span><span class='label_end'>&quot;:</span><span class='op'>-</span><span class='float'>6.6177961</span><span class='comma'>,</span>
+               <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>price_rank</span><span class='label_end'>&quot;:</span><span class='float'>0.2083944</span><span class='comma'>,</span>
+               <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>amount_of_all_competitors</span><span class='label_end'>&quot;:</span><span class='float'>0.253481</span><span class='comma'>,</span>
+               <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>average_price_on_market</span><span class='label_end'>&quot;:</span><span class='op'>-</span><span class='float'>0.0079326</span><span class='comma'>,</span>
+               <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>quality_rank</span><span class='label_end'>&quot;:</span><span class='op'>-</span><span class='float'>0.1835972</span>
+            <span class='rbrace'>}</span>
+         <span class='rbrace'>}</span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings_description</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Key Value map for Feature and their coeffient</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+         <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>amount</span><span class='label_end'>&quot;:</span><span class='int'>9</span>
+      <span class='rbrace'>}</span>
+   <span class='rbracket'>]</span><span class='comma'>,</span>
+   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>timeout_if_no_offers_available</span><span class='label_end'>&quot;:</span><span class='int'>2</span><span class='comma'>,</span>
+   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>timeout_if_too_many_requests</span><span class='label_end'>&quot;:</span><span class='int'>30</span><span class='comma'>,</span>
+   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>max_buying_price</span><span class='label_end'>&quot;:</span><span class='int'>80</span><span class='comma'>,</span>
+   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>debug</span><span class='label_end'>&quot;:</span><span class='kw'>false</span><span class='comma'>,</span>
+   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>producer_url</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>product_popularity</span><span class='label_end'>&quot;:</span><span class='lbrace'>{</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>1</span><span class='label_end'>&quot;:</span><span class='float'>25.0</span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>2</span><span class='label_end'>&quot;:</span><span class='float'>25.0</span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>3</span><span class='label_end'>&quot;:</span><span class='float'>25.0</span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>4</span><span class='label_end'>&quot;:</span><span class='float'>25.0</span>
+   <span class='rbrace'>}</span><span class='comma'>,</span>
+   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>marketplace_url</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>http://vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de:8080/marketplace</span><span class='tstring_end'>&quot;</span></span>
+<span class='rbrace'>}</span>
+</code></pre>
 </div></div>
 
       <div id="footer">
-  Generated on Mon Mar 13 16:03:28 2017 by
+  Generated on Mon Mar 13 17:12:02 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.8 (ruby-2.3.1).
 </div>
