@@ -101,6 +101,7 @@ class BuyingBehavior
     theta             = @behavior_settings["coefficients"].map {|_key, value| value }
     highest_prob_item = {}
     highest_prob      = 0
+    probs             = []
 
     $items.each do |item|
       # puts "eval #{item}"
@@ -117,9 +118,23 @@ class BuyingBehavior
       # glm = Statsample::GLM.compute data_set, :y, :logistic, {constant: 1, algorithm: :mle}
 
       # puts "item #{item["uid"]} has prob of #{prob}%"
-      if prob > highest_prob
-        highest_prob      = prob
-        highest_prob_item = item
+      #if prob > highest_prob
+      #  highest_prob      = prob
+      #  highest_prob_item = item
+      #end
+      probs.push(prob)
+    end
+
+    sumProbs = probs.inject(:+)
+    return nil if sumProbs == 0
+    normalized_probs = probs.map{|p| p / sumProbs}
+    r = Random.rand()
+    currentSum = 0
+    for i in (0..normalized_probs.length-1)
+      currentSum = currentSum + normalized_probs[i]
+      if r <= currentSum then
+        highest_prob_item = items[i]
+        break
       end
     end
     # puts "highest item is #{highest_prob_item["uid"]} with #{highest_prob}%"
