@@ -1,18 +1,10 @@
 require "pp"
 require "buyingbehavior"
-require "net/http"
-# require 'resolv'
-require "resolv-replace"
 require "behavior_controller"
 
 class SettingController < BehaviorController
-  include HTTParty
   include RegisterHelper
-
-  persistent_connection_adapter name:         "Marketplace",
-                                pool_size:    300,
-                                idle_timeout: 10,
-                                keep_alive:   30
+  include PartyHelper
 
   def init(params, request)
     $min_buying_amount              = params.key?(:min_buying_amount)              ? params[:min_buying_amount]              : 1
@@ -116,7 +108,9 @@ class SettingController < BehaviorController
 
   def get_available_items
     url = $marketplace_url + "/offers"
-    response = http_get_on(url, "marketplace")
+    begin
+      response = http_get_on(url)
+    end while response.nil?
     puts response.code if $debug
     JSON.parse(response.body)
   end
@@ -153,16 +147,19 @@ class SettingController < BehaviorController
   def execute(item, behavior)
     url = $marketplace_url + "/offers/" + item["offer_id"].to_s + "/buy"
     puts "#{url} for #{behavior} with quality #{item['quality']}" if $debug
-    response = HTTParty.post(url,
-                             body:    {price:       item["price"],
-                                       amount:      rand($min_buying_amount..$max_buying_amount),
-                                       consumer_id: $consumer_id,
-                                       prime:       item["prime"],
-                                       behavior:    behavior
-                                      }.to_json,
-                             headers: {"Content-Type"  => "application/json",
-                                       "Authorization" => "Token #{$consumer_token}"
-                                      })
+
+    body = {  price:       item["price"],
+              amount:      rand($min_buying_amount..$max_buying_amount),
+              consumer_id: $consumer_id,
+              prime:       item["prime"],
+              behavior:    behavior
+             }.to_json
+    header = {"Content-Type"  => "application/json",
+              "Authorization" => "Token #{$consumer_token}"}
+    begin
+      response = http_post_on(url, header, body)
+    end while response.nil?
+
     puts response.code if $debug
     response.code
   end
@@ -179,25 +176,17 @@ class SettingController < BehaviorController
   def retrieve_and_build_product_popularity
     results = {}
 
-    $producer_details = http_get_on($producer_url + "/products?showDeleted=true", "producer")
+    begin
+      response = http_get_on($producer_url + "/products?showDeleted=true")
+    end while response.nil?
+
+    $producer_details = response
     $unique_products = ($producer_details.map {|item| item["product_id"] }).uniq
     $unique_products.each do |product|
       results[product] = 100.0 / $unique_products.size
     end
 
     results
-  end
-
-  def http_get_on(url, target)
-    puts url if $debug
-    begin
-      result = HTTParty.get(url)
-    rescue => e
-      puts "Critical: HTTP GET on #{target} resulted in #{e}, lets wait 10s"
-      sleep(10)
-      result = http_get_on(url)
-    end
-    result
   end
 
   def normalize_product_popularity

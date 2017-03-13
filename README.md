@@ -350,7 +350,7 @@ Like described in the [API documentation](https://hpi-epic.github.io/masterproje
    "timeout_if_no_offers_available":2,
    "timeout_if_too_many_requests":30,
    "max_buying_price":80,
-   "debug":false,
+   "debug":true,
    "producer_url":"http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de",
    "product_popularity":{
       "1":25.0,
