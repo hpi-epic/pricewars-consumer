@@ -59,7 +59,7 @@
 
       <div id="content"><div id='filecontents'><h1>Consumer</h1>
 
-<p>This Ruby app implements the MVC pattern including continuous integration and deployment via Codeship. Please make sure tests are running before committing. HTML can be found in the <em>public/</em> dir.</p>
+<p>This Ruby app implements the MVC pattern including continuous integration and deployment via Codeship. Please make sure tests are running before committing.</p>
 
 <p>We are using the <a href="https://guides.github.com/introduction/flow/">Github flow</a> for contribution.</p>
 
@@ -172,19 +172,12 @@
 
 <p>First, install dependencies</p>
 
-<pre class="code ruby"><code class="ruby">sudo apt-get install libgsl0-dev
-</code></pre>
-
-<p>and run</p>
-
 <pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_install'>install</span>
 </code></pre>
 
 <p>afterwards you may start the webserver</p>
 
-<pre class="code ruby"><code class="ruby">export PRICEWARS_MARKETPLACE_URL=&#39;http://vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de:8080/marketplace&#39;
-export PRICEWARS_PRODUCER_URL=&#39;http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de&#39;
-rails s -b 0.0.0.0
+<pre class="code ruby"><code class="ruby">rails s -b 0.0.0.0
 </code></pre>
 
 <p>where as the ENV var PRICEWARS_MARKETPLACE_URL and PRICEWARS_PRODUCER_URL point to the actual path of the marketplace and the producer.</p>
@@ -195,7 +188,7 @@ rails s -b 0.0.0.0
 
 <h3>API</h3>
 
-<p><a href="https://hpi-epic.github.io/masterproject-pricewars/api/">Ref</a></p>
+<p>The reader will politely be referred to the swagger.io <a href="https://hpi-epic.github.io/masterproject-pricewars/api/">API documentation</a>.</p>
 
 <h3>Source Code</h3>
 
@@ -220,62 +213,158 @@ rails s -b 0.0.0.0
 
 <h3>Concept</h3>
 
-<p>The consumer is defined via behaviors which are implemented in <em>lib/buyingbehavior.rb</em>. All available behaviors are included with their default settings and description in <em>app/controllers/behavior_controller.rb</em> .</p>
+<p>The consumer is defined via behaviors which are implemented in <em>lib/buyingbehavior.rb</em>. All available behaviors are included and exposed with their default settings and description in <em>app/controllers/behavior_controller.rb</em> .</p>
 
 <h4>Consumer Behaviors</h4>
 
-<p>Via settings, the distribution across those available behaviors is defined as percentage. In the consumer logic then, each behavior is <a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/app/controllers/setting_controller.rb#L142">called and executed</a> dynamically based on the provided behavior method name based on their distribution.</p>
+<p>Via settings, the distribution across those available behaviors is defined as percentage. In the consumer logic then, each behavior is <a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/app/controllers/setting_controller.rb#L142">called and executed</a> dynamically based on the provided behavior method name and its distribution.</p>
 
 <h5>Existing new behaviors</h5>
 
 <ul>
-<li>buy_first
-&gt; buying the first item out of the marketplace offer list</li>
-<li>buy_random
-&gt; buying a random item out of the marketplace offer list</li>
-<li>buy_cheap
-&gt; buying the cheapest item out of the marketplace offer list</li>
-<li>buy_n_cheap(n)
-&gt; buying the n-cheapest item out of the marketplace offer list</li>
-<li>buy_second_cheap
-&gt; buying the second cheapest item out of the marketplace offer list</li>
-<li>buy_third_cheap
-&gt; buying the third cheapest item out of the marketplace offer list</li>
-<li>buy_cheap_and_prime
-&gt; buying the cheapest item out of the marketplace offer list filtered by prime</li>
-<li>buy_expensive
-&gt; buying the most expensive item out of the marketplace offer list</li>
-<li>buy_cheapest_best_quality_with_prime
-&gt; buying the cheapest item with the best possible quality out of the marketplace offer list filtered by prime</li>
-<li>buy_cheapest_best_quality
-&gt; buying the cheapest item with the best possible quality out of the marketplace offer list</li>
-<li>buy_sigmoid_distribution_price
-&gt; buying items with sigmoid distribution around twice the producer price from the marketplace offer list</li>
-<li>buy_logit_coefficients
-&gt; buying items based on the provided logit coefficients from the marketplace offer list</li>
+<li><a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L29">buy_first</a></li>
 </ul>
+
+<blockquote>
+<p>buying the first item out of the marketplace offer list</p>
+</blockquote>
+
+<ul>
+<li><a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L33">buy_random</a></li>
+</ul>
+
+<blockquote>
+<p>buying a random item out of the marketplace offer list</p>
+</blockquote>
+
+<ul>
+<li><a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L37">buy_cheap</a></li>
+</ul>
+
+<blockquote>
+<p>buying the cheapest item out of the marketplace offer list</p>
+</blockquote>
+
+<ul>
+<li><a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L41">buy_n_cheap(n)</a></li>
+</ul>
+
+<blockquote>
+<p>buying the n-cheapest item out of the marketplace offer list</p>
+</blockquote>
+
+<ul>
+<li><a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L50">buy_second_cheap</a></li>
+</ul>
+
+<blockquote>
+<p>buying the second cheapest item out of the marketplace offer list</p>
+</blockquote>
+
+<ul>
+<li><a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L54">buy_third_cheap</a></li>
+</ul>
+
+<blockquote>
+<p>buying the third cheapest item out of the marketplace offer list</p>
+</blockquote>
+
+<ul>
+<li><a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L58">buy_cheap_and_prime</a></li>
+</ul>
+
+<blockquote>
+<p>buying the cheapest item out of the marketplace offer list filtered by prime</p>
+</blockquote>
+
+<ul>
+<li><a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L62">buy_expensive</a></li>
+</ul>
+
+<blockquote>
+<p>buying the most expensive item out of the marketplace offer list</p>
+</blockquote>
+
+<ul>
+<li><a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L66">buy_cheapest_best_quality_with_prime</a></li>
+</ul>
+
+<blockquote>
+<p>buying the cheapest item with the best possible quality out of
+the marketplace offer list filtered by prime</p>
+</blockquote>
+
+<ul>
+<li><a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L71">buy_cheapest_best_quality</a></li>
+</ul>
+
+<blockquote>
+<p>buying the cheapest item with the best possible quality out of the marketplace offer list</p>
+</blockquote>
+
+<ul>
+<li><a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L77">buy_sigmoid_distribution_price</a></li>
+</ul>
+
+<blockquote>
+<p>buying items with sigmoid distribution around twice the producer price from the marketplace offer list</p>
+</blockquote>
+
+<ul>
+<li><a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L99">buy_logit_coefficients</a></li>
+</ul>
+
+<blockquote>
+<p>buying items based on the provided logit coefficients from the marketplace offer list</p>
+</blockquote>
 
 <h5>Adding new behaviors</h5>
 
-<p>For adding a new buying behavior, one simple needs to add the buying logic as method in <em>lib/buyingbehavior.rb</em> starting with the prefix <em>buy_</em> returning the item (only one!), which is supposed to be bought.</p>
+<p>For adding a new buying behavior, one simply needs to add the buying logic as method in <em>lib/buyingbehavior.rb</em> starting with the prefix <em>buy_</em> returning the item (only one!), which is supposed to be bought.</p>
 
-<p>If wished, <em>validate_max_price()</em> can be used to validate whether the selected item full fills the settings (e.g. max price).</p>
+<p>If wished, <em>validate_max_price()</em> can be used to validate whether the selected item comply the settings (e.g. max price).</p>
 
 <p>If the new behavior has individual settings, they can be accessed via <em>@behavior_settings</em>.</p>
 
-<p>All available product (ids) are included in <em>$products</em> and <em>$items</em> contains all offer items for one preselected product category.</p>
+<p>All available product (ids) are included in <em>$products</em> and <em>$items</em> contains all offer items for one preselected product category. This preselection is done during the <a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L26">initialization</a> and can be realized either by selecting a random product or by selecting a product based on the provided product popularity via settings.</p>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># OPTIONS: select_random_product | select_based_on_product_popularity
+</span></code></pre>
 
 <p>Keep in mind to add the new behavior with its description, default settings and method name in the <em>app/controller/behavior_controller.rb</em> in the way that it will be included and listed in the default setting return value.</p>
+
+<h5>Adding new features for logit behaviors</h5>
+
+<p>For adding a new features for the logit behavior, one simply needs to extend the logic in <em>lib\features.rb</em>. In particular, one may implement a new method and include it in the switch case starting in L9.</p>
 
 <h4>Selection of one product &amp; its market situation</h4>
 
 <p>The current implementation supports an even distributed selection of items (random selection). Additionally, one may define product popularity via the consumer settings which is evaluated instead of a random distribution.</p>
 
 <p>The relative selection method can be defined in the <a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L25">initialize method of the buyingbehavior.rb</a> by either using <em>select_random_product</em> or  <em>select_based_on_product_popularity</em> (see comments).</p>
+
+<h3>Host entries</h3>
+
+<p>When working on the provided VMs make sure to including DNS routing in the local /etc/hosts file. We experienced a lot of issues with TCP connection timeouts if those are not set. Also within the CI &amp; CD pipeline in the way that github was not reachable due to connection timeouts.
+Different resolver were tried out, however, the only working solution is to expand the host file,</p>
+
+<pre class="code ruby"><code class="ruby">/etc/hosts
+127.0.0.1       localhost
+127.0.1.1       vm-mpws2016hp1-01.eaalab.hpi.uni-potsdam.de     vm-mpws2016hp1-01
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+
+# Reducing DNS lookups by assigning statically marketplace host
+192.168.31.90 vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de
+192.168.31.89 vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de
+</code></pre>
 </div></div>
 
       <div id="footer">
-  Generated on Sat Mar  4 12:08:21 2017 by
+  Generated on Mon Mar 13 16:03:28 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.8 (ruby-2.3.1).
 </div>

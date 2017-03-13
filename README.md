@@ -36,9 +36,6 @@ The meta repository containing general information can be found [here](https://g
 |   |-- initializers
 |   `-- locales
 |-- db
-|-- doc
-|   |-- css
-|   `-- js
 |-- lib
 |   |-- assets
 |   |-- capistrano
@@ -46,6 +43,9 @@ The meta repository containing general information can be found [here](https://g
 |   `-- tasks
 |-- log
 |-- public
+|   `-- doc
+|      |-- css
+|      `-- js
 |-- spec
 |   `-- controllers
 |-- tmp
@@ -79,6 +79,7 @@ afterwards you may start the webserver
 ```
 rails s -b 0.0.0.0
 ```
+
 where as the ENV var PRICEWARS_MARKETPLACE_URL and PRICEWARS_PRODUCER_URL point to the actual path of the marketplace and the producer.
 
 If all worked out, see the results with _ http://localhost:3000 _ .
@@ -92,7 +93,7 @@ The reader will politely be referred to the swagger.io [API documentation](https
 
 ### Source Code
 
-Detailed information regarding method and function usage and behavior can be found within the [doc/ directory](doc/index.html) of this repository.
+Detailed information regarding method and function usage and behavior can be found within the [public/doc/ directory](public/doc/index.html) of this repository or within the deployed service by [clicking here](http://vm-mpws2016hp1-01.eaalab.hpi.uni-potsdam.de/doc/index.html).
 
 ### ENV parameter
 
@@ -168,6 +169,18 @@ the marketplace offer list filtered by prime
 
 > buying items based on the provided logit coefficients from the marketplace offer list
 
+##### Sigmoid distribution behavior in detail
+
+The [sigmoid distribution](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L77) behavior realizes a sigmoid(-x) distribution of consumer purchases over [twice the producer price](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L88) which is used as mean. The offer which is highest probability is selected to be bought.
+
+##### Logistic regression behavior in detail
+
+The [logistic regression](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L99) behavior calculates for each offer the buying probability based on the feature coefficients provided in the behavior settings. The offer with the highest probability of selling will be actually bought by the consumer.
+The features and their coefficients can be altered within runtime and will then be applied to the next calculation iteration taking place. Make sure the hashmap of features and their coefficients is also implemented as available features.
+
+##### Adding new features for logit behaviors
+
+For adding a new feature for the logit behavior, one simply needs to extend the logic in *lib\features.rb*. In particular, one may implement a new method and include it in the switch case starting in L9.
 
 ##### Adding new behaviors
 
@@ -185,9 +198,6 @@ All available product (ids) are included in *$products* and *$items* contains al
 
 Keep in mind to add the new behavior with its description, default settings and method name in the *app/controller/behavior_controller.rb* in the way that it will be included and listed in the default setting return value.
 
-##### Adding new features for logit behaviors
-
-For adding a new features for the logit behavior, one simply needs to extend the logic in *lib\features.rb*. In particular, one may implement a new method and include it in the switch case starting in L9.
 
 #### Selection of one product & its market situation
 
@@ -213,4 +223,141 @@ ff02::2 ip6-allrouters
 # Reducing DNS lookups by assigning statically marketplace host
 192.168.31.90 vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de
 192.168.31.89 vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de
+```
+
+### Sample Configuration
+
+Like described in the [API documentation](https://hpi-epic.github.io/masterproject-pricewars/api/), a sample setting json for the consumer looks like the following:
+
+> HTTP GET http://localhost:3000/setting/
+
+```
+{
+   "consumer_per_minute":100.0,
+   "amount_of_consumers":1,
+   "probability_of_buy":100,
+   "min_buying_amount":1,
+   "max_buying_amount":1,
+   "min_wait":0.1,
+   "max_wait":2,
+   "behaviors":[
+      {
+         "name":"first",
+         "description":"I am buying the first possible item",
+         "settings":{
+
+         },
+         "settings_description":"Behavior settings not necessary",
+         "amount":9
+      },
+      {
+         "name":"random",
+         "description":"I am buying random items",
+         "settings":{
+
+         },
+         "settings_description":"Behavior settings not necessary",
+         "amount":9
+      },
+      {
+         "name":"cheap",
+         "description":"I am buying the cheapest item",
+         "settings":{
+
+         },
+         "settings_description":"Behavior settings not necessary",
+         "amount":9
+      },
+      {
+         "name":"expensive",
+         "description":"I am buying the most expensive item",
+         "settings":{
+
+         },
+         "settings_description":"Behavior settings not necessary",
+         "amount":9
+      },
+      {
+         "name":"cheap_and_prime",
+         "description":"I am buying the cheapest item which supports prime shipping",
+         "settings":{
+
+         },
+         "settings_description":"Behavior settings not necessary",
+         "amount":9
+      },
+      {
+         "name":"cheapest_best_quality",
+         "description":"I am buying the cheapest best quality available.",
+         "settings":{
+
+         },
+         "settings_description":"Behavior settings not necessary",
+         "amount":9
+      },
+      {
+         "name":"cheapest_best_quality_with_prime",
+         "description":"I am buying the cheapest best quality available which supports prime.",
+         "settings":{
+
+         },
+         "settings_description":"Behavior settings not necessary",
+         "amount":9
+      },
+      {
+         "name":"second_cheap",
+         "description":"I am buying the second cheapest item",
+         "settings":{
+
+         },
+         "settings_description":"Behavior settings not necessary",
+         "amount":9
+      },
+      {
+         "name":"third_cheap",
+         "description":"I am buying the third cheapest item",
+         "settings":{
+
+         },
+         "settings_description":"Behavior settings not necessary",
+         "amount":9
+      },
+      {
+         "name":"sigmoid_distribution_price",
+         "description":"I am with sigmoid distribution on the price regarding the producer prices",
+         "settings":{
+
+         },
+         "settings_description":"Behavior settings not necessary",
+         "amount":9
+      },
+      {
+         "name":"logit_coefficients",
+         "description":"I am with logit coefficients",
+         "settings":{
+            "coefficients":{
+               "intercept":-6.6177961,
+               "price_rank":0.2083944,
+               "amount_of_all_competitors":0.253481,
+               "average_price_on_market":-0.0079326,
+               "quality_rank":-0.1835972
+            }
+         },
+         "settings_description":"Key Value map for Feature and their coeffient",
+         "amount":9
+      }
+   ],
+   "timeout_if_no_offers_available":2,
+   "timeout_if_too_many_requests":30,
+   "max_buying_price":80,
+   "debug":false,
+   "producer_url":"http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de",
+   "product_popularity":{
+      "1":25.0,
+      "2":25.0,
+      "3":25.0,
+      "4":25.0
+   },
+   "marketplace_url":"http://vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de:8080/marketplace"
+}
 ```
