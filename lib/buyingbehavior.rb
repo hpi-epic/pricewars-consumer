@@ -1,5 +1,4 @@
 require "pp"
-# require 'httparty-icebox'
 require "gaussian"
 require "sigmoid"
 require "logit"
@@ -7,8 +6,6 @@ require "features"
 # require 'statsample-glm'
 
 class BuyingBehavior
-  # include HTTParty::Icebox
-  include HTTParty
   attr_reader :expression, :variables
 
   # uncomment for using caching for external calls (e.g. producer) to reduce waiting time
@@ -117,28 +114,10 @@ class BuyingBehavior
       prob              = logit.predict(features, theta, y)
       # glm = Statsample::GLM.compute data_set, :y, :logistic, {constant: 1, algorithm: :mle}
 
-      # puts "item #{item["uid"]} has prob of #{prob}%"
-      #if prob > highest_prob
-      #  highest_prob      = prob
-      #  highest_prob_item = item
-      #end
       probs.push(prob)
     end
 
-    sumProbs = probs.inject(:+)
-    return nil if sumProbs == 0
-    normalized_probs = probs.map{|p| p / sumProbs}
-    r = Random.rand()
-    currentSum = 0
-    for i in (0..normalized_probs.length-1)
-      currentSum = currentSum + normalized_probs[i]
-      if r <= currentSum then
-        highest_prob_item = items[i]
-        break
-      end
-    end
-    # puts "highest item is #{highest_prob_item["uid"]} with #{highest_prob}%"
-    validate_max_price(highest_prob_item)
+    validate_max_price(normalize_and_roll_dice_with(probs))
   end
 
   private
@@ -163,6 +142,29 @@ class BuyingBehavior
 
   def select_random_product
     $items = $unfiltered_items.select {|item| item["product_id"] == $products.uniq.sample }
+  end
+
+  def normalize_and_roll_dice(probs)
+    sumProbs = probs.inject(:+)
+    return nil if sumProbs == 0
+    normalized_probs = probs.map{|p| p / sumProbs}
+    r = Random.rand()
+    currentSum = 0
+
+    for i in (0..normalized_probs.length-1)
+      currentSum += normalized_probs[i]
+      if r <= currentSum then
+        selected_item = $items[i]
+        break
+      end
+    end
+
+    unless selected_item.nil?
+      selected_item
+    else
+      $items[probs.rindex(probs.max)] #choose item with highest prob if non is decied
+      #probs.each_with_index.max[1]
+    end
   end
 
   # consumes { :black => 51, :white => 17 }
