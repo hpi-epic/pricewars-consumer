@@ -101,16 +101,13 @@ class BuyingBehavior
     probs             = []
 
     $items.each do |item|
-      # puts "eval #{item}"
       names             = @behavior_settings["coefficients"].map {|key, _value| key }
       names.delete("intercept")
       features          = [build_features_array(names, item)]
       logit             = Logit.new
       y                 = []
       features.length.times { y.push(1) }
-      # puts "y: #{y}"
-      # puts "theta: #{theta}"
-      # puts "features: #{features}"
+
       prob              = logit.predict(features, theta, y)
       # glm = Statsample::GLM.compute data_set, :y, :logistic, {constant: 1, algorithm: :mle}
 
@@ -144,7 +141,7 @@ class BuyingBehavior
     $items = $unfiltered_items.select {|item| item["product_id"] == $products.uniq.sample }
   end
 
-  def normalize_and_roll_dice(probs)
+  def normalize_and_roll_dice_with(probs)
     sumProbs = probs.inject(:+)
     return nil if sumProbs == 0
     normalized_probs = probs.map{|p| p / sumProbs}
