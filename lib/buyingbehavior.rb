@@ -159,12 +159,7 @@ class BuyingBehavior
       end
     end
 
-    unless selected_item.nil?
-      selected_item
-    else
-      $items[probs.rindex(probs.max)] #choose item with highest prob if non is decied
-      #probs.each_with_index.max[1]
-    end
+    selected_item
   end
 
   # consumes { :black => 51, :white => 17 }
