@@ -1,8 +1,8 @@
 # Consumer
 
-This Ruby app implements the MVC pattern including continuous integration and deployment via Codeship. Please make sure tests are running before committing.
+This repository contains the Consumer-component of the Price Wars simulation. The consumer represents the costumers arriving at the marketplace and buying products. How often and which products they buy is decided based on custom consumer-behaviors that can be configured and changed.
 
-We are using the [Github flow](https://guides.github.com/introduction/flow/) for contribution.
+The consumer is realized using a Ruby-app implementing the MVC pattern including continuous integration and deployment via Codeship. Please make sure tests are running before committing.
 
 The meta repository containing general information can be found [here](https://github.com/hpi-epic/masterproject-pricewars)
 
@@ -17,85 +17,22 @@ The meta repository containing general information can be found [here](https://g
 | [Merchant](https://github.com/hpi-epic/pricewars-merchant) | master  	|  [vm-mpws2016hp1-06.eaalab.hpi.uni-potsdam.de/](http://vm-mpws2016hp1-06.eaalab.hpi.uni-potsdam.de/) 	| [ ![Codeship Status for hpi-epic/pricewars-merchant](https://app.codeship.com/projects/a7d3be30-88c5-0134-ea9c-5ad89f4798f3/status?branch=master)](https://app.codeship.com/projects/184013) | Stable |
 | [Kafka RESTful API](https://github.com/hpi-epic/pricewars-kafka-rest) | master  	|  [vm-mpws2016hp1-05.eaalab.hpi.uni-potsdam.de](http://vm-mpws2016hp1-05.eaalab.hpi.uni-potsdam.de) 	|  [ ![Codeship Status for hpi-epic/pricewars-kafka-rest](https://app.codeship.com/projects/f59aa150-92f0-0134-8718-4a1d78af514c/status?branch=master)](https://app.codeship.com/projects/186252) | Stable |
 
-
 ## Requirements
+
+The consumer is written in Rails. Ensure to have the following components installed and set up on your computer:
 
 * Ruby 2.3
 * Rails 4.2
 
-## Folder Structure
+## Setup
 
-```
-|-- app
-|   `-- controllers
-|       `-- concerns
-|-- bin
-|-- config
-|   |-- deploy
-|   |-- environments
-|   |-- initializers
-|   `-- locales
-|-- db
-|-- lib
-|   |-- assets
-|   |-- capistrano
-|   |   `-- tasks
-|   `-- tasks
-|-- log
-|-- public
-|   `-- doc
-|      |-- css
-|      `-- js
-|-- spec
-|   `-- controllers
-|-- tmp
-|   |-- cache
-|   |   `-- assets
-|   |-- pids
-|   |-- sessions
-|   `-- sockets
-`-- vendor
+After cloning the repo, install the necessary dependencies with `bundle exec bundle install`.
 
-```
+Afterwards you may start the webserver with `rails s -b 0.0.0.0` where the ENV var PRICEWARS_MARKETPLACE_URL and PRICEWARS_PRODUCER_URL point to the actual path of the marketplace and the producer.
 
-## Deployment
+If all worked out, see the results at _ http://localhost:3000 _ .
 
-Clone the repo with
-
-```
-git clone https://github.com/hpi-epic/pricewars-consumer
-```
-
-### Rails Backend
-
-First, install dependencies
-
-```
-bundle exec bundle install
-```
-
-afterwards you may start the webserver
-
-```
-rails s -b 0.0.0.0
-```
-
-where as the ENV var PRICEWARS_MARKETPLACE_URL and PRICEWARS_PRODUCER_URL point to the actual path of the marketplace and the producer.
-
-If all worked out, see the results with _ http://localhost:3000 _ .
-
-
-## Documentation
-
-### API
-
-The reader will politely be referred to the swagger.io [API documentation](https://hpi-epic.github.io/masterproject-pricewars/api/).
-
-### Source Code
-
-Detailed information regarding method and function usage and behavior can be found within the [public/doc/ directory](public/doc/index.html) of this repository or within the deployed service by [clicking here](http://vm-mpws2016hp1-01.eaalab.hpi.uni-potsdam.de/doc/index.html).
-
-### ENV parameter
+## Configuration
 
 Currently, two ENV params are needed:
 * PRICEWARS_PRODUCER_URL
@@ -110,15 +47,15 @@ export PRICEWARS_MARKETPLACE_URL='http://vm-mpws2016hp1-04.eaalab.hpi.uni-potsda
 export PRICEWARS_PRODUCER_URL='http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de'
 ```
 
-### Concept
+## Concept
 
 The consumer is defined via behaviors which are implemented in *lib/buyingbehavior.rb*. All available behaviors are included and exposed with their default settings and description in *app/controllers/behavior_controller.rb* .
 
-#### Consumer Behaviors
+### Consumer Behaviors
 
 Via settings, the distribution across those available behaviors is defined as percentage. In the consumer logic then, each behavior is [called and executed](https://github.com/hpi-epic/pricewars-consumer/blob/master/app/controllers/setting_controller.rb#L142) dynamically based on the provided behavior method name and its distribution.
 
-##### Existing new behaviors
+#### Existing new behaviors
 
 * [buy_first](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L29)
 
@@ -169,20 +106,20 @@ the marketplace offer list filtered by prime
 
 > buying items based on the provided logit coefficients from the marketplace offer list
 
-##### Sigmoid distribution behavior in detail
+#### Sigmoid distribution behavior in detail
 
 The [sigmoid distribution](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L77) behavior realizes a sigmoid(-x) distribution of consumer purchases over [twice the producer price](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L88) which is used as mean. The offer which is highest probability is selected to be bought.
 
-##### Logistic regression behavior in detail
+#### Logistic regression behavior in detail
 
 The [logistic regression](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L99) behavior calculates for each offer the buying probability based on the feature coefficients provided in the behavior settings. The offer with the highest probability of selling will be actually bought by the consumer.
 The features and their coefficients can be altered within runtime and will then be applied to the next calculation iteration taking place. Make sure the hashmap of features and their coefficients is also implemented as available features.
 
-##### Adding new features for logit behaviors
+#### Adding new features for logit behaviors
 
 For adding a new feature for the logit behavior, one simply needs to extend the logic in *lib\features.rb*. In particular, one may implement a new method and include it in the switch case starting in L9.
 
-##### Adding new behaviors
+#### Adding new behaviors
 
 For adding a new buying behavior, one simply needs to add the buying logic as method in *lib/buyingbehavior.rb* starting with the prefix *buy_* returning the item (only one!), which is supposed to be bought.
 
@@ -199,13 +136,13 @@ All available product (ids) are included in *$products* and *$items* contains al
 Keep in mind to add the new behavior with its description, default settings and method name in the *app/controller/behavior_controller.rb* in the way that it will be included and listed in the default setting return value.
 
 
-#### Selection of one product & its market situation
+### Selection of one product & its market situation
 
 The current implementation supports an even distributed selection of items (random selection). Additionally, one may define product popularity via the consumer settings which is evaluated instead of a random distribution.
 
 The relative selection method can be defined in the [initialize method of the buyingbehavior.rb](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L25) by either using *select_random_product* or  *select_based_on_product_popularity* (see comments).
 
-### Host entries
+## Host entries
 
 When working on the provided VMs make sure to including DNS routing in the local /etc/hosts file. We experienced a lot of issues with TCP connection timeouts if those are not set. Also within the CI & CD pipeline in the way that github was not reachable due to connection timeouts.
 Different resolver were tried out, however, the only working solution is to expand the host file,
@@ -225,7 +162,7 @@ ff02::2 ip6-allrouters
 192.168.31.89 vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de
 ```
 
-### Sample Configuration
+## Sample Configuration
 
 Like described in the [API documentation](https://hpi-epic.github.io/masterproject-pricewars/api/), a sample setting json for the consumer looks like the following:
 
@@ -361,3 +298,7 @@ Like described in the [API documentation](https://hpi-epic.github.io/masterproje
    "marketplace_url":"http://vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de:8080/marketplace"
 }
 ```
+
+## Source Code
+
+Detailed information regarding method and function usage and behavior can be found within the [public/doc/ directory](public/doc/index.html) of this repository or within the deployed service by [clicking here](http://vm-mpws2016hp1-01.eaalab.hpi.uni-potsdam.de/doc/index.html).
