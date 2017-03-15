@@ -148,11 +148,11 @@ class SettingController < BehaviorController
     url = $marketplace_url + "/offers/" + item["offer_id"].to_s + "/buy"
     puts "#{url} for #{behavior} with quality #{item['quality']}" if $debug
 
-    body = {  price:       item["price"],
-              amount:      rand($min_buying_amount..$max_buying_amount),
-              consumer_id: $consumer_id,
-              prime:       item["prime"],
-              behavior:    behavior
+    body = {price:       item["price"],
+            amount:      rand($min_buying_amount..$max_buying_amount),
+            consumer_id: $consumer_id,
+            prime:       item["prime"],
+            behavior:    behavior
              }.to_json
     header = {"Content-Type"  => "application/json",
               "Authorization" => "Token #{$consumer_token}"}

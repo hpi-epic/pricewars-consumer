@@ -33,5 +33,4 @@ module PartyHelper
     end
     result
   end
-
 end

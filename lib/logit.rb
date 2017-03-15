@@ -12,11 +12,11 @@ class Logit
 
     features.each {|i| i.unshift(1) } # Append a column of 1's to features
 
-    #puts "theta: #{theta}"
+    # puts "theta: #{theta}"
 
     relativize_theta = self.class.relativize_theta(theta)
 
-    #puts "relativize_theta: #{relativize_theta}"
+    # puts "relativize_theta: #{relativize_theta}"
     self.class.cost_logistic_regression(relativize_theta, features, y, m, n)
   end
 
@@ -48,9 +48,9 @@ class Logit
 
   def self.relativize_theta(theta)
     relativize_theta = []
-    sum = theta.inject(0){|sum,x| sum + x }
+    sum = theta.inject(0) {|sum, x| sum + x }
     theta.each do |coefficient|
-      relativize_theta.push(coefficient/sum)
+      relativize_theta.push(coefficient / sum)
     end
     relativize_theta
   end
