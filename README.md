@@ -175,7 +175,7 @@ The [sigmoid distribution](https://github.com/hpi-epic/pricewars-consumer/blob/m
 
 ##### Logistic regression behavior in detail
 
-The [logistic regression](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L99) behavior calculates for each offer the buying probability based on the feature coefficients provided in the behavior settings. The offer with the highest probability of selling will be actually bought by the consumer.
+The [logit behavior](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L99) implements logistic regression with feature scaling and calculates for each offer the buying probability based on the feature coefficients provided in the behavior settings. The offer with the highest probability of selling will be actually bought by the consumer.
 The features and their coefficients can be altered within runtime and will then be applied to the next calculation iteration taking place. Make sure the hashmap of features and their coefficients is also implemented as available features.
 
 ##### Adding new features for logit behaviors
