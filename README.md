@@ -112,8 +112,27 @@ The [sigmoid distribution](https://github.com/hpi-epic/pricewars-consumer/blob/m
 
 #### Logistic regression behavior in detail
 
-The [logit behavior](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L99) implements logistic regression with feature scaling and calculates for each offer the buying probability based on the feature coefficients provided in the behavior settings. The offer with the highest probability of selling will be actually bought by the consumer.
-The features and their coefficients can be altered within runtime and will then be applied to the next calculation iteration taking place. Make sure the hashmap of features and their coefficients is also implemented as available features.
+The [logit behavior](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L99) implements a logistic regression with feature scaling and calculates for each offer the buying probability based on the feature coefficients provided in the behavior settings. Based on this buying probability for each offer, the consumer will actually choose an offer to buy.
+In this way, potential consumer behavior can be learned on real world data and imitated in the simulation solution.
+
+Logistic regression is a regression model where the dependent variable -- in our case the selling of an offer -- is categorical. This categorization outcome must be discrete and should be dichotomous in nature simply expressed by a boolean whether a purchase happened or not. To determine this, this behavior consumes features and their coefficients can be altered within runtime and will then be applied to the next calculation iteration taking place. The describing hashmap of features and their coefficients contains only available features which are already implemented otherwise they will be ignored.
+
+The default settings for the logit behavior holds the following settings:
+
+```
+{
+   "coefficients":{
+      "intercept":-6.6177961,
+      "price_rank":0.2083944,
+      "amount_of_all_competitors":0.253481,
+      "average_price_on_market":-0.0079326,
+      "quality_rank":-0.1835972
+   }
+}
+```
+
+which were extracted from a real world use case provided by a big book retail company.
+For deeper insights in the concepts of logistic regression, the reader is kindly referred to [DW Hosmer Jr et al. work](https://www.researchgate.net/profile/Andrew_Cucchiara/publication/261659875_Applied_Logistic_Regression/links/542c7eff0cf277d58e8c811e/Applied-Logistic-Regression.pdf).
 
 #### Adding new features for logit behaviors
 
