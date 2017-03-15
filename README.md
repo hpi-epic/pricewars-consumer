@@ -110,6 +110,13 @@ the marketplace offer list filtered by prime
 
 The [sigmoid distribution](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L77) behavior realizes a sigmoid(-x) distribution of consumer purchases over [twice the producer price](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L88) which is used as mean. The offer which is highest probability is selected to be bought.
 
+The following figures delineate the sigmoid distribution where y is the probability of purchase and x the price of an offer. In the given example, the mean is twice the producer price (15€) therefore 30€.
+
+![alt tag](/public/doc/sigmoid.png?raw=true)
+![alt tag](/public/doc/sigmoid_2.png?raw=true)
+
+Consequently, the cheaper is offer is, the higher the purchase probability, the higher the purchase the lower the purchase probability.
+
 #### Logistic regression behavior in detail
 
 The [logit behavior](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L99) implements a logistic regression with feature scaling and calculates for each offer the buying probability based on the feature coefficients provided in the behavior settings. Based on this buying probability for each offer, the consumer will actually choose an offer to buy.
