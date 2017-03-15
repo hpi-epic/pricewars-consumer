@@ -59,9 +59,9 @@
 
       <div id="content"><div id='filecontents'><h1>Consumer</h1>
 
-<p>This Ruby app implements the MVC pattern including continuous integration and deployment via Codeship. Please make sure tests are running before committing.</p>
+<p>This repository contains the Consumer-component of the Price Wars simulation. The consumer represents the costumers arriving at the marketplace and buying products. How often and which products they buy is decided based on custom consumer-behaviors that can be configured and changed.</p>
 
-<p>We are using the <a href="https://guides.github.com/introduction/flow/">Github flow</a> for contribution.</p>
+<p>The consumer is realized using a Ruby-app implementing the MVC pattern including continuous integration and deployment via Codeship. Please make sure tests are running before committing.</p>
 
 <p>The meta repository containing general information can be found <a href="https://github.com/hpi-epic/masterproject-pricewars">here</a></p>
 
@@ -122,79 +122,22 @@
 
 <h2>Requirements</h2>
 
+<p>The consumer is written in Rails. Ensure to have the following components installed and set up on your computer:</p>
+
 <ul>
 <li>Ruby 2.3</li>
 <li>Rails 4.2</li>
 </ul>
 
-<h2>Folder Structure</h2>
+<h2>Setup</h2>
 
-<pre class="code ruby"><code class="ruby">|-- app
-|   `-- controllers
-|       `-- concerns
-|-- bin
-|-- config
-|   |-- deploy
-|   |-- environments
-|   |-- initializers
-|   `-- locales
-|-- db
-|-- lib
-|   |-- assets
-|   |-- capistrano
-|   |   `-- tasks
-|   `-- tasks
-|-- log
-|-- public
-|   `-- doc
-|      |-- css
-|      `-- js
-|-- spec
-|   `-- controllers
-|-- tmp
-|   |-- cache
-|   |   `-- assets
-|   |-- pids
-|   |-- sessions
-|   `-- sockets
-`-- vendor
+<p>After cloning the repo, install the necessary dependencies with <code>bundle exec bundle install</code>.</p>
 
-</code></pre>
+<p>Afterwards you may start the webserver with <code>rails s -b 0.0.0.0</code> where the ENV var PRICEWARS_MARKETPLACE_URL and PRICEWARS_PRODUCER_URL point to the actual path of the marketplace and the producer.</p>
 
-<h2>Deployment</h2>
+<p>If all worked out, see the results at _ <a href="http://localhost:3000">http://localhost:3000</a> _ .</p>
 
-<p>Clone the repo with</p>
-
-<pre class="code ruby"><code class="ruby">git clone https://github.com/hpi-epic/pricewars-consumer
-</code></pre>
-
-<h3>Rails Backend</h3>
-
-<p>First, install dependencies</p>
-
-<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_exec'>exec</span> <span class='id identifier rubyid_bundle'>bundle</span> <span class='id identifier rubyid_install'>install</span>
-</code></pre>
-
-<p>afterwards you may start the webserver</p>
-
-<pre class="code ruby"><code class="ruby">rails s -b 0.0.0.0
-</code></pre>
-
-<p>where as the ENV var PRICEWARS_MARKETPLACE_URL and PRICEWARS_PRODUCER_URL point to the actual path of the marketplace and the producer.</p>
-
-<p>If all worked out, see the results with _ <a href="http://localhost:3000">http://localhost:3000</a> _ .</p>
-
-<h2>Documentation</h2>
-
-<h3>API</h3>
-
-<p>The reader will politely be referred to the swagger.io <a href="https://hpi-epic.github.io/masterproject-pricewars/api/">API documentation</a>.</p>
-
-<h3>Source Code</h3>
-
-<p>Detailed information regarding method and function usage and behavior can be found within the <a href="public/doc/index.html">public/doc/ directory</a> of this repository or within the deployed service by <a href="http://vm-mpws2016hp1-01.eaalab.hpi.uni-potsdam.de/doc/index.html">clicking here</a>.</p>
-
-<h3>ENV parameter</h3>
+<h2>Configuration</h2>
 
 <p>Currently, two ENV params are needed:</p>
 
@@ -211,15 +154,15 @@
 <span class='id identifier rubyid_export'>export</span> <span class='const'>PRICEWARS_PRODUCER_URL</span><span class='op'>=</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de</span><span class='tstring_end'>&#39;</span></span>
 </code></pre>
 
-<h3>Concept</h3>
+<h2>Concept</h2>
 
 <p>The consumer is defined via behaviors which are implemented in <em>lib/buyingbehavior.rb</em>. All available behaviors are included and exposed with their default settings and description in <em>app/controllers/behavior_controller.rb</em> .</p>
 
-<h4>Consumer Behaviors</h4>
+<h3>Consumer Behaviors</h3>
 
 <p>Via settings, the distribution across those available behaviors is defined as percentage. In the consumer logic then, each behavior is <a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/app/controllers/setting_controller.rb#L142">called and executed</a> dynamically based on the provided behavior method name and its distribution.</p>
 
-<h5>Existing new behaviors</h5>
+<h4>Existing behaviors</h4>
 
 <ul>
 <li><a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L29">buy_first</a></li>
@@ -318,20 +261,45 @@ the marketplace offer list filtered by prime</p>
 <p>buying items based on the provided logit coefficients from the marketplace offer list</p>
 </blockquote>
 
-<h5>Sigmoid distribution behavior in detail</h5>
+<h4>Sigmoid distribution behavior in detail</h4>
 
 <p>The <a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L77">sigmoid distribution</a> behavior realizes a sigmoid(-x) distribution of consumer purchases over <a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L88">twice the producer price</a> which is used as mean. The offer which is highest probability is selected to be bought.</p>
 
-<h5>Logistic regression behavior in detail</h5>
+<p>The following figures delineate the sigmoid distribution where y is the probability of purchase and x the price of an offer. In the given example, the mean is twice the producer price (15€) therefore 30€.</p>
 
-<p>The <a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L99">logistic regression</a> behavior calculates for each offer the buying probability based on the feature coefficients provided in the behavior settings. The offer with the highest probability of selling will be actually bought by the consumer.
-The features and their coefficients can be altered within runtime and will then be applied to the next calculation iteration taking place. Make sure the hashmap of features and their coefficients is also implemented as available features.</p>
+<p><img src="/public/doc/sigmoid.png?raw=true" alt="alt tag">
+<img src="/public/doc/sigmoid_2.png?raw=true" alt="alt tag"></p>
 
-<h5>Adding new features for logit behaviors</h5>
+<p>Consequently, the cheaper the offer is, the higher the purchase probability; the higher the price the lower the purchase probability.</p>
+
+<h4>Logistic regression behavior in detail</h4>
+
+<p>The <a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L99">logit behavior</a> implements a logistic regression with feature scaling and calculates for each offer the buying probability based on the feature coefficients provided in the behavior settings. Based on this buying probability for each offer, the consumer will actually choose an offer to buy.
+In this way, potential consumer behavior can be learned on real world data and imitated in the simulation solution.</p>
+
+<p>Logistic regression is a regression model where the dependent variable -- in our case the selling of an offer -- is categorical. This categorization outcome must be discrete and should be dichotomous in nature simply expressed by a boolean whether a purchase happened or not. To determine this, this behavior consumes features and their coefficients can be altered within runtime and will then be applied to the next calculation iteration taking place. The describing hashmap of features and their coefficients contains only available features which are already implemented otherwise they will be ignored.</p>
+
+<p>The default settings for the logit behavior holds the following settings:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='lbrace'>{</span>
+   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>coefficients</span><span class='label_end'>&quot;:</span><span class='lbrace'>{</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>intercept</span><span class='label_end'>&quot;:</span><span class='op'>-</span><span class='float'>6.6177961</span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>price_rank</span><span class='label_end'>&quot;:</span><span class='float'>0.2083944</span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>amount_of_all_competitors</span><span class='label_end'>&quot;:</span><span class='float'>0.253481</span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>average_price_on_market</span><span class='label_end'>&quot;:</span><span class='op'>-</span><span class='float'>0.0079326</span><span class='comma'>,</span>
+      <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>quality_rank</span><span class='label_end'>&quot;:</span><span class='op'>-</span><span class='float'>0.1835972</span>
+   <span class='rbrace'>}</span>
+<span class='rbrace'>}</span>
+</code></pre>
+
+<p>which were extracted from a real world use case provided by a big book retail company.
+For deeper insights in the concepts of logistic regression, the reader is kindly referred to <a href="https://www.researchgate.net/profile/Andrew_Cucchiara/publication/261659875_Applied_Logistic_Regression/links/542c7eff0cf277d58e8c811e/Applied-Logistic-Regression.pdf">DW Hosmer Jr et al. work</a>.</p>
+
+<h4>Adding new features for logit behaviors</h4>
 
 <p>For adding a new feature for the logit behavior, one simply needs to extend the logic in <em>lib\features.rb</em>. In particular, one may implement a new method and include it in the switch case starting in L9.</p>
 
-<h5>Adding new behaviors</h5>
+<h4>Adding new behaviors</h4>
 
 <p>For adding a new buying behavior, one simply needs to add the buying logic as method in <em>lib/buyingbehavior.rb</em> starting with the prefix <em>buy_</em> returning the item (only one!), which is supposed to be bought.</p>
 
@@ -346,16 +314,16 @@ The features and their coefficients can be altered within runtime and will then 
 
 <p>Keep in mind to add the new behavior with its description, default settings and method name in the <em>app/controller/behavior_controller.rb</em> in the way that it will be included and listed in the default setting return value.</p>
 
-<h4>Selection of one product &amp; its market situation</h4>
+<h3>Selection of one product &amp; its market situation</h3>
 
 <p>The current implementation supports an even distributed selection of items (random selection). Additionally, one may define product popularity via the consumer settings which is evaluated instead of a random distribution.</p>
 
 <p>The relative selection method can be defined in the <a href="https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L25">initialize method of the buyingbehavior.rb</a> by either using <em>select_random_product</em> or  <em>select_based_on_product_popularity</em> (see comments).</p>
 
-<h3>Host entries</h3>
+<h2>Host entries</h2>
 
 <p>When working on the provided VMs make sure to including DNS routing in the local /etc/hosts file. We experienced a lot of issues with TCP connection timeouts if those are not set. Also within the CI &amp; CD pipeline in the way that github was not reachable due to connection timeouts.
-Different resolver were tried out, however, the only working solution is to expand the host file,</p>
+Different resolvers were tried out, however, the only working solution is to expand the host file,</p>
 
 <pre class="code ruby"><code class="ruby">/etc/hosts
 127.0.0.1       localhost
@@ -371,7 +339,7 @@ ff02::2 ip6-allrouters
 192.168.31.89 vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de
 </code></pre>
 
-<h3>Sample Configuration</h3>
+<h2>Sample Configuration</h2>
 
 <p>Like described in the <a href="https://hpi-epic.github.io/masterproject-pricewars/api/">API documentation</a>, a sample setting json for the consumer looks like the following:</p>
 
@@ -508,10 +476,14 @@ ff02::2 ip6-allrouters
    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>marketplace_url</span><span class='label_end'>&quot;:</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>http://vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de:8080/marketplace</span><span class='tstring_end'>&quot;</span></span>
 <span class='rbrace'>}</span>
 </code></pre>
+
+<h2>Source Code</h2>
+
+<p>Detailed information regarding method and function usage and behavior can be found within the <a href="public/doc/index.html">public/doc/ directory</a> of this repository or within the deployed service by <a href="http://vm-mpws2016hp1-01.eaalab.hpi.uni-potsdam.de/doc/index.html">clicking here</a>.</p>
 </div></div>
 
       <div id="footer">
-  Generated on Tue Mar 14 08:43:56 2017 by
+  Generated on Wed Mar 15 16:15:23 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.8 (ruby-2.3.1).
 </div>
