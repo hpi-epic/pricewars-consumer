@@ -115,7 +115,7 @@ The following figures delineate the sigmoid distribution where y is the probabil
 ![alt tag](/public/doc/sigmoid.png?raw=true)
 ![alt tag](/public/doc/sigmoid_2.png?raw=true)
 
-Consequently, the cheaper is offer is, the higher the purchase probability, the higher the purchase the lower the purchase probability.
+Consequently, the cheaper the offer is, the higher the purchase probability; the higher the price the lower the purchase probability.
 
 #### Logistic regression behavior in detail
 
@@ -171,7 +171,7 @@ The relative selection method can be defined in the [initialize method of the bu
 ## Host entries
 
 When working on the provided VMs make sure to including DNS routing in the local /etc/hosts file. We experienced a lot of issues with TCP connection timeouts if those are not set. Also within the CI & CD pipeline in the way that github was not reachable due to connection timeouts.
-Different resolver were tried out, however, the only working solution is to expand the host file,
+Different resolvers were tried out, however, the only working solution is to expand the host file,
 
 ```
 /etc/hosts
