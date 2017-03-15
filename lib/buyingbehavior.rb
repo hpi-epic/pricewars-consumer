@@ -142,14 +142,14 @@ class BuyingBehavior
   end
 
   def normalize_and_roll_dice_with(probs)
-    sumProbs = probs.inject(:+)
-    return nil if sumProbs == 0
-    normalized_probs = probs.map {|p| p / sumProbs }
+    #sumProbs = probs.inject(:+)
+    #return nil if sumProbs == 0
+    #normalized_probs = probs.map {|p| p / sumProbs }
     r = Random.rand
     currentSum = 0
 
-    for i in (0..normalized_probs.length - 1)
-      currentSum += normalized_probs[i]
+    for i in (0..probs.length - 1)
+      currentSum += probs[i]
       if r <= currentSum
         selected_item = $items[i]
         break
