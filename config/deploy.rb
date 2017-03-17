@@ -1,8 +1,8 @@
 # config valid only for current version of Capistrano
 # lock '3.4.0'
 
-set :application, "Pricewars-consumer"
-set :repo_url, "git@github.com:hpi-epic/pricewars-consumer.git"
+set :application, 'Pricewars-consumer'
+set :repo_url, 'git@github.com:hpi-epic/pricewars-consumer.git'
 set :scm, :git
 
 set :pty, true
@@ -15,16 +15,16 @@ set :keep_releases, 5
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
-set :default_env, rvm_bin_path: "~/.rvm/bin/"
+set :default_env, rvm_bin_path: '~/.rvm/bin/'
 # set :bundle_gemfile, "backend/Gemfile"
 # set :repo_tree, 'backend'
 
 # Default deploy_to directory is /var/www/my_app_name
-set :deploy_to, "/var/www/consumer"
+set :deploy_to, '/var/www/consumer'
 
 # Default value for :scm is :git
 # set :scm, :git
-set :rvm_ruby_version, "2.3.1"
+set :rvm_ruby_version, '2.3.1'
 
 # Default value for :format is :pretty
 # set :format, :pretty
@@ -64,11 +64,11 @@ namespace :deploy do
     on roles :all do
       within release_path do
         execute "mkdir -p #{release_path}/tmp/"
-        execute :touch, "tmp/restart.txt"
+        execute :touch, 'tmp/restart.txt'
       end
     end
   end
 
-  after :deploy, "deploy:prepare_app"
-  after :deploy, "deploy:restart_passenger"
+  after :deploy, 'deploy:prepare_app'
+  after :deploy, 'deploy:restart_passenger'
 end

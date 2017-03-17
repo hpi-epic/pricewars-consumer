@@ -1,11 +1,14 @@
-require "net/http"
+require 'net/http'
 # require 'resolv'
-require "resolv-replace"
+require 'resolv-replace'
 
 module PartyHelper
   include HTTParty
 
-  persistent_connection_adapter name:         "Marketplace",
+  # uncomment for using caching for external calls (e.g. producer) to reduce waiting time
+  # cache :store => 'file', :timeout => 300, :location => '/tmp/'
+
+  persistent_connection_adapter name:         'Marketplace',
                                 pool_size:    300,
                                 idle_timeout: 10,
                                 keep_alive:   30

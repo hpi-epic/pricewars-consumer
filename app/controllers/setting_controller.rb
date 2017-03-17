@@ -1,6 +1,6 @@
-require "pp"
-require "buyingbehavior"
-require "behavior_controller"
+require 'pp'
+require 'buyingbehavior'
+require 'behavior_controller'
 
 class SettingController < BehaviorController
   include RegisterHelper
@@ -32,20 +32,20 @@ class SettingController < BehaviorController
   end
 
   def update
-    render(nothing: true, status: 405) && return unless request.content_type == "application/json"
+    render(nothing: true, status: 405) && return unless request.content_type == 'application/json'
     render(nothing: true, status: 405) && return unless params.key?(:marketplace_url)
     init(params, request)
     render json: retrieve_current_or_default_settings
   end
 
   def update_product_details
-    puts "Updating product details on request" if $debug
+    puts 'Updating product details on request' if $debug
     retrieve_and_build_product_popularity
-    render(text: "updated product details", status: 200)
+    render(text: 'updated product details', status: 200)
   end
 
   def create
-    render(nothing: true, status: 405) && return unless request.content_type == "application/json"
+    render(nothing: true, status: 405) && return unless request.content_type == 'application/json'
     render(nothing: true, status: 405) && return unless params.key?(:marketplace_url)
 
     init(params, request)
@@ -65,7 +65,7 @@ class SettingController < BehaviorController
             sleep($timeout_if_no_offers_available)
             next
           end
-          status = logic(available_items, params, params.key?("bulk") ? true : false)
+          status = logic(available_items, params, params.key?('bulk') ? true : false)
         end
       end
       $list_of_threads.push(thread)
@@ -76,7 +76,7 @@ class SettingController < BehaviorController
 
   def status
     result = {}
-    result["status"] = $list_of_threads.present? ? "running" : "dead"
+    result['status'] = $list_of_threads.present? ? 'running' : 'dead'
     render json: result
   end
 
@@ -88,18 +88,18 @@ class SettingController < BehaviorController
       $list_of_threads = []
 
       if $marketplace_url.nil? || $consumer_id.nil?
-        render(text: "invalid configuration: consumer_id or marketplace_url unknown", status: 417) && return
+        render(text: 'invalid configuration: consumer_id or marketplace_url unknown', status: 417) && return
       end
-      render(text: "all process instances terminated", status: 200)
+      render(text: 'all process instances terminated', status: 200)
     else
-      render(text: "no instance running", status: 200)
+      render(text: 'no instance running', status: 200)
     end
   end
 
   private
 
   def register_with_marketplace
-    register_on($marketplace_url, $consumer_url, "Default", "Buying with specified settings")
+    register_on($marketplace_url, $consumer_url, 'Default', 'Buying with specified settings')
   end
 
   def deregister_with_marketplace
@@ -107,7 +107,7 @@ class SettingController < BehaviorController
   end
 
   def get_available_items
-    url = $marketplace_url + "/offers"
+    url = $marketplace_url + '/offers'
     begin
       response = http_get_on(url)
     end while response.nil?
@@ -118,12 +118,12 @@ class SettingController < BehaviorController
   def logic(items, _settings, _bulk_boolean)
     if rand(1..100) < $probability_of_buy
       behavior_weights = {}
-      $behaviors_settings.each {|behavior| behavior_weights[behavior[:name]] = behavior[:amount] }
+      $behaviors_settings.each { |behavior| behavior_weights[behavior[:name]] = behavior[:amount] }
       selected_behavior = choose_weighted(behavior_weights)
       puts "selected_behavior: #{selected_behavior}" if $debug
-      behavior = ($behaviors_settings.select {|b| b[:name] == selected_behavior }).first
+      behavior = ($behaviors_settings.select { |b| b[:name] == selected_behavior }).first
       puts "actual behavior: #{behavior[:name]}" if $debug
-      item = BuyingBehavior.new(items, expand_behavior_settings(behavior[:settings])).send("buy_" + behavior[:name]) # get item based on buying behavior
+      item = BuyingBehavior.new(items, expand_behavior_settings(behavior[:settings])).send('buy_' + behavior[:name]) # get item based on buying behavior
       if item.nil?
         puts "no item selected by BuyingBehavior with #{behavior[:name]}, sleeping #{$timeout_if_no_offers_available}s" if $debug
         sleep($timeout_if_no_offers_available)
@@ -134,28 +134,28 @@ class SettingController < BehaviorController
         puts "429, sleeping #{$timeout_if_too_many_requests}s" if $debug
         sleep($timeout_if_too_many_requests)
       elsif status == 401
-        puts "401.." if $debug
+        puts '401..' if $debug
         deregister_with_marketplace
         register_with_marketplace
-        puts "ERROR: marketplace rejected consumer API Token"
+        puts 'ERROR: marketplace rejected consumer API Token'
       end
     else
-      puts "The luck is not with us, maybe next round" if $debug
+      puts 'The luck is not with us, maybe next round' if $debug
     end
   end
 
   def execute(item, behavior)
-    url = $marketplace_url + "/offers/" + item["offer_id"].to_s + "/buy"
+    url = $marketplace_url + '/offers/' + item['offer_id'].to_s + '/buy'
     puts "#{url} for #{behavior} with quality #{item['quality']}" if $debug
 
-    body = {price:       item["price"],
-            amount:      rand($min_buying_amount..$max_buying_amount),
-            consumer_id: $consumer_id,
-            prime:       item["prime"],
-            behavior:    behavior
+    body = { price:       item['price'],
+             amount:      rand($min_buying_amount..$max_buying_amount),
+             consumer_id: $consumer_id,
+             prime:       item['prime'],
+             behavior:    behavior
              }.to_json
-    header = {"Content-Type"  => "application/json",
-              "Authorization" => "Token #{$consumer_token}"}
+    header = { 'Content-Type'  => 'application/json',
+               'Authorization' => "Token #{$consumer_token}" }
     begin
       response = http_post_on(url, header, body)
     end while response.nil?
@@ -177,11 +177,11 @@ class SettingController < BehaviorController
     results = {}
 
     begin
-      response = http_get_on($producer_url + "/products?showDeleted=true")
+      response = http_get_on($producer_url + '/products?showDeleted=true')
     end while response.nil?
 
     $producer_details = response
-    $unique_products = ($producer_details.map {|item| item["product_id"] }).uniq
+    $unique_products = ($producer_details.map { |item| item['product_id'] }).uniq
     $unique_products.each do |product|
       results[product] = 100.0 / $unique_products.size
     end
@@ -211,21 +211,21 @@ class SettingController < BehaviorController
 
   def retrieve_current_or_default_settings
     settings = {}
-    settings["consumer_per_minute"]            = $consumer_per_minute            ? $consumer_per_minute                            : 100.0
-    settings["amount_of_consumers"]            = $amount_of_consumers            ? $amount_of_consumers                            : 1
-    settings["probability_of_buy"]             = $probability_of_buy             ? $probability_of_buy                             : 100
-    settings["min_buying_amount"]              = $min_buying_amount              ? $min_buying_amount                              : 1
-    settings["max_buying_amount"]              = $max_buying_amount              ? $max_buying_amount                              : 1
-    settings["min_wait"]                       = $min_wait                       ? $min_wait                                       : 0.1
-    settings["max_wait"]                       = $max_wait                       ? $max_wait                                       : 2
-    settings["behaviors"]                      = $behaviors_settings             ? $behaviors_settings                             : gather_available_behaviors
-    settings["timeout_if_no_offers_available"] = $timeout_if_no_offers_available ? $timeout_if_no_offers_available                 : 2
-    settings["timeout_if_too_many_requests"]   = $timeout_if_too_many_requests   ? $timeout_if_too_many_requests                   : 30
-    settings["max_buying_price"]               = $max_buying_price               ? $max_buying_price                               : 80
-    settings["debug"]                          = $debug                          ? $debug                                          : false
-    settings["producer_url"]                   = $producer_url
-    settings["product_popularity"]             = $product_popularity             ? $product_popularity                             : retrieve_and_build_product_popularity
-    settings["marketplace_url"]                = $marketplace_url
+    settings['consumer_per_minute']            = $consumer_per_minute            ? $consumer_per_minute                            : 100.0
+    settings['amount_of_consumers']            = $amount_of_consumers            ? $amount_of_consumers                            : 1
+    settings['probability_of_buy']             = $probability_of_buy             ? $probability_of_buy                             : 100
+    settings['min_buying_amount']              = $min_buying_amount              ? $min_buying_amount                              : 1
+    settings['max_buying_amount']              = $max_buying_amount              ? $max_buying_amount                              : 1
+    settings['min_wait']                       = $min_wait                       ? $min_wait                                       : 0.1
+    settings['max_wait']                       = $max_wait                       ? $max_wait                                       : 2
+    settings['behaviors']                      = $behaviors_settings             ? $behaviors_settings                             : gather_available_behaviors
+    settings['timeout_if_no_offers_available'] = $timeout_if_no_offers_available ? $timeout_if_no_offers_available                 : 2
+    settings['timeout_if_too_many_requests']   = $timeout_if_too_many_requests   ? $timeout_if_too_many_requests                   : 30
+    settings['max_buying_price']               = $max_buying_price               ? $max_buying_price                               : 80
+    settings['debug']                          = $debug                          ? $debug                                          : false
+    settings['producer_url']                   = $producer_url
+    settings['product_popularity']             = $product_popularity             ? $product_popularity                             : retrieve_and_build_product_popularity
+    settings['marketplace_url']                = $marketplace_url
     settings
   end
 

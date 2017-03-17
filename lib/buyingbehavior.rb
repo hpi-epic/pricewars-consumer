@@ -1,19 +1,16 @@
-require "pp"
-require "gaussian"
-require "sigmoid"
-require "logit"
-require "features"
+require 'pp'
+require 'gaussian'
+require 'sigmoid'
+require 'logit'
+require 'features'
 # require 'statsample-glm'
 
 class BuyingBehavior
   attr_reader :expression, :variables
 
-  # uncomment for using caching for external calls (e.g. producer) to reduce waiting time
-  # cache :store => 'file', :timeout => 300, :location => '/tmp/'
-
   # Initialize with parameters passed
   def initialize(items, behavior_settings)
-    $products           = items.map {|item| item["product_id"] }
+    $products           = items.map { |item| item['product_id'] }
     $unfiltered_items   = items
     @behavior_settings  = behavior_settings
 
@@ -33,7 +30,7 @@ class BuyingBehavior
   end
 
   def buy_cheap
-    validate_max_price($items.min_by {|item| item["price"] })
+    validate_max_price($items.min_by { |item| item['price'] })
   end
 
   def buy_n_cheap(n)
@@ -54,11 +51,11 @@ class BuyingBehavior
   end
 
   def buy_cheap_and_prime
-    validate_max_price(having_prime($items).min_by {|item| item["price"] })
+    validate_max_price(having_prime($items).min_by { |item| item['price'] })
   end
 
   def buy_expensive
-    validate_max_price($items.max_by {|item| item["price"] })
+    validate_max_price($items.max_by { |item| item['price'] })
   end
 
   def buy_cheapest_best_quality_with_prime
@@ -67,9 +64,9 @@ class BuyingBehavior
   end
 
   def buy_cheapest_best_quality
-    best_quality = $items.map {|item| item["quality"] }.max
-    best_quality_items = $items.select {|item| item["quality"] == best_quality }
-    validate_max_price(best_quality_items.min_by {|item| item["price"] })
+    best_quality = $items.map { |item| item['quality'] }.max
+    best_quality_items = $items.select { |item| item['quality'] == best_quality }
+    validate_max_price(best_quality_items.min_by { |item| item['price'] })
   end
 
   def buy_sigmoid_distribution_price
@@ -77,12 +74,12 @@ class BuyingBehavior
     highest_prob_item = {}
 
     $items.shuffle.each do |item|
-      product = (@behavior_settings[:producer_prices].select {|product| product["uid"] == item["uid"] }).first
+      product = (@behavior_settings[:producer_prices].select { |product| product['uid'] == item['uid'] }).first
       if product.nil?
         puts "ERROR: item uid #{item['uid']} is unknown to producer_prices for sigmoid distribution"
         next
       end
-      sig = RandomSigmoid.new(product["price"].to_i * 2, item["price"].to_i).rand
+      sig = RandomSigmoid.new(product['price'].to_i * 2, item['price'].to_i).rand
 
       prob = (sig * 100)
 
@@ -95,14 +92,14 @@ class BuyingBehavior
   end
 
   def buy_logit_coefficients
-    theta             = @behavior_settings["coefficients"].map {|_key, value| value }
+    theta             = @behavior_settings['coefficients'].map { |_key, value| value }
     highest_prob_item = {}
     highest_prob      = 0
     probs             = []
 
     $items.each do |item|
-      names             = @behavior_settings["coefficients"].map {|key, _value| key }
-      names.delete("intercept")
+      names             = @behavior_settings['coefficients'].map { |key, _value| key }
+      names.delete('intercept')
       features          = [build_features_array(names, item)]
       logit             = Logit.new
       y                 = []
@@ -128,23 +125,23 @@ class BuyingBehavior
   end
 
   def select_based_on_product_popularity
-    if @behavior_settings["product_popularity"].nil?
-      puts "ALERT: product_popularity wrong configured, falling back to select_random_product"
+    if @behavior_settings['product_popularity'].nil?
+      puts 'ALERT: product_popularity wrong configured, falling back to select_random_product'
       return select_random_product
     end
-    products_in_marketsituation = $unfiltered_items.map {|item| item["product_id"] }
-    supported_products = @behavior_settings["product_popularity"].select {|key, _value| products_in_marketsituation.uniq.include?(key.to_i) }
-    $items = $unfiltered_items.select {|item| item["product_id"] == choose_weighted(supported_products).to_i }
+    products_in_marketsituation = $unfiltered_items.map { |item| item['product_id'] }
+    supported_products = @behavior_settings['product_popularity'].select { |key, _value| products_in_marketsituation.uniq.include?(key.to_i) }
+    $items = $unfiltered_items.select { |item| item['product_id'] == choose_weighted(supported_products).to_i }
   end
 
   def select_random_product
-    $items = $unfiltered_items.select {|item| item["product_id"] == $products.uniq.sample }
+    $items = $unfiltered_items.select { |item| item['product_id'] == $products.uniq.sample }
   end
 
   def normalize_and_roll_dice_with(probs)
     sumProbs = probs.inject(:+)
     return nil if sumProbs == 0
-    normalized_probs = probs.map {|p| p / sumProbs }
+    normalized_probs = probs.map { |p| p / sumProbs }
     r = Random.rand
     currentSum = 0
 
@@ -173,7 +170,7 @@ class BuyingBehavior
 
   def validate_max_price(item)
     return nil if item.nil? || item.blank?
-    if item["price"] > @behavior_settings["max_buying_price"]
+    if item['price'] > @behavior_settings['max_buying_price']
       puts "item price (#{item['price']}€) is above max_buying_price (#{@behavior_settings['max_buying_price']}€), reject" if $debug
       nil
     else
@@ -182,11 +179,11 @@ class BuyingBehavior
   end
 
   def having_prime(items)
-    items.select {|item| item["prime"] == true }
+    items.select { |item| item['prime'] == true }
   end
 
   def finding_best_quality(items)
-    items.map {|item| item["quality"] }.max
+    items.map { |item| item['quality'] }.max
   end
 end
 

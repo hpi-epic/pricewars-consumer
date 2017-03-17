@@ -28,7 +28,7 @@ The consumer is written in Rails. Ensure to have the following components instal
 
 After cloning the repo, install the necessary dependencies with `bundle exec bundle install`.
 
-Afterwards you may start the webserver with `rails s -b 0.0.0.0` where the ENV var PRICEWARS_MARKETPLACE_URL and PRICEWARS_PRODUCER_URL point to the actual path of the marketplace and the producer.
+Afterwards you may start the webserver with `rails s -b 0.0.0.0` where the ENV variables PRICEWARS_MARKETPLACE_URL and PRICEWARS_PRODUCER_URL point to the actual path of the marketplace and the producer.
 
 If all worked out, see the results at _ http://localhost:3000 _ .
 
@@ -108,7 +108,7 @@ the marketplace offer list filtered by prime
 
 #### Sigmoid distribution behavior in detail
 
-The [sigmoid distribution](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L77) behavior realizes a sigmoid(-x) distribution of consumer purchases over [twice the producer price](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L88) which is used as mean. The offer which is highest probability is selected to be bought.
+The [sigmoid distribution](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L77) behavior realizes a sigmoid(-x) distribution of consumer purchases over [twice the producer price](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L88) which is used as mean.
 
 The following figures delineate the sigmoid distribution where y is the probability of purchase and x the price of an offer. In the given example, the mean is twice the producer price (15€) therefore 30€.
 
@@ -175,13 +175,6 @@ Different resolvers were tried out, however, the only working solution is to exp
 
 ```
 /etc/hosts
-127.0.0.1       localhost
-127.0.1.1       vm-mpws2016hp1-01.eaalab.hpi.uni-potsdam.de     vm-mpws2016hp1-01
-
-# The following lines are desirable for IPv6 capable hosts
-::1     localhost ip6-localhost ip6-loopback
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
 
 # Reducing DNS lookups by assigning statically marketplace host
 192.168.31.90 vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de

@@ -2,7 +2,7 @@
 # http://stackoverflow.com/questions/5825680/code-to-generate-gaussian-normally-distributed-random-numbers-in-ruby
 
 class RandomGaussian
-  def initialize(mean, stddev, rand_helper=-> { Kernel.rand })
+  def initialize(mean, stddev, rand_helper = -> { Kernel.rand })
     @rand_helper = rand_helper
     @mean = mean
     @stddev = stddev

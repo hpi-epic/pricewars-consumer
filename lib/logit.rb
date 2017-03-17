@@ -10,13 +10,10 @@ class Logit
     m = features.length      # Number of training examples
     n = features[0].length   # Number of features
 
-    features.each {|i| i.unshift(1) } # Append a column of 1's to features
-
-    # puts "theta: #{theta}"
+    features.each { |i| i.unshift(1) } # Append a column of 1's to features
 
     relativize_theta = self.class.relativize_theta(theta)
 
-    # puts "relativize_theta: #{relativize_theta}"
     self.class.cost_logistic_regression(relativize_theta, features, y, m, n)
   end
 
@@ -30,7 +27,7 @@ class Logit
     n = features[0].length          # Number of features
     initial_theta = [0.0] * (n + 1) # Initialize theta's
 
-    features.each {|i| i.unshift(1) } # Append a column of 1's to features
+    features.each { |i| i.unshift(1) } # Append a column of 1's to features
 
     features = self.class.scale_features(features, m, n)
 
@@ -48,7 +45,7 @@ class Logit
 
   def self.relativize_theta(theta)
     relativize_theta = []
-    sum = theta.inject(0) {|sum, x| sum + x }
+    sum = theta.inject(0) { |sum, x| sum + x }
     theta.each do |coefficient|
       relativize_theta.push(coefficient / sum)
     end
@@ -86,7 +83,6 @@ class Logit
   def self.h_logistic_regression(theta, x, n)
     theta_t_x = 0
     0.upto n do |i|
-      # puts "#theta[i] #{theta[i]} and x[i] #{x[i]} for #{i}"
       theta_t_x += theta[i] * x[i]
     end
 
