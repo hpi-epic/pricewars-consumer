@@ -276,10 +276,7 @@ href="https://github.com/emaadmanzoor/python-ML-minimal/blob/master/logistic-reg
 15
 16
 17
-18
-19
-20
-21</pre>
+18</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/logit.rb', line 9</span>
@@ -288,14 +285,11 @@ href="https://github.com/emaadmanzoor/python-ML-minimal/blob/master/logistic-reg
   <span class='id identifier rubyid_m'>m</span> <span class='op'>=</span> <span class='id identifier rubyid_features'>features</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span>      <span class='comment'># Number of training examples
 </span>  <span class='id identifier rubyid_n'>n</span> <span class='op'>=</span> <span class='id identifier rubyid_features'>features</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span>   <span class='comment'># Number of features
 </span>
-  <span class='id identifier rubyid_features'>features</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_i'>i</span><span class='op'>|</span> <span class='id identifier rubyid_i'>i</span><span class='period'>.</span><span class='id identifier rubyid_unshift'>unshift</span><span class='lparen'>(</span><span class='int'>1</span><span class='rparen'>)</span> <span class='rbrace'>}</span> <span class='comment'># Append a column of 1&#39;s to features
-</span>
-  <span class='comment'># puts &quot;theta: #{theta}&quot;
+  <span class='id identifier rubyid_features'>features</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_i'>i</span><span class='op'>|</span> <span class='id identifier rubyid_i'>i</span><span class='period'>.</span><span class='id identifier rubyid_unshift'>unshift</span><span class='lparen'>(</span><span class='int'>1</span><span class='rparen'>)</span> <span class='rbrace'>}</span> <span class='comment'># Append a column of 1&#39;s to features
 </span>
   <span class='id identifier rubyid_relativize_theta'>relativize_theta</span> <span class='op'>=</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_relativize_theta'>relativize_theta</span><span class='lparen'>(</span><span class='id identifier rubyid_theta'>theta</span><span class='rparen'>)</span>
 
-  <span class='comment'># puts &quot;relativize_theta: #{relativize_theta}&quot;
-</span>  <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_cost_logistic_regression'>cost_logistic_regression</span><span class='lparen'>(</span><span class='id identifier rubyid_relativize_theta'>relativize_theta</span><span class='comma'>,</span> <span class='id identifier rubyid_features'>features</span><span class='comma'>,</span> <span class='id identifier rubyid_y'>y</span><span class='comma'>,</span> <span class='id identifier rubyid_m'>m</span><span class='comma'>,</span> <span class='id identifier rubyid_n'>n</span><span class='rparen'>)</span>
+  <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_cost_logistic_regression'>cost_logistic_regression</span><span class='lparen'>(</span><span class='id identifier rubyid_relativize_theta'>relativize_theta</span><span class='comma'>,</span> <span class='id identifier rubyid_features'>features</span><span class='comma'>,</span> <span class='id identifier rubyid_y'>y</span><span class='comma'>,</span> <span class='id identifier rubyid_m'>m</span><span class='comma'>,</span> <span class='id identifier rubyid_n'>n</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -330,6 +324,9 @@ results, e.g. [0,1,0] learning_rate = 0.001 iterations    = 4000</p>
       <pre class="lines">
 
 
+25
+26
+27
 28
 29
 30
@@ -344,20 +341,17 @@ results, e.g. [0,1,0] learning_rate = 0.001 iterations    = 4000</p>
 39
 40
 41
-42
-43
-44
-45</pre>
+42</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/logit.rb', line 28</span>
+      <pre class="code"><span class="info file"># File 'lib/logit.rb', line 25</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_train'>train</span><span class='lparen'>(</span><span class='id identifier rubyid_features'>features</span><span class='comma'>,</span> <span class='id identifier rubyid_y'>y</span><span class='comma'>,</span> <span class='id identifier rubyid_learning_rate'>learning_rate</span><span class='comma'>,</span> <span class='id identifier rubyid_iterations'>iterations</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_m'>m</span> <span class='op'>=</span> <span class='id identifier rubyid_features'>features</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span>             <span class='comment'># Number of training examples
 </span>  <span class='id identifier rubyid_n'>n</span> <span class='op'>=</span> <span class='id identifier rubyid_features'>features</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span>          <span class='comment'># Number of features
 </span>  <span class='id identifier rubyid_initial_theta'>initial_theta</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='float'>0.0</span><span class='rbracket'>]</span> <span class='op'>*</span> <span class='lparen'>(</span><span class='id identifier rubyid_n'>n</span> <span class='op'>+</span> <span class='int'>1</span><span class='rparen'>)</span> <span class='comment'># Initialize theta&#39;s
 </span>
-  <span class='id identifier rubyid_features'>features</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_i'>i</span><span class='op'>|</span> <span class='id identifier rubyid_i'>i</span><span class='period'>.</span><span class='id identifier rubyid_unshift'>unshift</span><span class='lparen'>(</span><span class='int'>1</span><span class='rparen'>)</span> <span class='rbrace'>}</span> <span class='comment'># Append a column of 1&#39;s to features
+  <span class='id identifier rubyid_features'>features</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_i'>i</span><span class='op'>|</span> <span class='id identifier rubyid_i'>i</span><span class='period'>.</span><span class='id identifier rubyid_unshift'>unshift</span><span class='lparen'>(</span><span class='int'>1</span><span class='rparen'>)</span> <span class='rbrace'>}</span> <span class='comment'># Append a column of 1&#39;s to features
 </span>
   <span class='id identifier rubyid_features'>features</span> <span class='op'>=</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_scale_features'>scale_features</span><span class='lparen'>(</span><span class='id identifier rubyid_features'>features</span><span class='comma'>,</span> <span class='id identifier rubyid_m'>m</span><span class='comma'>,</span> <span class='id identifier rubyid_n'>n</span><span class='rparen'>)</span>
 
@@ -380,7 +374,7 @@ results, e.g. [0,1,0] learning_rate = 0.001 iterations    = 4000</p>
 </div>
 
       <div id="footer">
-  Generated on Wed Mar 15 16:15:23 2017 by
+  Generated on Tue Mar 28 15:46:50 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.8 (ruby-2.3.1).
 </div>

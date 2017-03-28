@@ -217,7 +217,7 @@ href="http://stackoverflow.com/questions/5825680/code-to-generate-gaussian-norma
     <td>
       <pre class="code"><span class="info file"># File 'lib/gaussian.rb', line 5</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_mean'>mean</span><span class='comma'>,</span> <span class='id identifier rubyid_stddev'>stddev</span><span class='comma'>,</span> <span class='id identifier rubyid_rand_helper'>rand_helper</span><span class='op'>=</span><span class='tlambda'>-&gt;</span> <span class='tlambeg'>{</span> <span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_rand'>rand</span> <span class='rbrace'>}</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_mean'>mean</span><span class='comma'>,</span> <span class='id identifier rubyid_stddev'>stddev</span><span class='comma'>,</span> <span class='id identifier rubyid_rand_helper'>rand_helper</span> <span class='op'>=</span> <span class='tlambda'>-&gt;</span> <span class='tlambeg'>{</span> <span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_rand'>rand</span> <span class='rbrace'>}</span><span class='rparen'>)</span>
   <span class='ivar'>@rand_helper</span> <span class='op'>=</span> <span class='id identifier rubyid_rand_helper'>rand_helper</span>
   <span class='ivar'>@mean</span> <span class='op'>=</span> <span class='id identifier rubyid_mean'>mean</span>
   <span class='ivar'>@stddev</span> <span class='op'>=</span> <span class='id identifier rubyid_stddev'>stddev</span>
@@ -287,7 +287,7 @@ href="http://stackoverflow.com/questions/5825680/code-to-generate-gaussian-norma
 </div>
 
       <div id="footer">
-  Generated on Wed Mar 15 16:15:23 2017 by
+  Generated on Tue Mar 28 15:46:50 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.8 (ruby-2.3.1).
 </div>

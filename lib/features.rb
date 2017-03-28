@@ -35,7 +35,7 @@ class Features
   def self.feature_price_rank(market_situation, evaluated_item)
     amount_of_cheaper_offers    = market_situation.select { |item| item['price'] < evaluated_item['price'] }
     amount_of_offers_same_price = market_situation.select { |item| item['price'] == evaluated_item['price'] }
-    1 + amount_of_cheaper_offers.size + (amount_of_offers_same_price.size/2)
+    1 + amount_of_cheaper_offers.size + (amount_of_offers_same_price.size / 2)
   end
 
   def self.feature_distance_to_cheapest_competitor(market_situation, evaluated_item)
