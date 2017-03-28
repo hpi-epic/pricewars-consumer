@@ -146,7 +146,7 @@ class SettingController < BehaviorController
 
   def execute(item, behavior)
     url = $marketplace_url + '/offers/' + item['offer_id'].to_s + '/buy'
-    puts "#{url} for #{behavior} with quality #{item['quality']}" if $debug
+    puts "buying #{item['offer_id']} for #{behavior} with quality #{item['quality']}" if $debug
 
     body = { price:       item['price'],
              amount:      rand($min_buying_amount..$max_buying_amount),
@@ -158,6 +158,10 @@ class SettingController < BehaviorController
                'Authorization' => "Token #{$consumer_token}" }
     begin
       response = http_post_on(url, header, body)
+      if response.respond_to?(:code)
+        puts "#{response.code}"
+        return if response.code === 204
+      end
     end while response.nil?
 
     puts response.code if $debug

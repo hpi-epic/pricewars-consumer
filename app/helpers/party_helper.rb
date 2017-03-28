@@ -28,12 +28,12 @@ module PartyHelper
   def http_post_on(url, header, body)
     puts url if $debug
     begin
-      result = HTTParty.post(url, body: body, headers: header)
+      response = HTTParty.post(url, body: body, headers: header)
     rescue => e
       puts "Critical: HTTP POST on #{url} with header: #{header} and body: #{body} resulted in #{e}, lets wait 10s"
       sleep(10)
-      result = nil
+      response = nil
     end
-    result
+    response
   end
 end
