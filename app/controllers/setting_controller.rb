@@ -40,7 +40,8 @@ class SettingController < BehaviorController
 
   def update_product_details
     puts 'Updating product details on request' if $debug
-    retrieve_and_build_product_popularity
+    $product_popularity = retrieve_and_build_product_popularity
+    normalize_product_popularity
     render(text: 'updated product details', status: 200)
   end
 
