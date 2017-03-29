@@ -160,7 +160,7 @@ class SettingController < BehaviorController
     begin
       response = http_post_on(url, header, body)
       if response.respond_to?(:code)
-        puts "#{response.code}"
+        puts "#{response.code}" if $debug
         return if response.code === 204
       end
     end while response.nil?
@@ -170,7 +170,7 @@ class SettingController < BehaviorController
   end
 
   def expand_behavior_settings(settings)
-    retrieve_and_build_product_popularity
+    #$product_popularity = retrieve_and_build_product_popularity # uncomment to automatically update product details from producer
     settings[:producer_prices]    = $producer_details
     settings[:max_buying_price]   = $max_buying_price
     settings[:product_popularity] = $product_popularity
