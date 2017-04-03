@@ -53,62 +53,62 @@ The consumer is defined via behaviors which are implemented in *lib/buyingbehavi
 
 ### Consumer Behaviors
 
-Via settings, the distribution across those available behaviors is defined as percentage. In the consumer logic then, each behavior is [called and executed](https://github.com/hpi-epic/pricewars-consumer/blob/master/app/controllers/setting_controller.rb#L142) dynamically based on the provided behavior method name and its distribution.
+Via settings, the distribution across those available behaviors is defined as percentage. In the consumer logic then, each behavior is [called and executed](https://github.com/hpi-epic/pricewars-consumer/blob/master/app/controllers/setting_controller.rb#L127) dynamically based on the provided behavior method name and its distribution.
 
 #### Existing behaviors
 
-* [buy_first](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L29)
+* [buy_first](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L24)
 
 > buying the first item out of the marketplace offer list
 
-* [buy_random](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L33)
+* [buy_random](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L28)
 
 > buying a random item out of the marketplace offer list
 
-* [buy_cheap](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L37)
+* [buy_cheap](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L32)
 
 > buying the cheapest item out of the marketplace offer list
 
-* [buy_n_cheap(n)](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L41)
+* [buy_n_cheap(n)](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L36)
 
 > buying the n-cheapest item out of the marketplace offer list
 
-* [buy_second_cheap](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L50)
+* [buy_second_cheap](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L45)
 
 > buying the second cheapest item out of the marketplace offer list
 
-* [buy_third_cheap](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L54)
+* [buy_third_cheap](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L49)
 
 > buying the third cheapest item out of the marketplace offer list
 
-* [buy_cheap_and_prime](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L58)
+* [buy_cheap_and_prime](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L53)
 
 > buying the cheapest item out of the marketplace offer list filtered by prime
 
-* [buy_expensive](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L62)
+* [buy_expensive](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L57)
 
 > buying the most expensive item out of the marketplace offer list
 
-* [buy_cheapest_best_quality_with_prime](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L66)
+* [buy_cheapest_best_quality_with_prime](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L61)
 
 > buying the cheapest item with the best possible quality out of
 the marketplace offer list filtered by prime
 
-* [buy_cheapest_best_quality](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L71)
+* [buy_cheapest_best_quality](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L66)
 
 > buying the cheapest item with the best possible quality out of the marketplace offer list
 
-* [buy_sigmoid_distribution_price](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L77)
+* [buy_sigmoid_distribution_price](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L72)
 
 > buying items with sigmoid distribution around twice the producer price from the marketplace offer list
 
-* [buy_logit_coefficients](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L99)
+* [buy_logit_coefficients](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L94)
 
 > buying items based on the provided logit coefficients from the marketplace offer list
 
 #### Sigmoid distribution behavior in detail
 
-The [sigmoid distribution](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L77) behavior realizes a sigmoid(-x) distribution of consumer purchases over [twice the producer price](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L88) which is used as mean.
+The [sigmoid distribution](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L72) behavior realizes a sigmoid(-x) distribution of consumer purchases over [twice the producer price](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L82) which is used as mean.
 
 The following figures delineate the sigmoid distribution where y is the probability of purchase and x the price of an offer. In the given example, the mean is twice the producer price (15€) therefore 30€.
 
@@ -119,7 +119,7 @@ Consequently, the cheaper the offer is, the higher the purchase probability; the
 
 #### Logistic regression behavior in detail
 
-The [logit behavior](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L99) implements a logistic regression with feature scaling and calculates for each offer the buying probability based on the feature coefficients provided in the behavior settings. Based on this buying probability for each offer, the consumer will actually choose an offer to buy.
+The [logit behavior](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L94) implements a logistic regression with feature scaling and calculates for each offer the buying probability based on the feature coefficients provided in the behavior settings. Based on this buying probability for each offer, the consumer will actually choose an offer to buy.
 In this way, potential consumer behavior can be learned on real world data and imitated in the simulation solution.
 
 Logistic regression is a regression model where the dependent variable -- in our case the selling of an offer -- is categorical. This categorization outcome must be discrete and should be dichotomous in nature simply expressed by a boolean whether a purchase happened or not. To determine this, this behavior consumes features and their coefficients can be altered within runtime and will then be applied to the next calculation iteration taking place. The describing hashmap of features and their coefficients contains only available features which are already implemented otherwise they will be ignored.
@@ -166,7 +166,7 @@ Keep in mind to add the new behavior with its description, default settings and 
 
 The current implementation supports an even distributed selection of items (random selection). Additionally, one may define product popularity via the consumer settings which is evaluated instead of a random distribution.
 
-The relative selection method can be defined in the [initialize method of the buyingbehavior.rb](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L25) by either using *select_random_product* or  *select_based_on_product_popularity* (see comments).
+The relative selection method can be defined in the [initialize method of the buyingbehavior.rb](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L19) by either using *select_random_product* or  *select_based_on_product_popularity* (see comments).
 
 ## Host entries
 
@@ -183,7 +183,7 @@ Different resolvers were tried out, however, the only working solution is to exp
 
 ## Sample Configuration
 
-Like described in the [API documentation](https://hpi-epic.github.io/masterproject-pricewars/api/), a sample setting json for the consumer looks like the following:
+Like described in the [API documentation](https://hpi-epic.github.io/masterproject-pricewars/), a sample setting json for the consumer looks like the following:
 
 > HTTP GET http://localhost:3000/setting/
 
