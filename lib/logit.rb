@@ -14,7 +14,8 @@ class Logit
 
     relativize_theta = self.class.relativize_theta(theta)
 
-    self.class.cost_logistic_regression(relativize_theta, features, y, m, n)
+    #self.class.cost_logistic_regression(relativize_theta, features, y, m, n)
+    self.class.logistic_regression_algebra(relativize_theta, features, n)
   end
 
   #
@@ -124,5 +125,13 @@ class Logit
       summation += y[i] * Math.log(h_logistic_regression(theta, x[i], n)) + (1 - y[i]) * Math.log(1 - h_logistic_regression(theta, x[i], n))
     end
     -summation / m
+  end
+
+  def self.logistic_regression_algebra(relativize_theta, features, n)
+    summation = 0.0
+    0.upto n - 1 do |i|
+      summation += (relativize_theta[i]*features[0][i])
+    end
+    summation
   end
 end
