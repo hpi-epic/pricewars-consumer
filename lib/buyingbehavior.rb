@@ -111,6 +111,20 @@ class BuyingBehavior
       probs.push(prob)
     end
 
+    if $debug
+      logit_model = Hash.new
+      for i in (0..probs.length-1)
+        break if probs.nil?
+        log_item = $items[i]
+        log_item["probability_of_sell"] = probs[i]
+        logit_model[$items[i]["offer_id"]] = log_item
+      end
+      logit_model["global"] = {}
+      logit_model["global"]["amount_of_all_competitors"] = $items.length
+      logit_model["global"]["highest_prob_price_rank"] = 1 + $items.select { |item| item['price'] < $items[probs.index(probs.max)]['price'] }.size
+      Logit.info logit_model.to_json
+    end
+
     validate_max_price(normalize_and_roll_dice_with(probs))
   end
 
