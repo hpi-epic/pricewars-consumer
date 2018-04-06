@@ -5,6 +5,7 @@ class BehaviorController < ApplicationController
 
   def gather_available_behaviors
     result = []
+    result.push(select_prefer_cheap)
     result.push(select_first_behavior)
     result.push(select_random_behavior)
     result.push(select_cheap_behavior)
@@ -16,11 +17,16 @@ class BehaviorController < ApplicationController
     result.push(select_third_cheap_behavior)
     result.push(select_sigmoid_distribution_price)
     result.push(select_logit_coefficients)
-    result.push(select_prefer_cheap)
-    evenly_distributed_behavior(result)
+    first_behavior_activated(result)
   end
 
   private
+
+  def first_behavior_activated(behaviors)
+    behaviors_with_amount = behaviors.map{|behavior| behavior.merge({'amount' => 0})}
+    behaviors_with_amount.first['amount'] = 100
+    behaviors_with_amount
+  end
 
   def evenly_distributed_behavior(behaviors)
     result = []
