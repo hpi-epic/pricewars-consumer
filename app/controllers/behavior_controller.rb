@@ -16,6 +16,7 @@ class BehaviorController < ApplicationController
     result.push(select_third_cheap_behavior)
     result.push(select_sigmoid_distribution_price)
     result.push(select_logit_coefficients)
+    result.push(select_prefer_cheap)
     evenly_distributed_behavior(result)
   end
 
@@ -126,6 +127,15 @@ class BehaviorController < ApplicationController
     behavior['description'] = 'I am with logit coefficients'
     behavior['settings'] = { "coefficients": { "intercept": -6.6177961, "price_rank": 0.2083944, "amount_of_all_competitors": 0.253481, "average_price_on_market": -0.0079326, "quality_rank": -0.1835972 } }
     behavior['settings_description'] = 'Key Value map for Feature and their coeffient'
+    behavior
+  end
+
+  def select_prefer_cheap
+    behavior = {}
+    behavior['name'] = 'prefer_cheap'
+    behavior['description'] = 'I prefer cheap products but sometimes I allow me a more expensive product'
+    behavior['settings'] = {}
+    behavior['settings_description'] = 'Behavior settings not necessary'
     behavior
   end
 end
