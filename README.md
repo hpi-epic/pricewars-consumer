@@ -2,20 +2,20 @@
 
 This repository contains the Consumer-component of the Price Wars simulation. The consumer represents the costumers arriving at the marketplace and buying products. How often and which products they buy is decided based on custom consumer-behaviors that can be configured and changed.
 
-The consumer is realized using a Ruby-app implementing the MVC pattern including continuous integration and deployment via Codeship. Please make sure tests are running before committing.
+The consumer is realized using a Ruby-app implementing the MVC pattern. Please make sure tests are running before committing.
 
-The meta repository containing general information can be found [here](https://github.com/hpi-epic/masterproject-pricewars)
+The meta repository containing general information can be found [here](https://github.com/hpi-epic/pricewars)
 
 ## Application Overview
 
-| Repo | Branch 	| Deployment to  	| Status | Description |
-|--- |---	|---	|---  |---   |
-| [UI](https://github.com/hpi-epic/pricewars-mgmt-ui) | master  	|  [vm-mpws2016hp1-02.eaalab.hpi.uni-potsdam.de](http://vm-mpws2016hp1-02.eaalab.hpi.uni-potsdam.de) 	| [ ![Codeship Status for hpi-epic/pricewars-mgmt-ui](https://app.codeship.com/projects/d91a8460-88c2-0134-a385-7213830b2f8c/status?branch=master)](https://app.codeship.com/projects/184009) | Stable |
-| [Consumer](https://github.com/hpi-epic/pricewars-consumer) | master  	|  [vm-mpws2016hp1-01.eaalab.hpi.uni-potsdam.de](http://vm-mpws2016hp1-01.eaalab.hpi.uni-potsdam.de) | [ ![Codeship Status for hpi-epic/pricewars-consumer](https://app.codeship.com/projects/96f32950-7824-0134-c83e-5251019101b9/status?branch=master)](https://app.codeship.com/projects/180119) | Stable |
-| [Producer](https://github.com/hpi-epic/pricewars-producer) | master  	|  [vm-mpws2016hp1-03eaalab.hpi.uni-potsdam.de](http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de) | [ ![Codeship Status for hpi-epic/pricewars-producer](https://app.codeship.com/projects/0328e450-88c6-0134-e3d6-7213830b2f8c/status?branch=master)](https://app.codeship.com/projects/184016) | Stable |
-| [Marketplace](https://github.com/hpi-epic/pricewars-marketplace) | master  	|  [vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de/marketplace](http://vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de/marketplace/offers) 	| [ ![Codeship Status for hpi-epic/pricewars-marketplace](https://app.codeship.com/projects/e9d9b3e0-88c5-0134-6167-4a60797e4d29/status?branch=master)](https://app.codeship.com/projects/184015) | Stable |
-| [Merchant](https://github.com/hpi-epic/pricewars-merchant) | master  	|  [vm-mpws2016hp1-06.eaalab.hpi.uni-potsdam.de/](http://vm-mpws2016hp1-06.eaalab.hpi.uni-potsdam.de/) 	| [ ![Codeship Status for hpi-epic/pricewars-merchant](https://app.codeship.com/projects/a7d3be30-88c5-0134-ea9c-5ad89f4798f3/status?branch=master)](https://app.codeship.com/projects/184013) | Stable |
-| [Kafka RESTful API](https://github.com/hpi-epic/pricewars-kafka-rest) | master  	|  [vm-mpws2016hp1-05.eaalab.hpi.uni-potsdam.de](http://vm-mpws2016hp1-05.eaalab.hpi.uni-potsdam.de) 	|  [ ![Codeship Status for hpi-epic/pricewars-kafka-rest](https://app.codeship.com/projects/f59aa150-92f0-0134-8718-4a1d78af514c/status?branch=master)](https://app.codeship.com/projects/186252) | Stable |
+| Repo |
+|--- |
+| [UI](https://github.com/hpi-epic/pricewars-mgmt-ui) |
+| [Consumer](https://github.com/hpi-epic/pricewars-consumer) |
+| [Producer](https://github.com/hpi-epic/pricewars-producer) |
+| [Marketplace](https://github.com/hpi-epic/pricewars-marketplace) |
+| [Merchant](https://github.com/hpi-epic/pricewars-merchant) |
+| [Kafka RESTful API](https://github.com/hpi-epic/pricewars-kafka-rest) |
 
 ## Requirements
 
@@ -30,7 +30,7 @@ After cloning the repo, install the necessary dependencies with `bundle exec bun
 
 Afterwards you may start the webserver with `rails s -b 0.0.0.0` where the ENV variables PRICEWARS_MARKETPLACE_URL and PRICEWARS_PRODUCER_URL point to the actual path of the marketplace and the producer.
 
-If all worked out, see the results at _ http://localhost:3000 _ .
+If all worked out, see the results at http://localhost:3000
 
 ## Configuration
 
@@ -105,6 +105,10 @@ the marketplace offer list filtered by prime
 * [buy_logit_coefficients](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L94)
 
 > buying items based on the provided logit coefficients from the marketplace offer list
+
+* buy_prefer_cheap
+
+> Buys with highest probability the cheapest product, but also has a chance to buy more expensive products. The probabilities are calculated with a modified market power formula.
 
 #### Sigmoid distribution behavior in detail
 

@@ -128,7 +128,33 @@ class BuyingBehavior
     validate_max_price(normalize_and_roll_dice_with(probs))
   end
 
+  def buy_prefer_cheap
+    relevant_offers = $items.select{|item| item['price'] <= @behavior_settings['max_buying_price']}
+    if relevant_offers.length == 0
+      nil
+    else
+      probabilites = buy_probabilities(relevant_offers)
+      choose_weighted(relevant_offers.zip(probabilites))
+    end
+  end
+
   private
+
+  # Uses a modified market power formula to calculate buying probabilities.
+  # The cheapest offers has the highest probability.
+  # The higher the price difference to the cheapest offers, the lower is the buying probability.
+  def buy_probabilities(offers)
+    price_sensitivity = 1
+    prices = offers.map{|offer| offer['price']}
+    max_price = prices.max
+    price_sum = prices.reduce(0, :+)
+    probabilities = []
+    offers.each do |offer|
+      probability = (max_price + price_sensitivity - offer['price']) / (offers.length * (max_price + price_sensitivity) - price_sum)
+      probabilities.push(probability)
+    end
+    probabilities
+  end
 
   def build_features_array(feature_names, item)
     result = []
