@@ -9,8 +9,6 @@ class SettingController < BehaviorController
   def init(params, request)
     $min_buying_amount              = params.key?(:min_buying_amount)              ? params[:min_buying_amount]              : 1
     $max_buying_amount              = params.key?(:max_buying_amount)              ? params[:max_buying_amount]              : 1
-    $min_wait                       = params.key?(:min_wait)                       ? params[:min_wait]                       : 0.1
-    $max_wait                       = params.key?(:max_wait)                       ? params[:max_wait]                       : 2
     $timeout_if_no_offers_available = params.key?(:timeout_if_no_offers_available) ? params[:timeout_if_no_offers_available] : 2
     $consumer_per_minute            = params.key?(:consumer_per_minute)            ? params[:consumer_per_minute]            : 100.0
     $timeout_if_too_many_requests   = params.key?(:timeout_if_too_many_requests)   ? params[:timeout_if_too_many_requests]   : 30
@@ -56,9 +54,9 @@ class SettingController < BehaviorController
     $amount_of_consumers.times do
       thread = Thread.new do |_t|
         loop do
-          general_timeout_through_consumer_settings = (60 / $consumer_per_minute) + rand($min_wait..$max_wait)
-          puts "next iteration starting of with sleeping #{general_timeout_through_consumer_settings}s" if $debug
-          sleep(general_timeout_through_consumer_settings) # sleep regarding global time zone and random offset
+          seconds_until_next_visit = exponential(60 / $consumer_per_minute)
+          puts "next visit in #{seconds_until_next_visit} seconds" if $debug
+          sleep(seconds_until_next_visit)
           available_items = get_available_items
           puts "processing #{available_items.size} offers" if $debug
           if !available_items.any? || available_items.empty?
@@ -66,7 +64,7 @@ class SettingController < BehaviorController
             sleep($timeout_if_no_offers_available)
             next
           end
-          status = logic(available_items, params, params.key?('bulk') ? true : false)
+          logic(available_items)
         end
       end
       $list_of_threads.push(thread)
@@ -116,7 +114,7 @@ class SettingController < BehaviorController
     JSON.parse(response.body)
   end
 
-  def logic(items, _settings, _bulk_boolean)
+  def logic(items)
     if rand(1..100) < $probability_of_buy
       behavior_weights = {}
       $behaviors_settings.each { |behavior| behavior_weights[behavior[:name]] = behavior[:amount] }
@@ -204,16 +202,6 @@ class SettingController < BehaviorController
     end
   end
 
-  # def cleanup_behavior_settings(behaviors)
-  #  behaviors.each do |key, behavior|
-  #    behaviors[key][:settings].delete(:producer_prices)
-  #    behaviors[key][:settings].delete(:max_buying_price)
-  #    behaviors[key][:settings].delete(:unique_products)
-  #    behaviors[key][:settings].delete(:product_popularity)
-  #  end
-  #  behaviors
-  # end
-
   def retrieve_current_or_default_settings
     settings = {}
     settings['consumer_per_minute']            = $consumer_per_minute            ? $consumer_per_minute                            : 100.0
@@ -221,8 +209,6 @@ class SettingController < BehaviorController
     settings['probability_of_buy']             = $probability_of_buy             ? $probability_of_buy                             : 100
     settings['min_buying_amount']              = $min_buying_amount              ? $min_buying_amount                              : 1
     settings['max_buying_amount']              = $max_buying_amount              ? $max_buying_amount                              : 1
-    settings['min_wait']                       = $min_wait                       ? $min_wait                                       : 0.1
-    settings['max_wait']                       = $max_wait                       ? $max_wait                                       : 2
     settings['behaviors']                      = $behaviors_settings             ? $behaviors_settings                             : gather_available_behaviors
     settings['timeout_if_no_offers_available'] = $timeout_if_no_offers_available ? $timeout_if_no_offers_available                 : 2
     settings['timeout_if_too_many_requests']   = $timeout_if_too_many_requests   ? $timeout_if_too_many_requests                   : 30
@@ -244,4 +230,10 @@ class SettingController < BehaviorController
       target -= weight
     end
   end
+
+  # Samples a random number from the exponential distribution
+  def exponential(mean)
+    -mean * Math.log(rand()) if mean > 0
+  end
+
 end
