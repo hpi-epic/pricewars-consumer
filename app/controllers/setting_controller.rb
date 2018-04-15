@@ -53,10 +53,8 @@ class SettingController < BehaviorController
     $list_of_threads ||= []
     $amount_of_consumers.times do
       thread = Thread.new do |_t|
+        next_customer_time = Time.now
         loop do
-          seconds_until_next_visit = exponential(60 / $consumer_per_minute)
-          puts "next visit in #{seconds_until_next_visit} seconds" if $debug
-          sleep(seconds_until_next_visit)
           available_items = get_available_items
           puts "processing #{available_items.size} offers" if $debug
           if !available_items.any? || available_items.empty?
@@ -65,6 +63,8 @@ class SettingController < BehaviorController
             next
           end
           logic(available_items)
+          next_customer_time += exponential(60 / $consumer_per_minute)
+          sleep([0, next_customer_time - Time.now].max)
         end
       end
       $list_of_threads.push(thread)
