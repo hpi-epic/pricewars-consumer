@@ -53,8 +53,6 @@ gem 'json'
 
 gem 'dotenv-rails'
 
-gem 'statsample-glm'
-
 # for deployment
 gem 'capistrano', '~> 3.4.1'
 gem 'capistrano-passenger'
