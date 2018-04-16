@@ -232,6 +232,7 @@ class SettingController < BehaviorController
   end
 
   # Samples a random number from the exponential distribution
+  # This function is from: https://stackoverflow.com/a/18304464
   def exponential(mean)
     -mean * Math.log(rand()) if mean > 0
   end
