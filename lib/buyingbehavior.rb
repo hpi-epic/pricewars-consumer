@@ -3,7 +3,6 @@ require 'gaussian'
 require 'sigmoid'
 require 'logit'
 require 'features'
-# require 'statsample-glm'
 
 class BuyingBehavior
   attr_reader :expression, :variables
