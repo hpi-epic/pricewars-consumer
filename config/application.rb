@@ -18,7 +18,7 @@ $producer_url = producer
 $marketplace_url = marketplace
 
 # Set the random seed to have a comparable consumer behavior over multiple iterations.
-srand 123
+srand 17
 
 module Parser
   class Application < Rails::Application
