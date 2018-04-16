@@ -11,6 +11,11 @@ class SettingController < BehaviorController
     $max_buying_amount              = params.key?(:max_buying_amount)              ? params[:max_buying_amount]              : 1
     $timeout_if_no_offers_available = params.key?(:timeout_if_no_offers_available) ? params[:timeout_if_no_offers_available] : 2
     $consumer_per_minute            = params.key?(:consumer_per_minute)            ? params[:consumer_per_minute]            : 100.0
+    if $consumer_per_minute <= 0
+      puts "Warning: Zero or less consumers per minutes is an invalid value"
+      puts "Setting consumers per minutes to 100.0"
+      $consumer_per_minute = 100.0
+    end
     $timeout_if_too_many_requests   = params.key?(:timeout_if_too_many_requests)   ? params[:timeout_if_too_many_requests]   : 30
     $amount_of_consumers            = params.key?(:amount_of_consumers)            ? params[:amount_of_consumers]            : 1
     $probability_of_buy             = params.key?(:probability_of_buy)             ? params[:probability_of_buy]             : 100
