@@ -59,6 +59,8 @@ class SettingController < BehaviorController
     $amount_of_consumers.times do
       thread = Thread.new do |_t|
         next_customer_time = Time.now
+        # Use a random generator with a fixed seed to have comparable waiting times over multiple simulations.
+        random_generator = Random.new(17)
         loop do
           available_items = get_available_items
           puts "processing #{available_items.size} offers" if $debug
@@ -68,7 +70,7 @@ class SettingController < BehaviorController
             next
           end
           logic(available_items)
-          next_customer_time += exponential(60 / $consumer_per_minute)
+          next_customer_time += exponential(60 / $consumer_per_minute, random_generator)
           sleep([0, next_customer_time - Time.now].max)
         end
       end
@@ -238,8 +240,8 @@ class SettingController < BehaviorController
 
   # Samples a random number from the exponential distribution
   # This function is from: https://stackoverflow.com/a/18304464
-  def exponential(mean)
-    -mean * Math.log(rand()) if mean > 0
+  def exponential(mean, generator)
+    -mean * Math.log(generator.rand()) if mean > 0
   end
 
 end

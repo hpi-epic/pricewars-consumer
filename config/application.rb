@@ -17,9 +17,6 @@ marketplace = 'http://' + marketplace unless marketplace.starts_with?('http')
 $producer_url = producer
 $marketplace_url = marketplace
 
-# Set the random seed to have a comparable consumer behavior over multiple iterations.
-srand 17
-
 module Parser
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.
