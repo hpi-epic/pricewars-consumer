@@ -70,7 +70,7 @@ class SettingController < BehaviorController
             next
           end
           logic(available_items)
-          next_customer_time += exponential(60 / $consumer_per_minute, random_generator)
+          next_customer_time += exponential(60.0 / $consumer_per_minute, random_generator)
           sleep([0, next_customer_time - Time.now].max)
         end
       end
