@@ -6,6 +6,8 @@ class SettingController < BehaviorController
   include RegisterHelper
   include PartyHelper
 
+  @@threads = []
+
   def init(params, request)
     $min_buying_amount              = params.key?(:min_buying_amount)              ? params[:min_buying_amount]              : 1
     $max_buying_amount              = params.key?(:max_buying_amount)              ? params[:max_buying_amount]              : 1
@@ -52,10 +54,10 @@ class SettingController < BehaviorController
     render(nothing: true, status: 405) && return unless request.content_type == 'application/json'
     render(nothing: true, status: 405) && return unless params.key?(:marketplace_url)
 
+    stop_threads
     init(params, request)
     register_with_marketplace unless $consumer_token.present?
 
-    $list_of_threads ||= []
     $amount_of_consumers.times do
       thread = Thread.new do |_t|
         next_customer_time = Time.now
@@ -70,11 +72,14 @@ class SettingController < BehaviorController
             next
           end
           logic(available_items)
-          next_customer_time += exponential(60 / $consumer_per_minute, random_generator)
+          next_customer_time += exponential(60.0 / $consumer_per_minute, random_generator)
           sleep([0, next_customer_time - Time.now].max)
         end
       end
-      $list_of_threads.push(thread)
+      if $debug
+        thread.abort_on_exception = true
+      end
+      @@threads.push(thread)
     end
 
     render json: retrieve_current_or_default_settings
@@ -82,23 +87,21 @@ class SettingController < BehaviorController
 
   def status
     result = {}
-    result['status'] = $list_of_threads.present? ? 'running' : 'dead'
+    result['status'] = @@threads.empty? ? 'dead' : 'running'
     render json: result
   end
 
   def delete
-    if $list_of_threads.present?
-      $list_of_threads.each do |thread|
-        Thread.kill(thread)
-      end
-      $list_of_threads = []
+    if @@threads.empty?
+      render(text: 'no instance running', status: 200) && return
+    end
 
-      if $marketplace_url.nil? || $consumer_id.nil?
-        render(text: 'invalid configuration: consumer_id or marketplace_url unknown', status: 417) && return
-      end
-      render(text: 'all process instances terminated', status: 200)
+    stop_threads
+
+    if $marketplace_url.nil? || $consumer_id.nil?
+      render(text: 'invalid configuration: consumer_id or marketplace_url unknown', status: 417)
     else
-      render(text: 'no instance running', status: 200)
+      render(text: 'all process instances terminated', status: 200)
     end
   end
 
@@ -121,6 +124,13 @@ class SettingController < BehaviorController
     JSON.parse(response.body)
   end
 
+  def stop_threads
+    @@threads.each do |thread|
+      thread.kill
+    end
+    @@threads.clear
+  end
+
   def logic(items)
     if rand(1..100) < $probability_of_buy
       behavior_weights = {}
@@ -135,7 +145,7 @@ class SettingController < BehaviorController
         sleep($timeout_if_no_offers_available)
         return
       end
-      status = execute(item, behavior[:name]) # buy now!
+      status = buy(item, behavior[:name])
       if status == 429
         puts "429, sleeping #{$timeout_if_too_many_requests}s" if $debug
         sleep($timeout_if_too_many_requests)
@@ -150,15 +160,15 @@ class SettingController < BehaviorController
     end
   end
 
-  def execute(item, behavior)
+  def buy(item, behavior_name)
     url = $marketplace_url + '/offers/' + item['offer_id'].to_s + '/buy'
-    puts "buying #{item['offer_id']} for #{behavior} with quality #{item['quality']}" if $debug
+    puts "buying #{item['offer_id']} for #{behavior_name} with quality #{item['quality']}" if $debug
 
     body = { price:       item['price'],
              amount:      rand($min_buying_amount..$max_buying_amount),
              consumer_id: $consumer_id,
              prime:       item['prime'],
-             behavior:    behavior
+             behavior:    behavior_name
              }.to_json
     header = { 'Content-Type'  => 'application/json',
                'Authorization' => "Token #{$consumer_token}" }
