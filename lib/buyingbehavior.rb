@@ -220,10 +220,6 @@ class BuyingBehavior
   def having_prime(items)
     items.select { |item| item['prime'] == true }
   end
-
-  def finding_best_quality(items)
-    items.map { |item| item['quality'] }.min
-  end
 end
 
 class InvalidExpressionError < RuntimeError; end
