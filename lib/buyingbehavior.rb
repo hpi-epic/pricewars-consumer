@@ -63,7 +63,7 @@ class BuyingBehavior
   end
 
   def buy_cheapest_best_quality
-    best_quality = $items.map { |item| item['quality'] }.max
+    best_quality = $items.map { |item| item['quality'] }.min
     best_quality_items = $items.select { |item| item['quality'] == best_quality }
     validate_max_price(best_quality_items.min_by { |item| item['price'] })
   end
@@ -219,10 +219,6 @@ class BuyingBehavior
 
   def having_prime(items)
     items.select { |item| item['prime'] == true }
-  end
-
-  def finding_best_quality(items)
-    items.map { |item| item['quality'] }.max
   end
 end
 
