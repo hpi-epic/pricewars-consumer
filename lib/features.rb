@@ -54,7 +54,7 @@ class Features
   end
 
   def self.feature_quality_rank(market_situation, evaluated_item)
-    amount_of_better_quality_offers = market_situation.select { |item| item['quality'] > evaluated_item['quality'] }
+    amount_of_better_quality_offers = market_situation.select { |item| item['quality'] < evaluated_item['quality'] }
     amount_of_better_quality_offers.size
   end
 end
