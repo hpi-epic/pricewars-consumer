@@ -22,6 +22,6 @@ class RegisterController < ApplicationController
     end
 
     response_code = unregister
-    render json: { 'status code from marketplace': response_code }.as_json
+    render json: { 'status code from marketplace' => response_code }.as_json
   end
 end

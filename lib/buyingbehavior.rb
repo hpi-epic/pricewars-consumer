@@ -221,6 +221,3 @@ class BuyingBehavior
     items.select { |item| item['prime'] == true }
   end
 end
-
-class InvalidExpressionError < RuntimeError; end
-class LimitExceededError < RuntimeError; end

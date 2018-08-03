@@ -13,7 +13,7 @@ module PartyHelper
                                 idle_timeout: 10,
                                 keep_alive:   30
 
-  def http_get_on(url)
+  def self.http_get_on(url)
     puts url if $debug
     begin
       result = HTTParty.get(url)
@@ -25,7 +25,7 @@ module PartyHelper
     result
   end
 
-  def http_post_on(url, header, body)
+  def self.http_post_on(url, header, body)
     puts url if $debug
     begin
       response = HTTParty.post(url, body: body, headers: header)
