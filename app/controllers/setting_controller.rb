@@ -29,20 +29,18 @@ class SettingController < BehaviorController
   $consumer_per_minute = 100.0
   $timeout_if_too_many_requests = 30
   $amount_of_consumers = 1
-  $probability_of_buy = 100
   $max_buying_price = 80
   $debug = true #todo: change to false
   $behaviors_settings = BehaviorController.gather_available_behaviors
   $product_popularity = retrieve_and_build_product_popularity
 
-  def init(params)
+  def update_settings(params)
     $min_buying_amount = params[:min_buying_amount] if params.key?(:min_buying_amount)
     $max_buying_amount = params[:max_buying_amount] if params.key?(:max_buying_amount)
     $timeout_if_no_offers_available = params[:timeout_if_no_offers_available] if params.key?(:timeout_if_no_offers_available)
     $consumer_per_minute = [params[:consumer_per_minute], 0.01].max if params.key?(:consumer_per_minute)
     $timeout_if_too_many_requests = params[:timeout_if_too_many_requests] if params.key?(:timeout_if_too_many_requests)
     $amount_of_consumers = params[:amount_of_consumers] if params.key?(:amount_of_consumers)
-    $probability_of_buy = params[:probability_of_buy] if params.key?(:probability_of_buy)
     $max_buying_price = params[:max_buying_price] if params.key?(:max_buying_price)
     $debug = params[:debug] if params.key?(:debug)
     $behaviors_settings = params[:behaviors] if params.key?(:behaviors)
@@ -59,8 +57,7 @@ class SettingController < BehaviorController
 
   def update
     render(nothing: true, status: 405) && return unless request.content_type == 'application/json'
-    render(nothing: true, status: 405) && return unless params.key?(:marketplace_url)
-    init(params)
+    update_settings(params)
     render json: retrieve_settings
   end
 
@@ -76,7 +73,7 @@ class SettingController < BehaviorController
     render(nothing: true, status: 405) && return unless params.key?(:marketplace_url)
 
     stop_threads
-    init(params)
+    update_settings(params)
     register_with_marketplace unless $consumer_token.present?
 
     $amount_of_consumers.times do
@@ -153,31 +150,27 @@ class SettingController < BehaviorController
   end
 
   def logic(items)
-    if rand(1..100) < $probability_of_buy
-      behavior_weights = {}
-      $behaviors_settings.each { |behavior| behavior_weights[behavior[:name]] = behavior[:amount] }
-      selected_behavior = choose_weighted(behavior_weights)
-      puts "selected_behavior: #{selected_behavior}" if $debug
-      behavior = ($behaviors_settings.select { |b| b[:name] == selected_behavior }).first
-      puts "actual behavior: #{behavior[:name]}" if $debug
-      item = BuyingBehavior.new(items, expand_behavior_settings(behavior[:settings])).send('buy_' + behavior[:name]) # get item based on buying behavior
-      if item.nil?
-        puts "no item selected by BuyingBehavior with #{behavior[:name]}, sleeping #{$timeout_if_no_offers_available}s" if $debug
-        sleep($timeout_if_no_offers_available)
-        return
-      end
-      status = buy(item, behavior[:name])
-      if status == 429
-        puts "429, sleeping #{$timeout_if_too_many_requests}s" if $debug
-        sleep($timeout_if_too_many_requests)
-      elsif status == 401
-        puts '401..' if $debug
-        deregister_with_marketplace
-        register_with_marketplace
-        puts 'ERROR: marketplace rejected consumer API Token'
-      end
-    else
-      puts 'The luck is not with us, maybe next round' if $debug
+    behavior_weights = {}
+    $behaviors_settings.each { |behavior| behavior_weights[behavior[:name]] = behavior[:amount] }
+    selected_behavior = choose_weighted(behavior_weights)
+    puts "selected_behavior: #{selected_behavior}" if $debug
+    behavior = ($behaviors_settings.select { |b| b[:name] == selected_behavior }).first
+    puts "actual behavior: #{behavior[:name]}" if $debug
+    item = BuyingBehavior.new(items, expand_behavior_settings(behavior[:settings])).send('buy_' + behavior[:name]) # get item based on buying behavior
+    if item.nil?
+      puts "no item selected by BuyingBehavior with #{behavior[:name]}, sleeping #{$timeout_if_no_offers_available}s" if $debug
+      sleep($timeout_if_no_offers_available)
+      return
+    end
+    status = buy(item, behavior[:name])
+    if status == 429
+      puts "429, sleeping #{$timeout_if_too_many_requests}s" if $debug
+      sleep($timeout_if_too_many_requests)
+    elsif status == 401
+      puts '401..' if $debug
+      deregister_with_marketplace
+      register_with_marketplace
+      puts 'ERROR: marketplace rejected consumer API Token'
     end
   end
 
@@ -231,7 +224,6 @@ class SettingController < BehaviorController
         timeout_if_no_offers_available: $timeout_if_no_offers_available,
         consumer_per_minute: $consumer_per_minute,
         amount_of_consumers: $amount_of_consumers,
-        probability_of_buy: $probability_of_buy,
         behaviors: $behaviors_settings,
         timeout_if_too_many_requests: $timeout_if_too_many_requests,
         max_buying_price: $max_buying_price,
