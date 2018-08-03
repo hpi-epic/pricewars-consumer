@@ -25,7 +25,6 @@ class SettingController < BehaviorController
   $threads = []
   $min_buying_amount = 1
   $max_buying_amount = 1
-  $timeout_if_no_offers_available = 2
   $consumer_per_minute = 100.0
   $timeout_if_too_many_requests = 30
   $amount_of_consumers = 1
@@ -37,7 +36,6 @@ class SettingController < BehaviorController
   def update_settings(params)
     $min_buying_amount = params[:min_buying_amount] if params.key?(:min_buying_amount)
     $max_buying_amount = params[:max_buying_amount] if params.key?(:max_buying_amount)
-    $timeout_if_no_offers_available = params[:timeout_if_no_offers_available] if params.key?(:timeout_if_no_offers_available)
     $consumer_per_minute = [params[:consumer_per_minute], 0.01].max if params.key?(:consumer_per_minute)
     $timeout_if_too_many_requests = params[:timeout_if_too_many_requests] if params.key?(:timeout_if_too_many_requests)
     $amount_of_consumers = params[:amount_of_consumers] if params.key?(:amount_of_consumers)
@@ -85,8 +83,6 @@ class SettingController < BehaviorController
           available_items = get_available_items
           puts "processing #{available_items.size} offers" if $debug
           if !available_items.any? || available_items.empty?
-            puts "no items available, sleeping #{$timeout_if_no_offers_available}s" if $debug
-            sleep($timeout_if_no_offers_available)
             next
           end
           logic(available_items)
@@ -158,8 +154,6 @@ class SettingController < BehaviorController
     puts "actual behavior: #{behavior[:name]}" if $debug
     item = BuyingBehavior.new(items, expand_behavior_settings(behavior[:settings])).send('buy_' + behavior[:name]) # get item based on buying behavior
     if item.nil?
-      puts "no item selected by BuyingBehavior with #{behavior[:name]}, sleeping #{$timeout_if_no_offers_available}s" if $debug
-      sleep($timeout_if_no_offers_available)
       return
     end
     status = buy(item, behavior[:name])
@@ -221,7 +215,6 @@ class SettingController < BehaviorController
     {
         min_buying_amount: $min_buying_amount,
         max_buying_amount: $max_buying_amount,
-        timeout_if_no_offers_available: $timeout_if_no_offers_available,
         consumer_per_minute: $consumer_per_minute,
         amount_of_consumers: $amount_of_consumers,
         behaviors: $behaviors_settings,
