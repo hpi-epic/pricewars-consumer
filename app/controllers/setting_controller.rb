@@ -27,7 +27,7 @@ class SettingController < BehaviorController
   $consumer_per_minute = 100.0
   $timeout_if_too_many_requests = 30
   $max_buying_price = 80
-  $debug = false
+  $debug = true
   $behaviors_settings = BehaviorController.gather_available_behaviors
   $product_popularity = retrieve_and_build_product_popularity
 
@@ -72,18 +72,18 @@ class SettingController < BehaviorController
     register_with_marketplace unless $consumer_token.present?
 
     thread = Thread.new do |_t|
-      next_customer_time = Time.now
       # Use a random generator with a fixed seed to have comparable waiting times over multiple simulations.
       random_generator = Random.new(17)
       loop do
+        start_time = Time.now
         available_items = get_available_items
         puts "processing #{available_items.size} offers" if $debug
         if !available_items.any? || available_items.empty?
           next
         end
         logic(available_items)
-        next_customer_time += exponential(60.0 / $consumer_per_minute, random_generator)
-        sleep([0, next_customer_time - Time.now].max)
+        wait_time = exponential(60.0 / $consumer_per_minute, random_generator)
+        sleep([0, start_time + wait_time - Time.now].max)
       end
     end
     if $debug
