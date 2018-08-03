@@ -92,8 +92,6 @@ class BuyingBehavior
 
   def buy_logit_coefficients
     theta             = @behavior_settings['coefficients'].map { |_key, value| value }
-    highest_prob_item = {}
-    highest_prob      = 0
     probs             = []
 
     $items.each do |item|
@@ -105,7 +103,6 @@ class BuyingBehavior
       features.length.times { y.push(1) }
 
       prob              = logit.predict(features, theta, y)
-      # glm = Statsample::GLM.compute data_set, :y, :logistic, {constant: 1, algorithm: :mle}
 
       probs.push(prob)
     end

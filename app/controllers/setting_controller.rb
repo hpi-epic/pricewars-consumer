@@ -27,7 +27,7 @@ class SettingController < BehaviorController
   $consumer_per_minute = 100.0
   $timeout_if_too_many_requests = 30
   $max_buying_price = 80
-  $debug = true #todo: change to false
+  $debug = false
   $behaviors_settings = BehaviorController.gather_available_behaviors
   $product_popularity = retrieve_and_build_product_popularity
 
