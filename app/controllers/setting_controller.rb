@@ -7,16 +7,15 @@ class SettingController < BehaviorController
   include PartyHelper
 
   def self.retrieve_and_build_product_popularity
-    results = {}
 
     begin
-      response = PartyHelper.http_get_on($producer_url + '/products?showDeleted=true')
-    end while response.nil?
+      $product_details = PartyHelper.http_get_on($producer_url + '/products?showDeleted=true')
+    end while $product_details.nil?
 
-    $producer_details = response
-    $unique_products = ($producer_details.map { |item| item['product_id'] }).uniq
-    $unique_products.each do |product|
-      results[product] = 100.0 / $unique_products.size
+    results = {}
+    unique_products = ($product_details.map { |item| item['product_id'] }).uniq
+    unique_products.each do |product|
+      results[product] = 100.0 / unique_products.size
     end
 
     results
@@ -27,7 +26,6 @@ class SettingController < BehaviorController
   $max_buying_amount = 1
   $consumer_per_minute = 100.0
   $timeout_if_too_many_requests = 30
-  $amount_of_consumers = 1
   $max_buying_price = 80
   $debug = true #todo: change to false
   $behaviors_settings = BehaviorController.gather_available_behaviors
@@ -38,7 +36,6 @@ class SettingController < BehaviorController
     $max_buying_amount = params[:max_buying_amount] if params.key?(:max_buying_amount)
     $consumer_per_minute = [params[:consumer_per_minute], 0.01].max if params.key?(:consumer_per_minute)
     $timeout_if_too_many_requests = params[:timeout_if_too_many_requests] if params.key?(:timeout_if_too_many_requests)
-    $amount_of_consumers = params[:amount_of_consumers] if params.key?(:amount_of_consumers)
     $max_buying_price = params[:max_buying_price] if params.key?(:max_buying_price)
     $debug = params[:debug] if params.key?(:debug)
     $behaviors_settings = params[:behaviors] if params.key?(:behaviors)
@@ -74,27 +71,25 @@ class SettingController < BehaviorController
     update_settings(params)
     register_with_marketplace unless $consumer_token.present?
 
-    $amount_of_consumers.times do
-      thread = Thread.new do |_t|
-        next_customer_time = Time.now
-        # Use a random generator with a fixed seed to have comparable waiting times over multiple simulations.
-        random_generator = Random.new(17)
-        loop do
-          available_items = get_available_items
-          puts "processing #{available_items.size} offers" if $debug
-          if !available_items.any? || available_items.empty?
-            next
-          end
-          logic(available_items)
-          next_customer_time += exponential(60.0 / $consumer_per_minute, random_generator)
-          sleep([0, next_customer_time - Time.now].max)
+    thread = Thread.new do |_t|
+      next_customer_time = Time.now
+      # Use a random generator with a fixed seed to have comparable waiting times over multiple simulations.
+      random_generator = Random.new(17)
+      loop do
+        available_items = get_available_items
+        puts "processing #{available_items.size} offers" if $debug
+        if !available_items.any? || available_items.empty?
+          next
         end
+        logic(available_items)
+        next_customer_time += exponential(60.0 / $consumer_per_minute, random_generator)
+        sleep([0, next_customer_time - Time.now].max)
       end
-      if $debug
-        thread.abort_on_exception = true
-      end
-      $threads.push(thread)
     end
+    if $debug
+      thread.abort_on_exception = true
+    end
+    $threads.push(thread)
 
     render json: retrieve_settings
   end
@@ -194,10 +189,9 @@ class SettingController < BehaviorController
 
   def expand_behavior_settings(settings)
     #$product_popularity = retrieve_and_build_product_popularity # uncomment to automatically update product details from producer
-    settings[:producer_prices]    = $producer_details
+    settings[:producer_prices]    = $product_details
     settings[:max_buying_price]   = $max_buying_price
     settings[:product_popularity] = $product_popularity
-    settings[:unique_products]    = $unique_products
     settings
   end
 
@@ -216,7 +210,6 @@ class SettingController < BehaviorController
         min_buying_amount: $min_buying_amount,
         max_buying_amount: $max_buying_amount,
         consumer_per_minute: $consumer_per_minute,
-        amount_of_consumers: $amount_of_consumers,
         behaviors: $behaviors_settings,
         timeout_if_too_many_requests: $timeout_if_too_many_requests,
         max_buying_price: $max_buying_price,
@@ -229,7 +222,7 @@ class SettingController < BehaviorController
 
   def choose_weighted(weighted)
     sum = weighted.inject(0) do |sum, item_and_weight|
-      sum += item_and_weight[1]
+      sum + item_and_weight[1]
     end
     target = rand(sum)
     weighted.each do |item, weight|
