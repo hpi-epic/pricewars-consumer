@@ -78,10 +78,9 @@ class SettingController < BehaviorController
         start_time = Time.now
         available_items = get_available_items
         puts "processing #{available_items.size} offers" if $debug
-        if !available_items.any? || available_items.empty?
-          next
+        if available_items.any? && !available_items.empty?
+          logic(available_items)
         end
-        logic(available_items)
         wait_time = exponential(60.0 / $consumer_per_minute, random_generator)
         sleep([0, start_time + wait_time - Time.now].max)
       end
