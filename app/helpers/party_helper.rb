@@ -30,10 +30,13 @@ module PartyHelper
     begin
       response = HTTParty.post(url, body: body, headers: header)
     rescue => e
-      puts "Critical: HTTP POST on #{url} with header: #{header} and body: #{body} resulted in #{e}, lets wait 10s"
-      sleep(10)
+      puts "Critical: HTTP POST on #{url} with header: #{header} and body: #{body} resulted in #{e}"
       response = nil
     end
+    raise RateLimitExceeded if response.code == 429
     response
   end
+end
+
+class RateLimitExceeded < StandardError
 end

@@ -27,7 +27,7 @@ class SettingController < BehaviorController
   $consumer_per_minute = 100.0
   $timeout_if_too_many_requests = 30
   $max_buying_price = 80
-  $debug = true
+  $debug = false
   $behaviors_settings = BehaviorController.gather_available_behaviors
   $product_popularity = retrieve_and_build_product_popularity
 
@@ -72,17 +72,18 @@ class SettingController < BehaviorController
     register_with_marketplace unless $consumer_token.present?
 
     thread = Thread.new do |_t|
+      next_customer_time = Time.now
       # Use a random generator with a fixed seed to have comparable waiting times over multiple simulations.
       random_generator = Random.new(17)
       loop do
-        start_time = Time.now
-        available_items = get_available_items
-        puts "processing #{available_items.size} offers" if $debug
-        if available_items.any? && !available_items.empty?
-          logic(available_items)
+        begin
+          visit_marketplace
+        rescue RateLimitExceeded
+          puts "Rate limit exceeded. Wait #{$timeout_if_too_many_requests} seconds"
+          next_customer_time += $timeout_if_too_many_requests
         end
-        wait_time = exponential(60.0 / $consumer_per_minute, random_generator)
-        sleep([0, start_time + wait_time - Time.now].max)
+        next_customer_time += exponential(60.0 / $consumer_per_minute, random_generator)
+        sleep([0, next_customer_time - Time.now].max)
       end
     end
     if $debug
@@ -139,27 +140,30 @@ class SettingController < BehaviorController
     $threads.clear
   end
 
-  def logic(items)
+  def visit_marketplace
+    item, behavior_name = buying_decision
+    return if item.nil?
+    status = buy(item, behavior_name)
+    if status == 401
+      puts '401..' if $debug
+      deregister_with_marketplace
+      register_with_marketplace
+      puts 'ERROR: marketplace rejected consumer API Token'
+    end
+  end
+
+  def buying_decision
+    items = get_available_items
+    puts "processing #{items.size} offers" if $debug
+    return if !items.any? || items.empty?
     behavior_weights = {}
     $behaviors_settings.each { |behavior| behavior_weights[behavior[:name]] = behavior[:amount] }
     selected_behavior = choose_weighted(behavior_weights)
     puts "selected_behavior: #{selected_behavior}" if $debug
     behavior = ($behaviors_settings.select { |b| b[:name] == selected_behavior }).first
     puts "actual behavior: #{behavior[:name]}" if $debug
-    item = BuyingBehavior.new(items, expand_behavior_settings(behavior[:settings])).send('buy_' + behavior[:name]) # get item based on buying behavior
-    if item.nil?
-      return
-    end
-    status = buy(item, behavior[:name])
-    if status == 429
-      puts "429, sleeping #{$timeout_if_too_many_requests}s" if $debug
-      sleep($timeout_if_too_many_requests)
-    elsif status == 401
-      puts '401..' if $debug
-      deregister_with_marketplace
-      register_with_marketplace
-      puts 'ERROR: marketplace rejected consumer API Token'
-    end
+    # get item based on buying behavior
+    return BuyingBehavior.new(items, expand_behavior_settings(behavior[:settings])).send('buy_' + behavior[:name]), behavior[:name]
   end
 
   def buy(item, behavior_name)
@@ -174,16 +178,14 @@ class SettingController < BehaviorController
              }.to_json
     header = {'Content-Type' => 'application/json',
               Authorization: "Token #{$consumer_token}"}
-    begin
-      response = PartyHelper.http_post_on(url, header, body)
-      if response.respond_to?(:code)
-        puts "#{response.code}" if $debug
-        return if response.code === 204
-      end
-    end while response.nil?
 
-    puts response.code if $debug
-    response.code
+    response = PartyHelper.http_post_on(url, header, body)
+    if response.nil?
+      nil
+    else
+      puts response.code if $debug
+      response.code
+    end
   end
 
   def expand_behavior_settings(settings)
