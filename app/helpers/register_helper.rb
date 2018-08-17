@@ -2,13 +2,12 @@ module RegisterHelper
   def register_on(marketplace_url, consumer_url, name, description)
     unregister if $consumer_token.present?
     $marketplace_url = marketplace_url
-    $consumer_url = consumer_url
     $consumer_name = name
     $consumer_description = description
     url = $marketplace_url + '/consumers'
     puts url if $debug
     response = HTTParty.post(url,
-                             body:    { api_endpoint_url: $consumer_url,
+                             body:    { api_endpoint_url: consumer_url,
                                         consumer_name:    $consumer_name,
                                         description:      $consumer_description
                              }.to_json,

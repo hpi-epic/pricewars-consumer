@@ -13,7 +13,7 @@ module PartyHelper
                                 idle_timeout: 10,
                                 keep_alive:   30
 
-  def http_get_on(url)
+  def self.http_get_on(url)
     puts url if $debug
     begin
       result = HTTParty.get(url)
@@ -25,15 +25,18 @@ module PartyHelper
     result
   end
 
-  def http_post_on(url, header, body)
+  def self.http_post_on(url, header, body)
     puts url if $debug
     begin
       response = HTTParty.post(url, body: body, headers: header)
     rescue => e
-      puts "Critical: HTTP POST on #{url} with header: #{header} and body: #{body} resulted in #{e}, lets wait 10s"
-      sleep(10)
+      puts "Critical: HTTP POST on #{url} with header: #{header} and body: #{body} resulted in #{e}"
       response = nil
     end
+    raise RateLimitExceeded if response.code == 429
     response
   end
+end
+
+class RateLimitExceeded < StandardError
 end
