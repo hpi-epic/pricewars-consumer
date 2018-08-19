@@ -1,11 +1,10 @@
 require 'net/http'
-# require 'resolv'
 require 'resolv-replace'
 
 module PartyHelper
   include HTTParty
 
-  # uncomment for using caching for external calls (e.g. producer) to reduce waiting time
+  # uncomment for using caching for external calls (e.g. marketplace) to reduce waiting time
   # cache :store => 'file', :timeout => 300, :location => '/tmp/'
 
   persistent_connection_adapter name:         'Marketplace',

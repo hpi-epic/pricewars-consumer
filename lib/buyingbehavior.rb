@@ -1,42 +1,34 @@
 require 'pp'
 require 'gaussian'
-require 'sigmoid'
 require 'logit'
 require 'features'
 
 class BuyingBehavior
   attr_reader :expression, :variables
 
-  # Initialize with parameters passed
   def initialize(items, behavior_settings)
-    $products           = items.map { |item| item['product_id'] }
-    $unfiltered_items   = items
-    @behavior_settings  = behavior_settings
-
-    # uncomment to select a random product for evaluation rather based on product popularity
-    # OPTIONS: select_random_product | select_based_on_product_popularity
-    select_based_on_product_popularity
-
-    puts "available items in buyingbehavior: #{$items.size}" if $debug
+    @items = items
+    @behavior_settings = behavior_settings
+    puts "available items in buying behavior: #{@items.size}" if $debug
   end
 
   def buy_first
-    validate_max_price($items.first)
+    validate_max_price(@items.first)
   end
 
   def buy_random
-    validate_max_price($items.sample)
+    validate_max_price(@items.sample)
   end
 
   def buy_cheap
-    validate_max_price($items.min_by { |item| item['price'] })
+    validate_max_price(@items.min_by { |item| item['price'] })
   end
 
   def buy_n_cheap(n)
     n.times do
       item = buy_cheap
       return nil if item.nil?
-      $items.delete(item)
+      @items.delete(item)
     end
     buy_cheap
   end
@@ -50,51 +42,29 @@ class BuyingBehavior
   end
 
   def buy_cheap_and_prime
-    validate_max_price(having_prime($items).min_by { |item| item['price'] })
+    validate_max_price(having_prime(@items).min_by { |item| item['price'] })
   end
 
   def buy_expensive
-    validate_max_price($items.max_by { |item| item['price'] })
+    validate_max_price(@items.max_by { |item| item['price'] })
   end
 
   def buy_cheapest_best_quality_with_prime
-    $items = having_prime($items)
+    @items = having_prime(@items)
     buy_cheapest_best_quality
   end
 
   def buy_cheapest_best_quality
-    best_quality = $items.map { |item| item['quality'] }.min
-    best_quality_items = $items.select { |item| item['quality'] == best_quality }
+    best_quality = @items.map { |item| item['quality'] }.min
+    best_quality_items = @items.select { |item| item['quality'] == best_quality }
     validate_max_price(best_quality_items.min_by { |item| item['price'] })
-  end
-
-  def buy_sigmoid_distribution_price
-    highest_prob    = 0
-    highest_prob_item = {}
-
-    $items.shuffle.each do |item|
-      product = (@behavior_settings[:producer_prices].select { |product| product['uid'] == item['uid'] }).first
-      if product.nil?
-        puts "ERROR: item uid #{item['uid']} is unknown to producer_prices for sigmoid distribution"
-        next
-      end
-      sig = RandomSigmoid.new(product['price'].to_i * 2, item['price'].to_i).rand
-
-      prob = (sig * 100)
-
-      if prob > highest_prob
-        highest_prob      = prob
-        highest_prob_item = item
-      end
-    end
-    validate_max_price(highest_prob_item)
   end
 
   def buy_logit_coefficients
     theta             = @behavior_settings['coefficients'].map { |_key, value| value }
     probs             = []
 
-    $items.each do |item|
+    @items.each do |item|
       names             = @behavior_settings['coefficients'].map { |key, _value| key }
       names.delete('intercept')
       features          = [build_features_array(names, item)]
@@ -111,21 +81,21 @@ class BuyingBehavior
       logit_model = Hash.new
       for i in (0..probs.length-1)
         break if probs.nil?
-        log_item = $items[i]
+        log_item = @items[i]
         log_item["probability_of_sell"] = probs[i]
-        logit_model[$items[i]["offer_id"]] = log_item
+        logit_model[@items[i]["offer_id"]] = log_item
       end
       logit_model["global"] = {}
-      logit_model["global"]["amount_of_all_competitors"] = $items.length
-      logit_model["global"]["highest_prob_price_rank"] = 1 + $items.select { |item| item['price'] < $items[probs.index(probs.max)]['price'] }.size
-      Logit.info logit_model.to_json
+      logit_model["global"]["amount_of_all_competitors"] = @items.length
+      logit_model["global"]["highest_prob_price_rank"] = 1 + @items.select { |item| item['price'] < @items[probs.index(probs.max)]['price'] }.size
+      #Logit.info logit_model.to_json
     end
 
     validate_max_price(normalize_and_roll_dice_with(probs))
   end
 
   def buy_prefer_cheap
-    relevant_offers = $items.select{|item| item['price'] <= @behavior_settings['max_buying_price']}
+    relevant_offers = @items.select{|item| item['price'] <= @behavior_settings['max_buying_price']}
     if relevant_offers.length == 0
       nil
     else
@@ -155,23 +125,9 @@ class BuyingBehavior
   def build_features_array(feature_names, item)
     result = []
     feature_names.each do |feature|
-      result.push(Features.new.determine(feature, $items, item))
+      result.push(Features.new.determine(feature, @items, item))
     end
     result
-  end
-
-  def select_based_on_product_popularity
-    if @behavior_settings['product_popularity'].nil?
-      puts 'ALERT: product_popularity wrong configured, falling back to select_random_product'
-      return select_random_product
-    end
-    products_in_marketsituation = $unfiltered_items.map { |item| item['product_id'] }
-    supported_products = @behavior_settings['product_popularity'].select { |key, _value| products_in_marketsituation.uniq.include?(key.to_i) }
-    $items = $unfiltered_items.select { |item| item['product_id'] == choose_weighted(supported_products).to_i }
-  end
-
-  def select_random_product
-    $items = $unfiltered_items.select { |item| item['product_id'] == $products.uniq.sample }
   end
 
   def normalize_and_roll_dice_with(probs)
@@ -184,7 +140,7 @@ class BuyingBehavior
     for i in (0..normalized_probs.length - 1)
       currentSum += normalized_probs[i]
       if r <= currentSum
-        selected_item = $items[i]
+        selected_item = @items[i]
         break
       end
     end

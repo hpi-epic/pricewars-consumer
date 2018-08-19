@@ -15,7 +15,6 @@ class BehaviorController < ApplicationController
     result.push(select_cheapest_best_quality_with_prime_behavior)
     result.push(select_second_cheap_behavior)
     result.push(select_third_cheap_behavior)
-    result.push(select_sigmoid_distribution_price)
     result.push(select_logit_coefficients)
   end
 
@@ -105,16 +104,6 @@ class BehaviorController < ApplicationController
     behavior = {}
     behavior['name'] = 'cheap_and_prime'
     behavior['description'] = 'I am buying the cheapest item which supports prime shipping'
-    behavior['settings'] = {}
-    behavior['settings_description'] = 'Behavior settings not necessary'
-    behavior['amount'] = 0
-    behavior
-  end
-
-  def self.select_sigmoid_distribution_price
-    behavior = {}
-    behavior['name'] = 'sigmoid_distribution_price'
-    behavior['description'] = 'I am with sigmoid distribution on the price regarding the producer prices'
     behavior['settings'] = {}
     behavior['settings_description'] = 'Behavior settings not necessary'
     behavior['amount'] = 0
