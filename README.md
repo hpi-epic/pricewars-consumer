@@ -28,23 +28,18 @@ The consumer is written in Rails. Ensure to have the following components instal
 
 After cloning the repo, install the necessary dependencies with `bundle exec bundle install`.
 
-Afterwards you may start the webserver with `rails s -b 0.0.0.0` where the ENV variables PRICEWARS_MARKETPLACE_URL and PRICEWARS_PRODUCER_URL point to the actual path of the marketplace and the producer.
+Afterwards you may start the webserver with `rails s -b 0.0.0.0` where the ENV variable PRICEWARS_MARKETPLACE_URL should point to the marketplace server.
 
 If all worked out, see the results at http://localhost:3000
 
 ## Configuration
 
-Currently, two ENV params are needed:
-* PRICEWARS_PRODUCER_URL
-* PRICEWARS_MARKETPLACE_URL
-
-If they are not set, the deployed VM urls are automatically used.
-
-One may simple export them to the related system:
+The marketplace url is configured in the environment variable `PRICEWARS_MARKETPLACE_URL`.
+If it is not set, a default url `http://marketplace:8080` is used.
+The environment variable can be set with:
 
 ```
-export PRICEWARS_MARKETPLACE_URL='http://vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de:8080/marketplace'
-export PRICEWARS_PRODUCER_URL='http://vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de'
+export PRICEWARS_MARKETPLACE_URL='http://your_hostname:8080'
 ```
 
 ## Concept
@@ -53,9 +48,10 @@ The consumer is defined via behaviors which are implemented in *lib/buyingbehavi
 
 ### Consumer Behaviors
 
-Via settings, the distribution across those available behaviors is defined as percentage. In the consumer logic then, each behavior is [called and executed](https://github.com/hpi-epic/pricewars-consumer/blob/master/app/controllers/setting_controller.rb#L127) dynamically based on the provided behavior method name and its distribution.
+The consumer chooses a random buying behavior for each buying decision.
+The buying behaviors have weights that determine how frequently each behavior is chosen.
 
-#### Existing behaviors
+The implemented behaviors are:
 
 * [buy_first](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L24)
 
@@ -98,10 +94,6 @@ the marketplace offer list filtered by prime
 
 > buying the cheapest item with the best possible quality out of the marketplace offer list
 
-* [buy_sigmoid_distribution_price](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L72)
-
-> buying items with sigmoid distribution around twice the producer price from the marketplace offer list
-
 * [buy_logit_coefficients](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L94)
 
 > buying items based on the provided logit coefficients from the marketplace offer list
@@ -109,17 +101,6 @@ the marketplace offer list filtered by prime
 * buy_prefer_cheap
 
 > Buys with highest probability the cheapest product, but also has a chance to buy more expensive products. The probabilities are calculated with a modified market power formula.
-
-#### Sigmoid distribution behavior in detail
-
-The [sigmoid distribution](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L72) behavior realizes a sigmoid(-x) distribution of consumer purchases over [twice the producer price](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L82) which is used as mean.
-
-The following figures delineate the sigmoid distribution where y is the probability of purchase and x the price of an offer. In the given example, the mean is twice the producer price (15€) therefore 30€.
-
-![alt tag](/public/doc/sigmoid.png?raw=true)
-![alt tag](/public/doc/sigmoid_2.png?raw=true)
-
-Consequently, the cheaper the offer is, the higher the purchase probability; the higher the price the lower the purchase probability.
 
 #### Logistic regression behavior in detail
 
@@ -157,33 +138,9 @@ If wished, *validate_max_price()* can be used to validate whether the selected i
 
 If the new behavior has individual settings, they can be accessed via *@behavior_settings*.
 
-All available product (ids) are included in *$products* and *$items* contains all offer items for one preselected product category. This preselection is done during the [initialization](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L26) and can be realized either by selecting a random product or by selecting a product based on the provided product popularity via settings.
-
-```
-# OPTIONS: select_random_product | select_based_on_product_popularity
-```
+A buying behavior chooses at most one offer from all available offers.
 
 Keep in mind to add the new behavior with its description, default settings and method name in the *app/controller/behavior_controller.rb* in the way that it will be included and listed in the default setting return value.
-
-
-### Selection of one product & its market situation
-
-The current implementation supports an even distributed selection of items (random selection). Additionally, one may define product popularity via the consumer settings which is evaluated instead of a random distribution.
-
-The relative selection method can be defined in the [initialize method of the buyingbehavior.rb](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L19) by either using *select_random_product* or  *select_based_on_product_popularity* (see comments).
-
-## Host entries
-
-When working on the provided VMs make sure to including DNS routing in the local /etc/hosts file. We experienced a lot of issues with TCP connection timeouts if those are not set. Also within the CI & CD pipeline in the way that github was not reachable due to connection timeouts.
-Different resolvers were tried out, however, the only working solution is to expand the host file,
-
-```
-/etc/hosts
-
-# Reducing DNS lookups by assigning statically marketplace host
-192.168.31.90 vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de
-192.168.31.89 vm-mpws2016hp1-03.eaalab.hpi.uni-potsdam.de
-```
 
 ## Sample Configuration
 
@@ -324,4 +281,4 @@ Like described in the [API documentation](https://hpi-epic.github.io/masterproje
 
 ## Source Code
 
-Detailed information regarding method and function usage and behavior can be found within the [public/doc/ directory](public/doc/index.html) of this repository or within the deployed service by [clicking here](http://vm-mpws2016hp1-01.eaalab.hpi.uni-potsdam.de/doc/index.html).
+Detailed information regarding method and function usage and behavior can be found within the [public/doc/ directory](public/doc/index.html) of this repository.

@@ -6,21 +6,6 @@ class SettingController < BehaviorController
   include RegisterHelper
   include PartyHelper
 
-  def self.retrieve_and_build_product_popularity
-
-    begin
-      $product_details = PartyHelper.http_get_on($producer_url + '/products?showDeleted=true')
-    end while $product_details.nil?
-
-    results = {}
-    unique_products = ($product_details.map { |item| item['product_id'] }).uniq
-    unique_products.each do |product|
-      results[product] = 100.0 / unique_products.size
-    end
-
-    results
-  end
-
   $threads = []
   $min_buying_amount = 1
   $max_buying_amount = 1
@@ -29,7 +14,6 @@ class SettingController < BehaviorController
   $max_buying_price = 80
   $debug = false
   $behaviors_settings = BehaviorController.gather_available_behaviors
-  $product_popularity = retrieve_and_build_product_popularity
 
   def update_settings(params)
     $min_buying_amount = params[:min_buying_amount] if params.key?(:min_buying_amount)
@@ -39,11 +23,7 @@ class SettingController < BehaviorController
     $max_buying_price = params[:max_buying_price] if params.key?(:max_buying_price)
     $debug = params[:debug] if params.key?(:debug)
     $behaviors_settings = params[:behaviors] if params.key?(:behaviors)
-    $product_popularity = params[:product_popularity] if params.key?(:product_popularity)
-    $producer_url = params[:producer_url] if params.key?(:producer_url)
     $marketplace_url = params[:marketplace_url] if params.key?(:marketplace_url)
-
-    normalize_product_popularity
   end
 
   def index
@@ -54,13 +34,6 @@ class SettingController < BehaviorController
     render(nothing: true, status: 405) && return unless request.content_type == 'application/json'
     update_settings(params)
     render json: retrieve_settings
-  end
-
-  def update_product_details
-    puts 'Updating product details on request' if $debug
-    $product_popularity = self.class.retrieve_and_build_product_popularity
-    normalize_product_popularity
-    render(text: 'updated product details', status: 200)
   end
 
   def create
@@ -189,21 +162,8 @@ class SettingController < BehaviorController
   end
 
   def expand_behavior_settings(settings)
-    #$product_popularity = retrieve_and_build_product_popularity # uncomment to automatically update product details from producer
-    settings[:producer_prices]    = $product_details
     settings[:max_buying_price]   = $max_buying_price
-    settings[:product_popularity] = $product_popularity
     settings
-  end
-
-  def normalize_product_popularity
-    total = 0.0
-    $product_popularity.each do |_key, value|
-      total += value
-    end
-    $product_popularity.each do |key2, value2|
-      $product_popularity[key2] = (value2 / total * 100).ceil
-    end
   end
 
   def retrieve_settings
@@ -215,8 +175,6 @@ class SettingController < BehaviorController
         timeout_if_too_many_requests: $timeout_if_too_many_requests,
         max_buying_price: $max_buying_price,
         debug: $debug,
-        producer_url: $producer_url,
-        product_popularity: $product_popularity,
         marketplace_url: $marketplace_url,
     }
   end
