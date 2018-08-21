@@ -11,8 +11,7 @@ Dotenv.load(File.expand_path('../.env',  __FILE__))
 # Show program output without delay (disable output buffering).
 STDOUT.sync = true
 
-marketplace = ENV['PRICEWARS_MARKETPLACE_URL'] || 'vm-mpws2016hp1-04.eaalab.hpi.uni-potsdam.de:8080/marketplace'
-$marketplace_url = 'http://' + marketplace unless marketplace.starts_with?('http')
+$marketplace_url = ENV['PRICEWARS_MARKETPLACE_URL'] || 'http://marketplace:8080'
 
 module Parser
   class Application < Rails::Application

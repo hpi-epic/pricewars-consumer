@@ -35,11 +35,11 @@ If all worked out, see the results at http://localhost:3000
 ## Configuration
 
 The marketplace url is configured in the environment variable `PRICEWARS_MARKETPLACE_URL`.
-If it is not set, a default url to a deployed VM is used.
+If it is not set, a default url `http://marketplace:8080` is used.
 The environment variable can be set with:
 
 ```
-export PRICEWARS_MARKETPLACE_URL='http://your_hostname:8080/marketplace'
+export PRICEWARS_MARKETPLACE_URL='http://your_hostname:8080'
 ```
 
 ## Concept
