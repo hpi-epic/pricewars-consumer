@@ -48,9 +48,10 @@ The consumer is defined via behaviors which are implemented in *lib/buyingbehavi
 
 ### Consumer Behaviors
 
-Via settings, the distribution across those available behaviors is defined as percentage. In the consumer logic then, each behavior is called and executed dynamically based on the provided behavior method name and its distribution.
+The consumer chooses a random buying behavior for each buying decision.
+The buying behaviors have weights that determine how frequently each behavior is chosen.
 
-#### Existing behaviors
+The implemented behaviors are:
 
 * [buy_first](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L24)
 
