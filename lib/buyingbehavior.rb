@@ -104,6 +104,41 @@ class BuyingBehavior
     end
   end
 
+  def buy_scoring_based
+    # Compare with paper: "Dynamic Pricing under Competition on Online Marketplaces: A Data-Driven Approach"
+    # The scoring factors for price and quality are different for each consumer. A lower score is better.
+    # We generate a random factor within a specified value range.
+
+    price_factor_range = 1.0..1.0
+    quality_factor_range = 0.0..3.0
+    willingness_to_buy_range = 20.0..80.0
+
+    prng = Random.new
+    price_factor = prng.rand(price_factor_range)
+    quality_factor = prng.rand(quality_factor_range)
+    willingness_to_buy = prng.rand(willingness_to_buy_range)
+
+    def score(item, price_factor, quality_factor)
+      price_factor * item['price'] + quality_factor * item['quality']
+    end
+
+    scored_items = @items.map{|item| {item: item, score: score(item, price_factor, quality_factor)} }
+    best_scored_item = scored_items.min { |a, b| a[:score] <=> b[:score] }
+
+    if $debug
+      puts "Price factor #{price_factor}, Quality factor #{quality_factor}, Willingness score: #{willingness_to_buy}"
+      puts "Scored items:"
+      scored_items.sort { |a, b| a[:score] <=> b[:score] }.each {|element| puts "\t#{element}"}
+    end
+
+    # Only buy from the best offer if its score is lower or equal than the willingness to buy.
+    if best_scored_item[:score] <= willingness_to_buy
+      best_scored_item[:item]
+    else
+      nil
+    end
+  end
+
   private
 
   # Uses a modified market power formula to calculate buying probabilities.

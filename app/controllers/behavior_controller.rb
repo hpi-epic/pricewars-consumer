@@ -16,6 +16,7 @@ class BehaviorController < ApplicationController
     result.push(select_second_cheap_behavior)
     result.push(select_third_cheap_behavior)
     result.push(select_logit_coefficients)
+    result.push(select_scoring_based)
   end
 
   private
@@ -132,6 +133,16 @@ class BehaviorController < ApplicationController
     behavior['settings'] = {}
     behavior['settings_description'] = 'Behavior settings not necessary'
     behavior['amount'] = 100
+    behavior
+  end
+
+  def self.select_scoring_based
+    behavior = {}
+    behavior['name'] = 'scoring_based'
+    behavior['description'] = 'I consider price and quality with some factor in my buying decision. I won\'t buy the best offer if its score is above my willingness to buy.'
+    behavior['settings'] = {}
+    behavior['settings_description'] = 'Behavior settings not necessary'
+    behavior['amount'] = 0
     behavior
   end
 end

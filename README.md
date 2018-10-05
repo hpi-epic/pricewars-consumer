@@ -102,6 +102,12 @@ the marketplace offer list filtered by prime
 
 > Buys with highest probability the cheapest product, but also has a chance to buy more expensive products. The probabilities are calculated with a modified market power formula.
 
+* buy_scoring_based
+
+> Scores each offer based on price and quality. A lower score is better.
+The consumer buys from the best offer if its score is below or equal to the consumer's willingness to buy.
+The importance of price and quality and the willingness varies for each consumer (visit).
+
 #### Logistic regression behavior in detail
 
 The [logit behavior](https://github.com/hpi-epic/pricewars-consumer/blob/master/lib/buyingbehavior.rb#L94) implements a logistic regression with feature scaling and calculates for each offer the buying probability based on the feature coefficients provided in the behavior settings. Based on this buying probability for each offer, the consumer will actually choose an offer to buy.
